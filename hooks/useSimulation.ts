@@ -25,6 +25,7 @@ function createInitialState(): SimulationState {
     historicalData: HISTORICAL_DATA,
     projectedData: [],
     advancedMode: false,
+    mode: "forward",
   };
 }
 

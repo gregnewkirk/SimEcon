@@ -79,6 +79,29 @@ export interface SimulationState {
   historicalData: YearData[];
   projectedData: YearData[];
   advancedMode: boolean;
+  mode: SimMode;
+  whatIfEventId?: string;
+}
+
+export type SimMode = "forward" | "whatif";
+
+export interface WhatIfEvent {
+  id: string;
+  name: string;
+  year: number;
+  description: string;
+  counterfactualPolicy: TaxPolicy;
+}
+
+export interface Persona {
+  id: string;
+  name: string;
+  title: string;
+  icon: string;
+  householdIncome: number;
+  netWorth: number;
+  effectiveTaxRate: number;
+  programBenefits: Record<string, number>;
 }
 
 export interface URLState {
@@ -93,4 +116,6 @@ export interface URLState {
   ag?: number;
   ai?: number;
   ae?: number;
+  m?: string;   // mode: forward | whatif
+  we?: string;  // what-if event ID
 }
