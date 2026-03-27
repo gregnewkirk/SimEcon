@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import type { SimulationState, URLState } from "@/lib/types";
+import type { SimulationState, SimMode, URLState } from "@/lib/types";
 import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR } from "@/lib/data/defaults";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { encodeURLState, decodeURLState } from "@/lib/url-state";
@@ -39,6 +39,9 @@ export function stateToURL(state: SimulationState): URLState {
     url.ai = state.assumptions.interestRate;
   if (state.assumptions.behavioralElasticity !== DEFAULT_ASSUMPTIONS.behavioralElasticity)
     url.ae = state.assumptions.behavioralElasticity;
+
+  if (state.mode === "whatif") url.m = "whatif";
+  if (state.whatIfEventId) url.we = state.whatIfEventId;
 
   return url;
 }
@@ -85,6 +88,15 @@ export function urlToState(urlState: URLState): Partial<SimulationState> {
       ...(urlState.ai !== undefined ? { interestRate: urlState.ai } : {}),
       ...(urlState.ae !== undefined ? { behavioralElasticity: urlState.ae } : {}),
     };
+  }
+
+  // Mode and what-if event
+  if (urlState.m === "whatif") {
+    partial.mode = "whatif" as SimMode;
+  }
+  if (urlState.we) {
+    partial.whatIfEventId = urlState.we;
+    partial.mode = "whatif" as SimMode;
   }
 
   return partial;

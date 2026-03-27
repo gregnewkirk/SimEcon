@@ -81,6 +81,12 @@ export function decodeURLState(hash: string): URLState {
       case "ae":
         result.ae = Number(value);
         break;
+      case "m":
+        result.m = value;
+        break;
+      case "we":
+        result.we = value;
+        break;
     }
   }
 

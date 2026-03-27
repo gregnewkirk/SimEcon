@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import type {
   SimulationState,
+  SimMode,
   TaxPolicy,
   AdvancedAssumptions,
   YearData,
@@ -10,7 +11,9 @@ import type {
 import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR } from "@/lib/data/defaults";
 import { HISTORICAL_DATA } from "@/lib/data/historical";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
+import { WHAT_IF_EVENTS_MAP } from "@/lib/data/what-if-events";
 import { simulate } from "@/lib/engine/simulate";
+import { simulateWhatIf, calculateWhatIfDelta } from "@/lib/engine/what-if";
 import { useURLStateSync } from "./useURLState";
 
 function createInitialState(): SimulationState {
@@ -68,6 +71,19 @@ export function useSimulation() {
     () => [...HISTORICAL_DATA, ...baselineData],
     [baselineData]
   );
+
+  // What-if mode data
+  const whatIfData = useMemo(() => {
+    if (state.mode !== "whatif" || !state.whatIfEventId) return null;
+    const event = WHAT_IF_EVENTS_MAP.get(state.whatIfEventId);
+    if (!event) return null;
+    return simulateWhatIf(event, state.assumptions, DEFAULT_END_YEAR);
+  }, [state.mode, state.whatIfEventId, state.assumptions]);
+
+  const whatIfDelta = useMemo(() => {
+    if (!whatIfData) return null;
+    return calculateWhatIfDelta(whatIfData.actual, whatIfData.counterfactual, state.currentYear);
+  }, [whatIfData, state.currentYear]);
 
   // Current year data lookups
   const currentYearData = useMemo(
@@ -132,6 +148,14 @@ export function useSimulation() {
     setState((prev) => ({ ...prev, advancedMode }));
   }, []);
 
+  const setMode = useCallback((mode: SimMode) => {
+    setState((prev) => ({ ...prev, mode }));
+  }, []);
+
+  const setWhatIfEvent = useCallback((eventId: string) => {
+    setState((prev) => ({ ...prev, whatIfEventId: eventId, mode: "whatif" as SimMode }));
+  }, []);
+
   const reset = useCallback(() => {
     setState(createInitialState());
   }, []);
@@ -155,6 +179,8 @@ export function useSimulation() {
     baselineAllData,
     currentYearData,
     baselineYearData,
+    whatIfData,
+    whatIfDelta,
     setTaxPolicy,
     toggleProgram,
     setAssumptions,
@@ -163,6 +189,8 @@ export function useSimulation() {
     setIsPlaying,
     setPlaybackSpeed,
     setAdvancedMode,
+    setMode,
+    setWhatIfEvent,
     reset,
   };
 }
