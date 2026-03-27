@@ -25,7 +25,7 @@ interface KPICardsProps {
 
 export function KPICards({ current, baseline }: KPICardsProps) {
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <KPICard
         label="National Debt"
         value={formatTrillions(current.debtTrillions)}
