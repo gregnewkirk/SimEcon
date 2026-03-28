@@ -27,6 +27,7 @@ function createInitialState(): SimulationState {
     },
     enabledPrograms: [],
     assumptions: { ...DEFAULT_ASSUMPTIONS },
+    programCostOverrides: {},
     currentYear: START_YEAR,
     isPlaying: false,
     playbackSpeed: 1,
@@ -55,9 +56,10 @@ export function useSimulation() {
       state.taxPolicy,
       state.enabledPrograms,
       state.assumptions,
-      DEFAULT_END_YEAR
+      DEFAULT_END_YEAR,
+      state.programCostOverrides
     );
-  }, [isRevisionMode, state.taxPolicy, state.enabledPrograms, state.assumptions]);
+  }, [isRevisionMode, state.taxPolicy, state.enabledPrograms, state.assumptions, state.programCostOverrides]);
 
   // === FIX MODE: projected data from end of historical (current behavior) ===
   const projectedData = useMemo(
@@ -67,9 +69,10 @@ export function useSimulation() {
         state.taxPolicy,
         state.enabledPrograms,
         state.assumptions,
-        DEFAULT_END_YEAR
+        DEFAULT_END_YEAR,
+        state.programCostOverrides
       ),
-    [state.taxPolicy, state.enabledPrograms, state.assumptions]
+    [state.taxPolicy, state.enabledPrograms, state.assumptions, state.programCostOverrides]
   );
 
   // Baseline: current policy, no programs, default assumptions (for comparison KPIs)
@@ -236,6 +239,13 @@ export function useSimulation() {
     setState((prev) => ({ ...prev, viewPerspective }));
   }, []);
 
+  const setProgramCostOverride = useCallback((programId: string, multiplier: number) => {
+    setState((prev) => ({
+      ...prev,
+      programCostOverrides: { ...prev.programCostOverrides, [programId]: multiplier },
+    }));
+  }, []);
+
   const toggleWhatIfEvent = useCallback((eventId: string) => {
     setState((prev) => {
       const ids = prev.whatIfEventIds.includes(eventId)
@@ -284,6 +294,7 @@ export function useSimulation() {
     setAdvancedMode,
     setMode,
     toggleWhatIfEvent,
+    setProgramCostOverride,
     setViewComplexity,
     setViewPerspective,
     reset,

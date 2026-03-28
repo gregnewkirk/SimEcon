@@ -68,6 +68,7 @@ export function SimulatorLayout() {
       onTaxChange={handleTaxChange}
       onBracketChange={sim.setBracketRate}
       onProgramToggle={sim.toggleProgram}
+      onProgramCostOverride={sim.setProgramCostOverride}
       onAssumptionsChange={handleAssumptionsChange}
       onAdvancedModeChange={sim.setAdvancedMode}
       onReset={sim.reset}

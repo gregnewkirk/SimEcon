@@ -97,19 +97,19 @@ export const PROGRAMS: Program[] = [
     id: "infrastructure",
     name: "Infrastructure Modernization",
     icon: "🌉",
-    annualCostBillions: 300,
+    annualCostBillions: 370,
     annualSavingsBillions: 0,
-    netCostBillions: 300,
+    netCostBillions: 370,
     source: {
-      value: 300,
+      value: 370,
       agency: "American Society of Civil Engineers",
-      dataset: "Infrastructure Report Card Investment Gap",
-      year: 2023,
-      url: "https://infrastructurereportcard.org",
-      accessedDate: "2025-01-15",
+      dataset: "2025 Report Card — Bridging the Gap Economic Analysis",
+      year: 2025,
+      url: "https://bridgingthegap.infrastructurereportcard.org",
+      accessedDate: "2025-03-28",
     },
     description:
-      "Roads, bridges, broadband, water systems, and electric grid upgrades. Estimated to create 1.5M jobs and boost GDP by 0.5-1.0%.",
+      "ASCE estimates a $3.7T investment gap over 2024-2033 (~$370B/yr) across roads, bridges, broadband, water systems, and the electric grid. The 2021 IIJA provided ~$240B/yr but authorizations expire in 2026.",
   },
 ];
 

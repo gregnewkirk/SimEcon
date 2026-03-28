@@ -16,7 +16,8 @@ export function simulateRevision(
   taxPolicy: TaxPolicy,
   enabledPrograms: string[],
   assumptions: AdvancedAssumptions,
-  endYear: number
+  endYear: number,
+  programCostOverrides: Record<string, number> = {}
 ): YearData[] {
   const projected: YearData[] = [];
 
@@ -24,7 +25,9 @@ export function simulateRevision(
   const BASE_DOLLAR_YEAR = 2025;
   const baseProgramCostBillions = enabledPrograms.reduce((sum, programId) => {
     const program = PROGRAMS_MAP.get(programId);
-    return sum + (program?.netCostBillions ?? 0);
+    if (!program) return sum;
+    const perProgramMultiplier = programCostOverrides[programId] ?? 1.0;
+    return sum + program.netCostBillions * perProgramMultiplier;
   }, 0) * (assumptions.programCostMultiplier ?? 1.0);
 
   let prev = startingConditions;

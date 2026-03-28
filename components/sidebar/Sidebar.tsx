@@ -20,6 +20,7 @@ interface SidebarProps {
   onTaxChange: (field: keyof TaxPolicy, value: number) => void;
   onBracketChange: (index: number, rate: number) => void;
   onProgramToggle: (programId: string) => void;
+  onProgramCostOverride: (programId: string, multiplier: number) => void;
   onAssumptionsChange: (
     field: keyof AdvancedAssumptionsType,
     value: number
@@ -36,6 +37,7 @@ export function Sidebar({
   onTaxChange,
   onBracketChange,
   onProgramToggle,
+  onProgramCostOverride,
   onAssumptionsChange,
   onAdvancedModeChange,
   onReset,
@@ -68,6 +70,9 @@ export function Sidebar({
       <ProgramToggles
         enabledPrograms={state.enabledPrograms}
         onToggle={onProgramToggle}
+        advancedMode={state.advancedMode}
+        programCostOverrides={state.programCostOverrides}
+        onProgramCostOverride={onProgramCostOverride}
       />
 
       <WhatIfToggles

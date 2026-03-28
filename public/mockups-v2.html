@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimEcon — Round 2: Refined Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Hanken+Grotesk:wght@200;300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Lora:ital,wght@0,400;0,500;1,400&family=Libre+Franklin:wght@200;300;400;500;600;700&family=Alegreya:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=General+Sans:wght@300;400;500;600;700&display=swap" crossorigin>
+<style>
+@font-face {
+  font-family: 'SF Pro Display';
+  src: local('SF Pro Display'), local('.SFNSDisplay-Regular'), local('system-ui');
+  font-weight: 100 900;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+.gallery-header {
+  padding: 80px 40px 48px;
+  text-align: center;
+}
+.gallery-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 12px;
+}
+.gallery-header p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: #1d1d1f;
+  letter-spacing: -0.5px;
+}
+.gallery-header .sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #86868b;
+  margin-top: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  padding: 28px 48px 100px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+  background: #fff;
+}
+
+.card-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 18px 10px;
+  background: #fff;
+}
+.card-num { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #ccc; letter-spacing: 2px; }
+.card-name { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #999; }
+
+/* ─── SHARED MOCKUP STRUCTURE ─── */
+.mock { height: 480px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.mock-header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.mock-logo { display: flex; align-items: center; gap: 8px; }
+.mock-nav { display: flex; gap: 8px; align-items: center; }
+.mock-btn { border-radius: 6px; cursor: pointer; border: none; }
+.mock-body { display: flex; flex: 1; overflow: hidden; }
+.mock-sidebar { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.mock-main { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.mock-kpis { display: flex; gap: 8px; flex-shrink: 0; }
+.mock-kpi { flex: 1; }
+.mock-chart-area { flex: 1; position: relative; overflow: hidden; }
+.mock-footer { flex-shrink: 0; display: flex; align-items: center; }
+.spark { width: 100%; height: 100%; }
+
+/* ══════════════════════════════════════════════
+   01 — CUPERTINO
+   Apple-native. System font weights, #007AFF blue, gray-100 cards.
+   ══════════════════════════════════════════════ */
+.d1 { background: #fafafa; }
+.d1 .mock-header { height: 48px; padding: 0 20px; background: rgba(250,250,250,.85); backdrop-filter: blur(20px); border-bottom: 0.5px solid #e5e5ea; }
+.d1 .mock-logo span:first-child { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.2px; }
+.d1 .mock-logo span:last-child { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 300; color: #86868b; }
+.d1 .mock-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; color: #007AFF; background: transparent; padding: 4px 12px; border-radius: 6px; }
+.d1 .mock-btn:last-child { background: #007AFF; color: #fff; border-radius: 16px; }
+.d1 .mock-body { padding: 16px; gap: 16px; }
+.d1 .mock-sidebar { width: 170px; background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.d1 .sidebar-section { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 600; color: #86868b; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px; }
+.d1 .sidebar-section:first-child { margin-top: 0; }
+.d1 .sidebar-row { display: flex; justify-content: space-between; padding: 5px 0; }
+.d1 .sidebar-row-label { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 400; color: #48484a; }
+.d1 .sidebar-row-val { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; color: #1d1d1f; }
+.d1 .sidebar-slider { height: 3px; background: #e5e5ea; border-radius: 2px; margin: 4px 0; position: relative; }
+.d1 .sidebar-slider-fill { height: 3px; background: #007AFF; border-radius: 2px; }
+.d1 .sidebar-slider-thumb { width: 10px; height: 10px; background: #fff; border-radius: 50%; box-shadow: 0 0.5px 4px rgba(0,0,0,.12), 0 0.5px 1px rgba(0,0,0,.08); position: absolute; top: -3.5px; }
+.d1 .mock-kpis { gap: 10px; }
+.d1 .mock-kpi { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.d1 .kpi-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #86868b; margin-bottom: 4px; }
+.d1 .kpi-val { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 300; color: #1d1d1f; letter-spacing: -0.5px; }
+.d1 .kpi-val.neg { color: #ff3b30; }
+.d1 .kpi-val.pos { color: #34c759; }
+.d1 .kpi-delta { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; margin-top: 2px; }
+.d1 .kpi-delta.neg { color: #ff3b30; }
+.d1 .kpi-delta.pos { color: #34c759; }
+.d1 .mock-chart-area { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.d1 .chart-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #86868b; padding: 12px 16px 0; }
+.d1 .mock-footer { height: 40px; margin-top: 4px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.04); padding: 0 16px; gap: 12px; }
+.d1 .footer-tick { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 400; color: #86868b; }
+.d1 .footer-progress { flex: 1; height: 3px; background: #e5e5ea; border-radius: 2px; }
+.d1 .footer-fill { width: 40%; height: 3px; background: #007AFF; border-radius: 2px; }
+.d1 .footer-play { width: 24px; height: 24px; background: #007AFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; }
+
+/* ══════════════════════════════════════════════
+   02 — PEARL
+   Warm white, rose gold accent, luxury fintech.
+   ══════════════════════════════════════════════ */
+.d2 { background: #fdf9f6; }
+.d2 .mock-header { height: 48px; padding: 0 20px; background: #fdf9f6; border-bottom: 0.5px solid #ece4dc; }
+.d2 .mock-logo span:first-child { font-family: 'Instrument Serif', serif; font-size: 20px; color: #2c2420; }
+.d2 .mock-logo span:last-child { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 300; color: #b8a898; letter-spacing: 3px; text-transform: uppercase; }
+.d2 .mock-btn { font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 400; color: #b8a898; background: transparent; border: 0.5px solid #e0d6cc; padding: 4px 12px; border-radius: 20px; }
+.d2 .mock-body { padding: 16px; gap: 16px; }
+.d2 .mock-sidebar { width: 165px; gap: 0; }
+.d2 .sidebar-section { font-family: 'Hanken Grotesk', sans-serif; font-size: 8px; font-weight: 500; color: #c4a882; letter-spacing: 3px; text-transform: uppercase; padding: 12px 0 6px; border-bottom: 0.5px solid #ece4dc; }
+.d2 .sidebar-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid #f4ece4; }
+.d2 .sidebar-row-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 300; color: #8a7a6a; }
+.d2 .sidebar-row-val { font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 500; color: #2c2420; }
+.d2 .mock-kpis { gap: 10px; }
+.d2 .mock-kpi { padding: 14px 16px; border-bottom: 1.5px solid #c4a882; }
+.d2 .kpi-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 400; color: #c4a882; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.d2 .kpi-val { font-family: 'Instrument Serif', serif; font-size: 26px; color: #2c2420; }
+.d2 .kpi-val.neg { color: #c45a4a; }
+.d2 .kpi-val.pos { color: #5a8a5a; }
+.d2 .mock-chart-area { background: transparent; border: 0.5px solid #ece4dc; border-radius: 8px; }
+.d2 .chart-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 400; color: #c4a882; letter-spacing: 2px; text-transform: uppercase; padding: 12px 16px 0; }
+.d2 .mock-footer { height: 40px; border-top: 0.5px solid #ece4dc; padding: 0 16px; gap: 12px; }
+.d2 .footer-tick { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 300; color: #b8a898; }
+.d2 .footer-progress { flex: 1; height: 1px; background: #ece4dc; }
+.d2 .footer-fill { width: 40%; height: 1px; background: #c4a882; }
+
+/* ══════════════════════════════════════════════
+   03 — MERCURY
+   Silver/chrome, cool gray, monospace numbers.
+   ══════════════════════════════════════════════ */
+.d3 { background: linear-gradient(180deg, #f2f2f5 0%, #eaeaef 100%); }
+.d3 .mock-header { height: 44px; padding: 0 18px; background: rgba(245,245,248,.9); backdrop-filter: blur(16px); border-bottom: 1px solid #d8d8dd; }
+.d3 .mock-logo span:first-child { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: #38383c; letter-spacing: 2px; text-transform: uppercase; }
+.d3 .mock-logo span:last-child { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #8e8e93; letter-spacing: 1px; }
+.d3 .mock-btn { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #8e8e93; background: rgba(255,255,255,.6); border: 0.5px solid #d8d8dd; padding: 4px 12px; }
+.d3 .mock-body { padding: 14px; gap: 14px; }
+.d3 .mock-sidebar { width: 160px; background: rgba(255,255,255,.5); backdrop-filter: blur(10px); border: 0.5px solid #d8d8dd; padding: 12px; border-radius: 10px; }
+.d3 .sidebar-section { font-family: 'Outfit', sans-serif; font-size: 8px; font-weight: 600; color: #8e8e93; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px; }
+.d3 .sidebar-section:first-child { margin-top: 0; }
+.d3 .sidebar-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 0.5px solid #eaeaef; }
+.d3 .sidebar-row-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #636366; }
+.d3 .sidebar-row-val { font-family: 'Geist Mono', monospace; font-size: 10px; color: #38383c; }
+.d3 .mock-kpis { gap: 8px; }
+.d3 .mock-kpi { background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,.4) 100%); backdrop-filter: blur(10px); border: 0.5px solid #d8d8dd; padding: 12px 14px; border-radius: 10px; }
+.d3 .kpi-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 500; color: #8e8e93; letter-spacing: 1px; margin-bottom: 4px; }
+.d3 .kpi-val { font-family: 'Geist Mono', monospace; font-size: 20px; font-weight: 400; color: #38383c; }
+.d3 .kpi-val.neg { color: #eb4d3d; }
+.d3 .kpi-val.pos { color: #30b050; }
+.d3 .mock-chart-area { background: rgba(255,255,255,.4); backdrop-filter: blur(10px); border: 0.5px solid #d8d8dd; border-radius: 10px; }
+.d3 .chart-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 500; color: #8e8e93; letter-spacing: 1px; padding: 10px 14px 0; }
+.d3 .mock-footer { height: 36px; background: rgba(255,255,255,.5); backdrop-filter: blur(10px); border: 0.5px solid #d8d8dd; border-radius: 10px; padding: 0 14px; gap: 12px; }
+.d3 .footer-tick { font-family: 'Geist Mono', monospace; font-size: 9px; color: #8e8e93; }
+.d3 .footer-progress { flex: 1; height: 2px; background: #d8d8dd; border-radius: 1px; }
+.d3 .footer-fill { width: 40%; height: 2px; background: linear-gradient(90deg, #8e8e93, #636366); border-radius: 1px; }
+
+/* ══════════════════════════════════════════════
+   04 — ALPINE
+   White + forest green accent, nature-meets-finance.
+   ══════════════════════════════════════════════ */
+.d4 { background: #fbfcfb; }
+.d4 .mock-header { height: 46px; padding: 0 20px; background: #fbfcfb; border-bottom: 1px solid #e8ece8; }
+.d4 .mock-logo span:first-child { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: #1b3a2a; letter-spacing: 0.5px; }
+.d4 .mock-logo span:last-child { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; font-weight: 400; color: #7a9a8a; letter-spacing: 1px; }
+.d4 .mock-btn { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 500; color: #2d6b4a; background: #e8f4ee; padding: 5px 14px; border-radius: 8px; }
+.d4 .mock-body { padding: 16px; gap: 16px; }
+.d4 .mock-sidebar { width: 165px; background: #f4f8f5; border-radius: 10px; padding: 14px; }
+.d4 .sidebar-section { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; font-weight: 600; color: #2d6b4a; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px; }
+.d4 .sidebar-section:first-child { margin-top: 0; }
+.d4 .sidebar-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #e8ece8; }
+.d4 .sidebar-row-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 400; color: #5a7a6a; }
+.d4 .sidebar-row-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 600; color: #1b3a2a; }
+.d4 .mock-kpis { gap: 10px; }
+.d4 .mock-kpi { background: #f4f8f5; border-radius: 10px; padding: 14px 16px; }
+.d4 .kpi-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; font-weight: 500; color: #7a9a8a; letter-spacing: 0.5px; margin-bottom: 4px; }
+.d4 .kpi-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 300; color: #1b3a2a; }
+.d4 .kpi-val.neg { color: #c04040; }
+.d4 .kpi-val.pos { color: #2d6b4a; }
+.d4 .mock-chart-area { background: #f4f8f5; border-radius: 10px; }
+.d4 .chart-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; font-weight: 500; color: #7a9a8a; padding: 12px 16px 0; }
+.d4 .mock-footer { height: 38px; background: #f4f8f5; border-radius: 10px; padding: 0 16px; gap: 12px; }
+.d4 .footer-tick { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; font-weight: 400; color: #7a9a8a; }
+.d4 .footer-progress { flex: 1; height: 3px; background: #d4e4da; border-radius: 2px; }
+.d4 .footer-fill { width: 40%; height: 3px; background: #2d6b4a; border-radius: 2px; }
+
+/* ══════════════════════════════════════════════
+   05 — IVORY
+   Warm cream, charcoal text, thin gold line accents.
+   ══════════════════════════════════════════════ */
+.d5 { background: #faf8f4; }
+.d5 .mock-header { height: 48px; padding: 0 22px; background: #faf8f4; border-bottom: 1px solid #eae6de; }
+.d5 .mock-logo span:first-child { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: #2a2a28; letter-spacing: 1px; }
+.d5 .mock-logo span:last-child { font-family: 'Libre Franklin', sans-serif; font-size: 8px; font-weight: 300; color: #a8a098; letter-spacing: 4px; text-transform: uppercase; }
+.d5 .mock-btn { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 400; color: #a8a098; background: transparent; border: 0.5px solid #d8d0c4; padding: 4px 12px; }
+.d5 .mock-body { padding: 18px; gap: 18px; }
+.d5 .mock-sidebar { width: 160px; gap: 0; border-right: 0.5px solid #eae6de; padding-right: 18px; }
+.d5 .sidebar-section { font-family: 'Libre Franklin', sans-serif; font-size: 7px; font-weight: 500; color: #c4a860; letter-spacing: 4px; text-transform: uppercase; padding: 14px 0 6px; border-bottom: 0.5px solid #eae6de; }
+.d5 .sidebar-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid #f0ece4; }
+.d5 .sidebar-row-label { font-family: 'Cormorant Garamond', serif; font-size: 12px; font-weight: 400; color: #6a6660; }
+.d5 .sidebar-row-val { font-family: 'Libre Franklin', sans-serif; font-size: 10px; font-weight: 500; color: #2a2a28; }
+.d5 .mock-kpis { gap: 12px; }
+.d5 .mock-kpi { padding: 14px 16px; background: transparent; border-left: 1.5px solid #c4a860; }
+.d5 .kpi-label { font-family: 'Libre Franklin', sans-serif; font-size: 8px; font-weight: 400; color: #a8a098; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.d5 .kpi-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: #2a2a28; }
+.d5 .kpi-val.neg { color: #a04040; }
+.d5 .kpi-val.pos { color: #407040; }
+.d5 .mock-chart-area { background: transparent; border: 0.5px solid #eae6de; border-radius: 4px; }
+.d5 .chart-label { font-family: 'Libre Franklin', sans-serif; font-size: 8px; font-weight: 400; color: #a8a098; letter-spacing: 3px; text-transform: uppercase; padding: 12px 16px 0; }
+.d5 .mock-footer { height: 38px; border-top: 0.5px solid #eae6de; padding: 0 16px; gap: 12px; }
+.d5 .footer-tick { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 300; color: #a8a098; }
+.d5 .footer-progress { flex: 1; height: 0.5px; background: #d8d0c4; }
+.d5 .footer-fill { width: 40%; height: 0.5px; background: #c4a860; }
+
+/* ══════════════════════════════════════════════
+   06 — GLASS
+   Translucent cards on soft gradient, floating.
+   ══════════════════════════════════════════════ */
+.d6 { background: linear-gradient(145deg, #e8ecf4 0%, #f0e8f0 30%, #e8f0f4 60%, #eef0e8 100%); }
+.d6 .mock-header { height: 44px; padding: 0 18px; background: rgba(255,255,255,.35); backdrop-filter: blur(24px); }
+.d6 .mock-logo span:first-child { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 500; color: #2a2a3a; }
+.d6 .mock-logo span:last-child { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #8888a0; }
+.d6 .mock-btn { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 400; color: #6868a0; background: rgba(255,255,255,.35); backdrop-filter: blur(10px); padding: 4px 12px; border-radius: 20px; border: 0.5px solid rgba(255,255,255,.5); }
+.d6 .mock-body { padding: 14px; gap: 14px; }
+.d6 .mock-sidebar { width: 155px; background: rgba(255,255,255,.3); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,.5); padding: 12px; border-radius: 14px; }
+.d6 .sidebar-section { font-family: 'Outfit', sans-serif; font-size: 8px; font-weight: 500; color: #8888a0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; margin-top: 10px; }
+.d6 .sidebar-section:first-child { margin-top: 0; }
+.d6 .sidebar-row { display: flex; justify-content: space-between; padding: 4px 0; }
+.d6 .sidebar-row-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #5a5a7a; }
+.d6 .sidebar-row-val { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #2a2a3a; }
+.d6 .mock-kpis { gap: 8px; }
+.d6 .mock-kpi { background: rgba(255,255,255,.35); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,.5); padding: 14px 16px; border-radius: 14px; }
+.d6 .kpi-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 400; color: #8888a0; margin-bottom: 4px; }
+.d6 .kpi-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 300; color: #2a2a3a; }
+.d6 .kpi-val.neg { color: #c05050; }
+.d6 .kpi-val.pos { color: #408860; }
+.d6 .mock-chart-area { background: rgba(255,255,255,.3); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,.5); border-radius: 14px; }
+.d6 .chart-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 400; color: #8888a0; padding: 12px 16px 0; }
+.d6 .mock-footer { height: 36px; background: rgba(255,255,255,.3); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,.5); border-radius: 14px; padding: 0 14px; gap: 12px; }
+.d6 .footer-tick { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #8888a0; }
+.d6 .footer-progress { flex: 1; height: 2px; background: rgba(150,150,180,.2); border-radius: 1px; }
+.d6 .footer-fill { width: 40%; height: 2px; background: linear-gradient(90deg, #7878c0, #a078c0); border-radius: 1px; }
+
+/* ══════════════════════════════════════════════
+   07 — NORDIC
+   Scandinavian. Near-white, muted steel blue, extreme space.
+   ══════════════════════════════════════════════ */
+.d7 { background: #f7f8fa; }
+.d7 .mock-header { height: 52px; padding: 0 24px; background: #f7f8fa; border-bottom: 1px solid #e8eaef; }
+.d7 .mock-logo span:first-child { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: #1a2030; letter-spacing: 2px; text-transform: uppercase; }
+.d7 .mock-logo span:last-child { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 300; color: #8090a8; letter-spacing: 1px; }
+.d7 .mock-btn { font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 400; color: #5070a0; background: transparent; padding: 4px 14px; }
+.d7 .mock-body { padding: 20px 24px; gap: 20px; }
+.d7 .mock-sidebar { width: 155px; gap: 0; }
+.d7 .sidebar-section { font-family: 'Hanken Grotesk', sans-serif; font-size: 8px; font-weight: 600; color: #5070a0; letter-spacing: 3px; text-transform: uppercase; padding: 16px 0 8px; }
+.d7 .sidebar-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eef0f4; }
+.d7 .sidebar-row-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; font-weight: 300; color: #6a7a90; }
+.d7 .sidebar-row-val { font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; font-weight: 500; color: #1a2030; }
+.d7 .mock-kpis { gap: 16px; }
+.d7 .mock-kpi { padding: 16px 0; border-bottom: 1px solid #e8eaef; }
+.d7 .kpi-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 500; color: #8090a8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+.d7 .kpi-val { font-family: 'Hanken Grotesk', sans-serif; font-size: 28px; font-weight: 200; color: #1a2030; letter-spacing: -1px; }
+.d7 .kpi-val.neg { color: #c04848; }
+.d7 .kpi-val.pos { color: #3a8a5a; }
+.d7 .mock-chart-area { background: transparent; border: 1px solid #e8eaef; border-radius: 2px; }
+.d7 .chart-label { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 500; color: #8090a8; letter-spacing: 2px; text-transform: uppercase; padding: 14px 18px 0; }
+.d7 .mock-footer { height: 38px; border-top: 1px solid #e8eaef; padding: 0 18px; gap: 14px; }
+.d7 .footer-tick { font-family: 'Hanken Grotesk', sans-serif; font-size: 9px; font-weight: 300; color: #8090a8; }
+.d7 .footer-progress { flex: 1; height: 1px; background: #e8eaef; }
+.d7 .footer-fill { width: 40%; height: 1px; background: #5070a0; }
+
+/* ══════════════════════════════════════════════
+   08 — MINT
+   White + sage green, modern banking.
+   ══════════════════════════════════════════════ */
+.d8 { background: #f8faf8; }
+.d8 .mock-header { height: 46px; padding: 0 18px; background: #fff; box-shadow: 0 1px 0 #e8ece8; }
+.d8 .mock-logo span:first-child { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 600; color: #1a2e24; }
+.d8 .mock-logo span:last-child { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #7a9a88; }
+.d8 .mock-btn { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #fff; background: #3a8a60; padding: 5px 14px; border-radius: 20px; }
+.d8 .mock-body { padding: 14px; gap: 14px; }
+.d8 .mock-sidebar { width: 160px; background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.d8 .sidebar-section { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 600; color: #3a8a60; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px; }
+.d8 .sidebar-section:first-child { margin-top: 0; }
+.d8 .sidebar-row { display: flex; justify-content: space-between; padding: 5px 0; }
+.d8 .sidebar-row-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #5a7a68; }
+.d8 .sidebar-row-val { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 600; color: #1a2e24; }
+.d8 .mock-kpis { gap: 8px; }
+.d8 .mock-kpi { background: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.d8 .kpi-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 500; color: #7a9a88; margin-bottom: 4px; }
+.d8 .kpi-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 400; color: #1a2e24; }
+.d8 .kpi-val.neg { color: #c04848; }
+.d8 .kpi-val.pos { color: #3a8a60; }
+.d8 .mock-chart-area { background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.d8 .chart-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 500; color: #7a9a88; padding: 12px 16px 0; }
+.d8 .mock-footer { height: 38px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.04); padding: 0 16px; gap: 12px; }
+.d8 .footer-tick { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 400; color: #7a9a88; }
+.d8 .footer-progress { flex: 1; height: 3px; background: #e0ece4; border-radius: 2px; }
+.d8 .footer-fill { width: 40%; height: 3px; background: #3a8a60; border-radius: 2px; }
+
+/* ══════════════════════════════════════════════
+   09 — SLATE
+   Light gray bg, white cards, indigo accent, enterprise.
+   ══════════════════════════════════════════════ */
+.d9 { background: #f0f2f5; }
+.d9 .mock-header { height: 46px; padding: 0 20px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.d9 .mock-logo span:first-child { font-family: 'Libre Franklin', sans-serif; font-size: 15px; font-weight: 600; color: #1a1d28; letter-spacing: 0.5px; }
+.d9 .mock-logo span:last-child { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 300; color: #8890a0; letter-spacing: 1px; }
+.d9 .mock-btn { font-family: 'Libre Franklin', sans-serif; font-size: 10px; font-weight: 500; color: #5060b0; background: #eef0fa; padding: 5px 14px; border-radius: 6px; }
+.d9 .mock-body { padding: 16px; gap: 14px; }
+.d9 .mock-sidebar { width: 170px; background: #fff; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.d9 .sidebar-section { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 600; color: #5060b0; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px; }
+.d9 .sidebar-section:first-child { margin-top: 0; }
+.d9 .sidebar-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f4f5f8; }
+.d9 .sidebar-row-label { font-family: 'Libre Franklin', sans-serif; font-size: 10px; font-weight: 400; color: #5a6070; }
+.d9 .sidebar-row-val { font-family: 'Libre Franklin', sans-serif; font-size: 10px; font-weight: 600; color: #1a1d28; }
+.d9 .mock-kpis { gap: 10px; }
+.d9 .mock-kpi { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); border-top: 2px solid #5060b0; }
+.d9 .kpi-label { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 500; color: #8890a0; letter-spacing: 0.5px; margin-bottom: 4px; }
+.d9 .kpi-val { font-family: 'Libre Franklin', sans-serif; font-size: 22px; font-weight: 300; color: #1a1d28; }
+.d9 .kpi-val.neg { color: #c04848; }
+.d9 .kpi-val.pos { color: #3a8a5a; }
+.d9 .mock-chart-area { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.d9 .chart-label { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 500; color: #8890a0; padding: 12px 16px 0; }
+.d9 .mock-footer { height: 38px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.04); padding: 0 16px; gap: 12px; }
+.d9 .footer-tick { font-family: 'Libre Franklin', sans-serif; font-size: 9px; font-weight: 400; color: #8890a0; }
+.d9 .footer-progress { flex: 1; height: 2px; background: #e8eaf0; border-radius: 1px; }
+.d9 .footer-fill { width: 40%; height: 2px; background: #5060b0; border-radius: 1px; }
+
+/* ══════════════════════════════════════════════
+   10 — QUARTZ
+   Pure white, warm gray, single coral accent.
+   ══════════════════════════════════════════════ */
+.d10 { background: #fff; }
+.d10 .mock-header { height: 50px; padding: 0 24px; background: #fff; border-bottom: 1px solid #f0f0f0; }
+.d10 .mock-logo span:first-child { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: #2a2a28; }
+.d10 .mock-logo span:last-child { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #b0b0a8; letter-spacing: 2px; text-transform: uppercase; }
+.d10 .mock-btn { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 400; color: #8a8a80; background: transparent; border: 1px solid #e8e8e4; padding: 4px 14px; border-radius: 4px; }
+.d10 .mock-body { padding: 20px 24px; gap: 20px; }
+.d10 .mock-sidebar { width: 155px; gap: 0; }
+.d10 .sidebar-section { font-family: 'Outfit', sans-serif; font-size: 8px; font-weight: 500; color: #d07050; letter-spacing: 3px; text-transform: uppercase; padding: 14px 0 6px; }
+.d10 .sidebar-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f4f4f0; }
+.d10 .sidebar-row-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #7a7a70; }
+.d10 .sidebar-row-val { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; color: #2a2a28; }
+.d10 .mock-kpis { gap: 12px; }
+.d10 .mock-kpi { padding: 16px 0; border-bottom: 1px solid #f0f0f0; }
+.d10 .kpi-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 400; color: #b0b0a8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.d10 .kpi-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; color: #2a2a28; }
+.d10 .kpi-val.neg { color: #d07050; }
+.d10 .kpi-val.pos { color: #508060; }
+.d10 .mock-chart-area { background: #fff; border: 1px solid #f0f0f0; border-radius: 4px; }
+.d10 .chart-label { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 400; color: #b0b0a8; letter-spacing: 2px; text-transform: uppercase; padding: 14px 18px 0; }
+.d10 .mock-footer { height: 40px; border-top: 1px solid #f0f0f0; padding: 0 18px; gap: 14px; }
+.d10 .footer-tick { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 300; color: #b0b0a8; }
+.d10 .footer-progress { flex: 1; height: 1px; background: #e8e8e4; }
+.d10 .footer-fill { width: 40%; height: 1px; background: #d07050; }
+
+</style>
+</head>
+<body>
+
+<div class="gallery-header">
+  <h1>SimEcon — Refined Directions</h1>
+  <p>10 More Mockups</p>
+  <div class="sub">Inspired by Frost + Vellum. Light, clear, Apple-like.</div>
+</div>
+
+<div class="grid">
+
+<!-- Helper: reusable SVG chart with configurable colors -->
+
+<!-- ─── 01 CUPERTINO ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">01</span><span class="card-name">Cupertino</span></div>
+  <div class="mock d1">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>Economic Policy Simulator</span></div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn">Play</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-slider"><div class="sidebar-slider-fill" style="width:60%"></div><div class="sidebar-slider-thumb" style="left:57%"></div></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-slider"><div class="sidebar-slider-fill" style="width:40%"></div><div class="sidebar-slider-thumb" style="left:37%"></div></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap Gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#34c759">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#34c759">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Defense</span><span class="sidebar-row-val" style="color:#c7c7cc">Off</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+            <div class="kpi-delta neg">-4.2 pts</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Deficit</div>
+            <div class="kpi-val neg">-$1.8T</div>
+            <div class="kpi-delta pos">+$0.3T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val">$4.9T</div>
+            <div class="kpi-delta pos">+$0.6T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#007AFF" stop-opacity=".1"/><stop offset="100%" stop-color="#007AFF" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#e5e5ea" stroke-width=".5"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#e5e5ea" stroke-width=".5"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#e5e5ea" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#007AFF" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc1)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#007AFF" stroke-width=".5" stroke-dasharray="3,3" opacity=".4"/>
+            <circle cx="190" cy="58" r="3" fill="#007AFF"/>
+            <text x="6" y="113" fill="#c7c7cc" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#007AFF" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-play">&#9654;</div>
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 02 PEARL ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">02</span><span class="card-name">Pearl</span></div>
+  <div class="mock d2">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>ECONOMIC POLICY</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div><div class="mock-btn">Share</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#5a8a5a">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#5a8a5a">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Defense</span><span class="sidebar-row-val" style="color:#c4b8a8">Off</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c4a882" stop-opacity=".12"/><stop offset="100%" stop-color="#c4a882" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#ece4dc" stroke-width=".5"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#ece4dc" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#d8ccc0" stroke-width="1" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#c4a882" stroke-width="1.5"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc2)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#c4a882" stroke-width=".5" stroke-dasharray="2,4" opacity=".4"/>
+            <text x="6" y="113" fill="#c4b8a8" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#c4a882" font-family="serif" font-size="7" font-style="italic">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 03 MERCURY ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">03</span><span class="card-name">Mercury</span></div>
+  <div class="mock d3">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SIMECON</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div><div class="mock-btn">Share</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">FIX_2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap Gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#30b050">ON</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#30b050">ON</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt/GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 14px">
+            <defs><linearGradient id="gc3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#636366" stop-opacity=".08"/><stop offset="100%" stop-color="#636366" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#d8d8dd" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#d8d8dd" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#636366" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc3)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#8e8e93" stroke-width=".5" stroke-dasharray="2,4" opacity=".4"/>
+            <text x="6" y="113" fill="#8e8e93" font-family="monospace" font-size="7">2000</text>
+            <text x="268" y="16" fill="#636366" font-family="monospace" font-size="7">YOURS</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 04 ALPINE ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">04</span><span class="card-name">Alpine</span></div>
+  <div class="mock d4">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap Gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#2d6b4a">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#2d6b4a">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val pos">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2d6b4a" stop-opacity=".1"/><stop offset="100%" stop-color="#2d6b4a" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#d4e4da" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#c4d8cc" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#2d6b4a" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc4)"/>
+            <circle cx="190" cy="58" r="3" fill="#2d6b4a" opacity=".6"/>
+            <text x="6" y="113" fill="#7a9a8a" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#2d6b4a" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 05 IVORY ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">05</span><span class="card-name">Ivory</span></div>
+  <div class="mock d5">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>ECONOMIC POLICY SIMULATOR</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div><div class="mock-btn">Share</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:10px 16px">
+            <defs><linearGradient id="gc5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c4a860" stop-opacity=".1"/><stop offset="100%" stop-color="#c4a860" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#eae6de" stroke-width=".5"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#eae6de" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#d8d0c4" stroke-width="1" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#2a2a28" stroke-width="1.5"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc5)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#c4a860" stroke-width=".5" stroke-dasharray="2,4" opacity=".4"/>
+            <text x="6" y="113" fill="#a8a098" font-family="serif" font-style="italic" font-size="7">2000</text>
+            <text x="268" y="16" fill="#2a2a28" font-family="serif" font-style="italic" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 06 GLASS ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">06</span><span class="card-name">Glass</span></div>
+  <div class="mock d6">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div><div class="mock-btn">Share</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#408860">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#408860">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7878c0" stop-opacity=".12"/><stop offset="100%" stop-color="#7878c0" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="rgba(150,150,180,.15)" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="rgba(150,150,180,.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#7878c0" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc6)"/>
+            <circle cx="190" cy="58" r="4" fill="rgba(120,120,192,.15)"/><circle cx="190" cy="58" r="2" fill="#7878c0"/>
+            <text x="6" y="113" fill="rgba(150,150,180,.5)" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#7878c0" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 07 NORDIC ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">07</span><span class="card-name">Nordic</span></div>
+  <div class="mock d7">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SIMECON</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap Gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#3a8a5a">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#3a8a5a">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:10px 18px">
+            <defs><linearGradient id="gc7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5070a0" stop-opacity=".08"/><stop offset="100%" stop-color="#5070a0" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#e8eaef" stroke-width=".5"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#e8eaef" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#d8dae0" stroke-width="1" stroke-dasharray="5,4"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#5070a0" stroke-width="1.5"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc7)"/>
+            <text x="6" y="113" fill="#8090a8" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#5070a0" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 08 MINT ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">08</span><span class="card-name">Mint</span></div>
+  <div class="mock d8">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Play</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#3a8a60">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#3a8a60">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val pos">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc8" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a8a60" stop-opacity=".1"/><stop offset="100%" stop-color="#3a8a60" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#e0ece4" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#c4d8cc" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#3a8a60" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc8)"/>
+            <circle cx="190" cy="58" r="3" fill="#3a8a60"/>
+            <text x="6" y="113" fill="#7a9a88" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#3a8a60" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 09 SLATE ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">09</span><span class="card-name">Slate</span></div>
+  <div class="mock d9">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>Policy Simulator</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top Bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap Gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#3a8a5a">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#3a8a5a">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 16px">
+            <defs><linearGradient id="gc9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5060b0" stop-opacity=".1"/><stop offset="100%" stop-color="#5060b0" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#e8eaf0" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#d0d4e0" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#5060b0" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc9)"/>
+            <circle cx="190" cy="58" r="3" fill="#5060b0"/>
+            <text x="6" y="113" fill="#8890a0" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#5060b0" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 10 QUARTZ ─── -->
+<div class="card">
+  <div class="card-label"><span class="card-num">10</span><span class="card-name">Quartz</span></div>
+  <div class="mock d10">
+    <div class="mock-header">
+      <div class="mock-logo"><span>SimEcon</span><span>ECONOMIC POLICY SIMULATOR</span></div>
+      <div class="mock-nav"><div class="mock-btn">Assumptions</div><div class="mock-btn">Share</div></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Mode</span><span class="sidebar-row-val">Fix 2025</span></div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Top bracket</span><span class="sidebar-row-val">37%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Corporate</span><span class="sidebar-row-val">21%</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Cap gains</span><span class="sidebar-row-val">20%</span></div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row"><span class="sidebar-row-label">Medicare</span><span class="sidebar-row-val" style="color:#508060">On</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-label">SS</span><span class="sidebar-row-val" style="color:#508060">On</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi"><div class="kpi-label">Debt / GDP</div><div class="kpi-val neg">128%</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Deficit</div><div class="kpi-val neg">-$1.8T</div></div>
+          <div class="mock-kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.9T</div></div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:10px 18px">
+            <defs><linearGradient id="gc10" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d07050" stop-opacity=".1"/><stop offset="100%" stop-color="#d07050" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#f0f0f0" stroke-width=".5"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#f0f0f0" stroke-width=".5"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="#e0e0dc" stroke-width="1" stroke-dasharray="5,4"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#2a2a28" stroke-width="1.5"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#gc10)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#d07050" stroke-width=".5" stroke-dasharray="2,4" opacity=".4"/>
+            <circle cx="190" cy="58" r="2.5" fill="#d07050"/>
+            <text x="6" y="113" fill="#b0b0a8" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#d07050" font-family="serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer"><div class="footer-tick">2000</div><div class="footer-progress"><div class="footer-fill"></div></div><div class="footer-tick">2025</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /grid -->
+</body>
+</html>

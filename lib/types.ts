@@ -86,6 +86,8 @@ export interface SimulationState {
   taxPolicy: TaxPolicy;
   enabledPrograms: string[];
   assumptions: AdvancedAssumptions;
+  /** Per-program cost multiplier overrides (default 1.0 = CBO baseline). Keyed by program ID. */
+  programCostOverrides: Record<string, number>;
   currentYear: number;
   isPlaying: boolean;
   playbackSpeed: 1 | 5 | 10;
