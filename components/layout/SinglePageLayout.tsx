@@ -178,6 +178,12 @@ export function SinglePageLayout() {
   const revenuePct = total > 0 ? (revenue / total) * 100 : 50;
   const spendingPct = 100 - revenuePct;
 
+  /* Debt numbers (for revision mode scoreboard) */
+  const debtYours = sim.todayYoursData.debtTrillions;
+  const debtActual = sim.todayActualData.debtTrillions;
+  const debtDiff = debtYours - debtActual;
+  const debtSaving = debtDiff < 0;
+
   return (
     <TooltipProvider delay={200}>
       <div className="min-h-screen bg-[#fafafa]" data-mode={sim.isRevisionMode ? "revision" : "fix"}>
@@ -447,76 +453,127 @@ export function SinglePageLayout() {
           </div>
         )}
 
-        {/* ─── SECTION 5: Sticky Budget Bar (the scoreboard) ─────────── */}
+        {/* ─── SECTION 5: Sticky Scoreboard ─────────────────────────── */}
         {modeSelected && (
           <div className="sticky bottom-0 z-50 border-t border-[#e5e5ea] bg-white/95 shadow-lg backdrop-blur-sm">
             <div className="mx-auto max-w-4xl px-4 py-2">
-              {/* Achievement banner */}
-              {isSurplus && (
-                <div className="mb-1 text-center text-xs font-bold text-[#34c759] animate-pulse">
-                  🎉 BALANCED BUDGET! You did what Congress couldn&apos;t.
-                </div>
-              )}
-              {!isSurplus && deficit > 0 && deficit < 500 && (
-                <div className="mb-1 text-center text-xs font-semibold text-[#ff9500]">
-                  🔥 Almost there! Just {formatB(deficit)} more to balance.
-                </div>
-              )}
-              {enabledPrograms.length >= 8 && !isSurplus && (
-                <div className="mb-1 text-center text-xs font-semibold text-[#af52de]">
-                  🤯 Big spender! {enabledPrograms.length} programs enabled — can you fund them all?
-                </div>
-              )}
 
-              <div className="flex items-center gap-3">
-                {/* Budget bar */}
-                <div className="relative h-10 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f5f5f7]">
-                  <div
-                    className="absolute left-0 top-0 h-full rounded-l-full transition-all duration-500 ease-out"
-                    style={{ width: `${revenuePct}%`, backgroundColor: "#34c759" }}
-                  />
-                  <div
-                    className="absolute right-0 top-0 h-full rounded-r-full transition-all duration-500 ease-out"
-                    style={{ width: `${spendingPct}%`, backgroundColor: "#ff3b30" }}
-                  />
-                  <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-[#1d1d1f]/30" />
-                  <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-bold text-white">
-                    <span className="drop-shadow">💰 {formatB(revenue)}</span>
-                    <span className="drop-shadow">💸 {formatB(spending)}</span>
+              {sim.isRevisionMode ? (
+                /* ── REVISION MODE: National Debt scoreboard ──────────── */
+                <>
+                  <div className="flex items-center gap-3">
+                    {/* Debt comparison bar */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between text-[10px] font-semibold text-[#86868b] mb-1">
+                        <span>National Debt</span>
+                        <span>{debtSaving ? "You saved" : "Still"} ${Math.abs(debtDiff).toFixed(1)}T {debtSaving ? "✨" : ""}</span>
+                      </div>
+                      <div className="relative h-8 overflow-hidden rounded-full bg-[#f5f5f7]">
+                        {/* Actual debt (gray baseline) */}
+                        <div
+                          className="absolute left-0 top-0 h-full rounded-full bg-[#c7c7cc] transition-all duration-500"
+                          style={{ width: `${Math.min((debtActual / Math.max(debtActual, debtYours, 1)) * 100, 100)}%` }}
+                        />
+                        {/* Your debt (colored overlay) */}
+                        <div
+                          className="absolute left-0 top-0 h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min((debtYours / Math.max(debtActual, debtYours, 1)) * 100, 100)}%`,
+                            backgroundColor: debtSaving ? "#34c759" : "#ff3b30",
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-bold text-white">
+                          <span className="drop-shadow">Yours: ${debtYours.toFixed(1)}T</span>
+                          <span className="drop-shadow text-white/70">Actual: ${debtActual.toFixed(1)}T</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Savings pill */}
+                    <div
+                      className="shrink-0 rounded-full px-3 py-1.5 text-sm font-bold whitespace-nowrap"
+                      style={{
+                        backgroundColor: debtSaving ? "#34c75920" : "#ff3b3020",
+                        color: debtSaving ? "#34c759" : "#ff3b30",
+                      }}
+                    >
+                      {debtSaving ? "−" : "+"}{formatB(Math.abs(debtDiff * 1000))}
+                    </div>
                   </div>
-                </div>
+                  <div className="mt-1 text-center text-[10px] text-[#86868b]">
+                    {sim.state.whatIfEventIds.length} event{sim.state.whatIfEventIds.length !== 1 ? "s" : ""} toggled
+                    {" · "}
+                    {enabledPrograms.length} program{enabledPrograms.length !== 1 ? "s" : ""}
+                  </div>
+                </>
+              ) : (
+                /* ── FIX MODE: Budget + Debt dual scoreboard ─────────── */
+                <>
+                  {/* Achievement banners */}
+                  {isSurplus && (
+                    <div className="mb-1 text-center text-xs font-bold text-[#34c759] animate-pulse">
+                      🎉 BALANCED BUDGET! You did what Congress couldn&apos;t.
+                    </div>
+                  )}
+                  {!isSurplus && deficit > 0 && deficit < 500 && (
+                    <div className="mb-1 text-center text-xs font-semibold text-[#ff9500]">
+                      🔥 Almost there! Just {formatB(deficit)} more to balance.
+                    </div>
+                  )}
 
-                {/* Deficit / surplus pill */}
-                <div
-                  className="shrink-0 rounded-full px-3 py-1.5 text-sm font-bold whitespace-nowrap transition-all duration-500"
-                  style={{
-                    backgroundColor: isSurplus ? "#34c75920" : "#ff3b3020",
-                    color: isSurplus ? "#34c759" : "#ff3b30",
-                  }}
-                >
-                  {isSurplus ? "✅ +" : "⚠️ −"}{formatB(Math.abs(deficit))}
-                </div>
+                  {/* Row 1: Budget balance bar + grade */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f5f5f7]">
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-l-full transition-all duration-500 ease-out"
+                        style={{ width: `${revenuePct}%`, backgroundColor: "#34c759" }}
+                      />
+                      <div
+                        className="absolute right-0 top-0 h-full rounded-r-full transition-all duration-500 ease-out"
+                        style={{ width: `${spendingPct}%`, backgroundColor: "#ff3b30" }}
+                      />
+                      <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-[#1d1d1f]/30" />
+                      <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-bold text-white sm:text-xs">
+                        <span className="drop-shadow">💰 {formatB(revenue)}</span>
+                        <span className="drop-shadow">💸 {formatB(spending)}</span>
+                      </div>
+                    </div>
 
-                {/* Grade — big and bold */}
-                <div className="shrink-0 flex flex-col items-center">
-                  <span
-                    className="text-3xl font-black leading-none transition-all duration-500 sm:text-4xl"
-                    style={{ color: grade.color }}
-                  >
-                    {grade.letter}
-                  </span>
-                  <span className="text-[8px] font-semibold text-[#86868b] uppercase tracking-wider">Grade</span>
-                </div>
-              </div>
+                    <div
+                      className="shrink-0 rounded-full px-2.5 py-1 text-xs font-bold whitespace-nowrap"
+                      style={{
+                        backgroundColor: isSurplus ? "#34c75920" : "#ff3b3020",
+                        color: isSurplus ? "#34c759" : "#ff3b30",
+                      }}
+                    >
+                      {isSurplus ? "+" : "−"}{formatB(Math.abs(deficit))}/yr
+                    </div>
 
-              {/* Programs counter */}
-              <div className="mt-1 flex items-center justify-between text-[10px] text-[#86868b]">
-                <span>{enabledPrograms.length} program{enabledPrograms.length !== 1 ? "s" : ""} active</span>
-                <span>
-                  Deficit: {((deficit / (gdp * 1000)) * 100).toFixed(1)}% of GDP
-                  {deficit / (gdp * 1000) * 100 > 3 && " ⚠️"}
-                </span>
-              </div>
+                    <div className="shrink-0 flex flex-col items-center">
+                      <span
+                        className="text-2xl font-black leading-none transition-all duration-500 sm:text-3xl"
+                        style={{ color: grade.color }}
+                      >
+                        {grade.letter}
+                      </span>
+                      <span className="text-[7px] font-semibold text-[#86868b] uppercase">Grade</span>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Debt trajectory (small, below budget bar) */}
+                  <div className="mt-1.5 flex items-center gap-2 text-[10px] text-[#86868b]">
+                    <span className="font-semibold">Debt by 2050:</span>
+                    <span className="font-bold tabular-nums" style={{ color: debtSaving ? "#34c759" : "#ff3b30" }}>
+                      ${debtYours.toFixed(1)}T
+                    </span>
+                    <span>vs ${debtActual.toFixed(1)}T baseline</span>
+                    <span className="font-semibold" style={{ color: debtSaving ? "#34c759" : "#ff3b30" }}>
+                      ({debtSaving ? "−" : "+"}{formatB(Math.abs(debtDiff * 1000))})
+                    </span>
+                    <span className="ml-auto">{enabledPrograms.length} programs · {((deficit / (gdp * 1000)) * 100).toFixed(1)}% of GDP</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
