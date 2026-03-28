@@ -9,6 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  ReferenceArea,
+  Label,
 } from "recharts";
 import type { YearData } from "@/lib/types";
 import { LAST_HISTORICAL_YEAR } from "@/lib/data/defaults";
@@ -335,13 +337,28 @@ export function SimpleView({
               labelStyle={{ color: "#86868b" }}
               formatter={(value) => [`$${Number(value).toFixed(2)}T`, ""]}
             />
-            {!isRevisionMode && (
-              <ReferenceLine
-                x={LAST_HISTORICAL_YEAR}
-                stroke="#c7c7cc"
-                strokeDasharray="3 3"
+            {/* Shaded region for projected data (after 2025) */}
+            <ReferenceArea
+              x1={LAST_HISTORICAL_YEAR}
+              fill="#f5f5f7"
+              fillOpacity={0.6}
+              ifOverflow="extendDomain"
+            />
+            {/* Hard line at 2025 boundary */}
+            <ReferenceLine
+              x={LAST_HISTORICAL_YEAR}
+              stroke="#86868b"
+              strokeWidth={1.5}
+              strokeDasharray="6 3"
+            >
+              <Label
+                value="← Historical | Projected →"
+                position="top"
+                fill="#86868b"
+                fontSize={10}
+                offset={8}
               />
-            )}
+            </ReferenceLine>
             {/* Actual: gray dashed */}
             <Area
               type="monotone"
