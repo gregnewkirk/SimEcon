@@ -32,17 +32,19 @@ export function simulate(
     const fiscalEffect = (totalProgramCostBillions / 1000) * assumptions.fiscalMultiplier * 0.01;
     const gdpTrillions = prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100 + fiscalEffect);
 
-    // 2. Calculate tax revenue
+    // 2. Calculate tax revenue based on policy
     const revenueBillions = calculateTaxRevenue(prev, taxPolicy, gdpTrillions);
 
-    // 3. Interest on debt
+    // 3. Interest on current debt
     const interestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
 
-    // 4. Total spending = baseline growth + programs + interest
-    const baselineSpending = prev.spendingBillions * (1 + assumptions.gdpGrowthRate / 100);
-    // Subtract interest already in baseline (previous year's interest component)
-    // and add this year's calculated interest
-    const spendingBillions = baselineSpending + totalProgramCostBillions + interestBillions;
+    // 4. Non-interest spending: strip out previous year's interest before growing
+    //    Historical spending already includes interest, so we must separate them
+    //    to avoid double-counting interest each year.
+    const prevInterestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
+    const prevNonInterestSpending = Math.max(prev.spendingBillions - prevInterestBillions, 0);
+    const nonInterestSpending = prevNonInterestSpending * (1 + assumptions.gdpGrowthRate / 100);
+    const spendingBillions = nonInterestSpending + totalProgramCostBillions + interestBillions;
 
     // 5. Deficit: negative means deficit, positive means surplus
     const deficitBillions = -(spendingBillions - revenueBillions);

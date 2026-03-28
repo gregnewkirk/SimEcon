@@ -23,6 +23,6 @@ export const WEALTH_BRACKETS: WealthBracket[] = [
   { id: "bottom50", label: "Bottom 50%", shortLabel: "50%", color: "#666666", shareOfWealth: 0.025 },
 ];
 
-export const START_YEAR = 2015;
+export const START_YEAR = 2000;
 export const LAST_HISTORICAL_YEAR = 2025;
 export const DEFAULT_END_YEAR = 2035;
