@@ -2,7 +2,9 @@
 
 import { Slider } from "@/components/ui/slider";
 import { SpeedControl } from "./SpeedControl";
+import { VideoExport } from "@/components/shared/VideoExport";
 import { START_YEAR, DEFAULT_END_YEAR } from "@/lib/data/defaults";
+import type { YearData, TaxPolicy } from "@/lib/types";
 
 interface PlaybackBarProps {
   currentYear: number;
@@ -11,6 +13,10 @@ interface PlaybackBarProps {
   onYearChange: (year: number) => void;
   onPlayToggle: () => void;
   onSpeedChange: (speed: 1 | 5 | 10) => void;
+  allData?: YearData[];
+  taxPolicy?: TaxPolicy;
+  enabledPrograms?: string[];
+  shareUrl?: string;
 }
 
 export function PlaybackBar({
@@ -20,6 +26,10 @@ export function PlaybackBar({
   onYearChange,
   onPlayToggle,
   onSpeedChange,
+  allData,
+  taxPolicy,
+  enabledPrograms,
+  shareUrl,
 }: PlaybackBarProps) {
   return (
     <div className="sticky bottom-0 z-50 flex items-center gap-4 border-t border-zinc-800 bg-[#0a0a1a] px-4 py-3">
@@ -47,6 +57,15 @@ export function PlaybackBar({
       </span>
 
       <SpeedControl speed={speed} onChange={onSpeedChange} />
+
+      {allData && taxPolicy && enabledPrograms && shareUrl && (
+        <VideoExport
+          allData={allData}
+          taxPolicy={taxPolicy}
+          enabledPrograms={enabledPrograms}
+          shareUrl={shareUrl}
+        />
+      )}
     </div>
   );
 }
