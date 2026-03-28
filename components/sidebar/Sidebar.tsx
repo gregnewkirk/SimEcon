@@ -75,10 +75,13 @@ export function Sidebar({
         onProgramCostOverride={onProgramCostOverride}
       />
 
-      <WhatIfToggles
-        whatIfEventIds={state.whatIfEventIds}
-        onToggleEvent={onToggleWhatIfEvent}
-      />
+      {/* What-if events only in revision mode (historical counterfactuals) */}
+      {state.mode === "revision" && (
+        <WhatIfToggles
+          whatIfEventIds={state.whatIfEventIds}
+          onToggleEvent={onToggleWhatIfEvent}
+        />
+      )}
 
       <AdvancedAssumptions
         assumptions={state.assumptions}
