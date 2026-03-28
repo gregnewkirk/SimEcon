@@ -1,5 +1,5 @@
-import { SimulatorLayout } from "@/components/layout/SimulatorLayout";
+import { SinglePageLayout } from "@/components/layout/SinglePageLayout";
 
 export default function Home() {
-  return <SimulatorLayout />;
+  return <SinglePageLayout />;
 }

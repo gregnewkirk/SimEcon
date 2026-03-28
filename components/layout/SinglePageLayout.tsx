@@ -1,0 +1,497 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSimulation } from "@/hooks/useSimulation";
+import { DEFAULT_END_YEAR, FIX_END_YEAR, CURRENT_POLICY } from "@/lib/data/defaults";
+import { SCENARIOS } from "@/lib/data/scenarios";
+import { PROGRAMS } from "@/lib/data/programs";
+import { EXPLAINERS } from "@/lib/data/explainers";
+import { WHAT_IF_EVENTS } from "@/lib/data/what-if-events";
+import { TaxSlider } from "@/components/sidebar/TaxSlider";
+import { SimpleView } from "@/components/visualization/SimpleView";
+import { TradeOffCards } from "@/components/visualization/TradeOffCards";
+import { HouseholdImpact } from "@/components/visualization/HouseholdImpact";
+import { PersonalCalculator } from "@/components/visualization/PersonalCalculator";
+import { CompareMode } from "@/components/visualization/CompareMode";
+import { ShareCard } from "@/components/shared/ShareCard";
+import type { TaxPolicy, SimMode } from "@/lib/types";
+
+/* ── Helpers ─────────────────────────────────────────────────────────── */
+
+function formatB(billions: number): string {
+  if (Math.abs(billions) >= 1000) {
+    return `$${(billions / 1000).toFixed(1)}T`;
+  }
+  return `$${Math.round(billions)}B`;
+}
+
+function getGrade(deficitBillions: number, gdpTrillions: number): { letter: string; color: string } {
+  if (deficitBillions <= 0) return { letter: "A+", color: "#34c759" };
+  const pct = (deficitBillions / (gdpTrillions * 1000)) * 100;
+  if (pct < 1) return { letter: "A", color: "#34c759" };
+  if (pct < 3) return { letter: "B", color: "#a8d65c" };
+  if (pct < 5) return { letter: "C", color: "#f5a623" };
+  if (pct < 8) return { letter: "D", color: "#ff6b35" };
+  return { letter: "F", color: "#ff3b30" };
+}
+
+/* ── Experimental program IDs ────────────────────────────────────────── */
+
+const EXPERIMENTAL_IDS = new Set([
+  "wealth_tax", "sports_betting_tax", "robot_tax", "sugar_tax", "land_value_tax",
+  "baby_bonds", "mental_health", "public_internet", "green_jobs", "rd_moonshot",
+]);
+
+/* ── Section Header ──────────────────────────────────────────────────── */
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-4 border-b border-[#e5e5ea] pb-2 text-xs font-semibold uppercase tracking-wider text-[#86868b]">
+      {children}
+    </h2>
+  );
+}
+
+/* ── Program Card ────────────────────────────────────────────────────── */
+
+function ProgramCard({
+  program,
+  enabled,
+  type,
+  onToggle,
+}: {
+  program: (typeof PROGRAMS)[number];
+  enabled: boolean;
+  type: "revenue" | "spending";
+  onToggle: () => void;
+}) {
+  const isRevenue = type === "revenue";
+  const accentColor = isRevenue ? "#34c759" : "#ff3b30";
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex items-center gap-3 rounded-xl border bg-white p-3 text-left shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+      style={{
+        borderColor: enabled ? accentColor : "#e5e5ea",
+        boxShadow: enabled
+          ? `0 0 0 1px ${accentColor}, 0 0 16px ${accentColor}30`
+          : undefined,
+      }}
+    >
+      <span className="text-xl">{program.icon}</span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-xs font-semibold text-[#1d1d1f]">{program.name}</div>
+        {EXPLAINERS[program.id] && (
+          <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-[#86868b]">
+            {EXPLAINERS[program.id].simple}
+          </div>
+        )}
+        <div
+          className="mt-0.5 font-mono text-xs transition-colors duration-200"
+          style={{ color: enabled ? accentColor : "#86868b" }}
+        >
+          {isRevenue ? "+" : "-"}{formatB(Math.abs(program.netCostBillions))}/yr
+        </div>
+      </div>
+      {/* Toggle pill */}
+      <div
+        className="flex h-6 w-10 shrink-0 items-center rounded-full p-0.5 transition-all duration-200"
+        style={{ backgroundColor: enabled ? accentColor : "#e5e5ea" }}
+      >
+        <div
+          className="size-5 rounded-full bg-white shadow-sm transition-all duration-200"
+          style={{ transform: enabled ? "translateX(16px)" : "translateX(0px)" }}
+        />
+      </div>
+    </button>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SINGLE PAGE LAYOUT — replaces SimulatorLayout
+   ════════════════════════════════════════════════════════════════════════ */
+
+export function SinglePageLayout() {
+  const sim = useSimulation();
+  const [shareOpen, setShareOpen] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+  const [modeSelected, setModeSelected] = useState(false);
+
+  /* Keep currentYear pinned to end of timeline */
+  const endYear = sim.isRevisionMode ? DEFAULT_END_YEAR : FIX_END_YEAR;
+  if (sim.state.currentYear !== endYear) {
+    sim.setCurrentYear(endYear);
+  }
+
+  /* Mode selection handler */
+  const handleModeSelect = useCallback(
+    (mode: SimMode) => {
+      sim.setMode(mode);
+      setModeSelected(true);
+    },
+    [sim.setMode],
+  );
+
+  /* Tax change handler */
+  const handleTaxChange = useCallback(
+    (field: keyof TaxPolicy, value: number) => {
+      sim.setTaxPolicy({ [field]: value });
+    },
+    [sim.setTaxPolicy],
+  );
+
+  /* Filtered scenarios by mode */
+  const filteredScenarios = useMemo(
+    () =>
+      SCENARIOS.filter(
+        (s) => s.mode === "both" || s.mode === sim.state.mode,
+      ),
+    [sim.state.mode],
+  );
+
+  /* Categorized programs */
+  const spendingPrograms = useMemo(
+    () => PROGRAMS.filter((p) => p.netCostBillions > 0 && !EXPERIMENTAL_IDS.has(p.id)),
+    [],
+  );
+  const revenuePrograms = useMemo(
+    () => PROGRAMS.filter((p) => p.netCostBillions < 0 && !EXPERIMENTAL_IDS.has(p.id)),
+    [],
+  );
+  const experimentalPrograms = useMemo(
+    () => PROGRAMS.filter((p) => EXPERIMENTAL_IDS.has(p.id)),
+    [],
+  );
+
+  /* Budget numbers */
+  const revenue = sim.todayYoursData.revenueBillions;
+  const spending = sim.todayYoursData.spendingBillions;
+  const gdp = sim.todayYoursData.gdpTrillions;
+  const deficit = spending - revenue;
+  const isSurplus = deficit <= 0;
+  const grade = useMemo(() => getGrade(deficit, gdp), [deficit, gdp]);
+  const total = revenue + spending;
+  const revenuePct = total > 0 ? (revenue / total) * 100 : 50;
+  const spendingPct = 100 - revenuePct;
+
+  return (
+    <TooltipProvider delay={200}>
+      <div className="min-h-screen bg-[#fafafa]" data-mode={sim.isRevisionMode ? "revision" : "fix"}>
+        {/* ─── SECTION 1: Hero + Mode Choice ─────────────────────────── */}
+        <section className="px-4 pb-8 pt-12 text-center">
+          <h1 className="mb-2 text-4xl font-black tracking-tight sm:text-5xl">
+            <span className="bg-gradient-to-r from-[#007AFF] via-[#af52de] to-[#ff3b30] bg-clip-text text-transparent">
+              SimEcon
+            </span>
+          </h1>
+          <p className="mb-8 text-lg text-[#86868b] sm:text-xl">
+            What would you do with $36 trillion?
+          </p>
+
+          <div className="mx-auto flex max-w-md gap-3">
+            <button
+              type="button"
+              onClick={() => handleModeSelect("revision")}
+              className="flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
+              style={{
+                borderColor: sim.state.mode === "revision" && modeSelected ? "#af52de" : "#e5e5ea",
+                backgroundColor: sim.state.mode === "revision" && modeSelected ? "#af52de10" : "white",
+                color: sim.state.mode === "revision" && modeSelected ? "#af52de" : "#1d1d1f",
+              }}
+            >
+              What If We Had...
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeSelect("fix")}
+              className="flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
+              style={{
+                borderColor: sim.state.mode === "fix" && modeSelected ? "#007AFF" : "#e5e5ea",
+                backgroundColor: sim.state.mode === "fix" && modeSelected ? "#007AFF10" : "white",
+                color: sim.state.mode === "fix" && modeSelected ? "#007AFF" : "#1d1d1f",
+              }}
+            >
+              Fix This Mess
+            </button>
+          </div>
+        </section>
+
+        {/* Everything below renders only after mode is selected */}
+        {modeSelected && (
+          <div className="mx-auto max-w-4xl px-4 pb-32">
+
+            {/* ─── SECTION 2: What-If Events (revision mode only) ──── */}
+            {sim.isRevisionMode && (
+              <section className="py-8">
+                <SectionHeader>What Happened — Toggle historical events to see what we traded away</SectionHeader>
+                <div className="flex flex-wrap gap-2">
+                  {WHAT_IF_EVENTS.map((event) => {
+                    const active = sim.state.whatIfEventIds.includes(event.id);
+                    return (
+                      <button
+                        key={event.id}
+                        type="button"
+                        onClick={() => sim.toggleWhatIfEvent(event.id)}
+                        className="rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:shadow-sm active:scale-[0.96]"
+                        style={{
+                          borderColor: active ? "#af52de" : "#e5e5ea",
+                          backgroundColor: active ? "#af52de15" : "white",
+                          color: active ? "#af52de" : "#1d1d1f",
+                        }}
+                      >
+                        {event.name} {active ? "\u2713" : ""}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Trade-off cards */}
+                {sim.state.whatIfEventIds.length > 0 && (
+                  <div className="mt-6">
+                    <TradeOffCards
+                      whatIfEventIds={sim.state.whatIfEventIds}
+                      enabledPrograms={sim.state.enabledPrograms}
+                    />
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* ─── SECTION 3: Scenario + Tax Controls ────────────────── */}
+            <section className="py-8">
+              <SectionHeader>Policy Scenario</SectionHeader>
+
+              {/* Scenario dropdown */}
+              <div className="mb-6">
+                <select
+                  value={sim.state.scenarioId}
+                  onChange={(e) => sim.loadScenario(e.target.value)}
+                  className="w-full rounded-xl border border-[#e5e5ea] bg-white px-4 py-3 text-sm font-medium text-[#1d1d1f] shadow-sm outline-none transition-all focus:border-[#007AFF] focus:ring-2 focus:ring-[#007AFF]/20 sm:w-auto"
+                >
+                  {filteredScenarios.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                  {/* Show custom if they've tweaked sliders */}
+                  {!filteredScenarios.some((s) => s.id === sim.state.scenarioId) && (
+                    <option value={sim.state.scenarioId}>Custom</option>
+                  )}
+                </select>
+              </div>
+
+              {/* Tax sliders */}
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#86868b]">Tax Rates</h3>
+              <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+                <TaxSlider
+                  label="Top Bracket"
+                  value={sim.state.taxPolicy.topMarginalRate}
+                  defaultValue={CURRENT_POLICY.topMarginalRate}
+                  onChange={(v) => handleTaxChange("topMarginalRate", v)}
+                  color="#007AFF"
+                  min={10}
+                  max={90}
+                  step={1}
+                />
+                <TaxSlider
+                  label="Corporate"
+                  value={sim.state.taxPolicy.corporateRate}
+                  defaultValue={CURRENT_POLICY.corporateRate}
+                  onChange={(v) => handleTaxChange("corporateRate", v)}
+                  color="#af52de"
+                  min={0}
+                  max={50}
+                  step={1}
+                />
+                <TaxSlider
+                  label="Capital Gains"
+                  value={sim.state.taxPolicy.capitalGainsRate}
+                  defaultValue={CURRENT_POLICY.capitalGainsRate}
+                  onChange={(v) => handleTaxChange("capitalGainsRate", v)}
+                  color="#34c759"
+                  min={0}
+                  max={50}
+                  step={1}
+                />
+                <TaxSlider
+                  label="Estate Tax"
+                  value={sim.state.taxPolicy.estateRate}
+                  defaultValue={CURRENT_POLICY.estateRate}
+                  onChange={(v) => handleTaxChange("estateRate", v)}
+                  color="#ff9500"
+                  min={0}
+                  max={70}
+                  step={1}
+                />
+              </div>
+            </section>
+
+            {/* ─── SECTION 4: Programs (the game part!) ──────────────── */}
+            <section className="py-8">
+              <SectionHeader>Spending Programs</SectionHeader>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {spendingPrograms.map((p) => (
+                  <ProgramCard
+                    key={p.id}
+                    program={p}
+                    enabled={sim.state.enabledPrograms.includes(p.id)}
+                    type="spending"
+                    onToggle={() => sim.toggleProgram(p.id)}
+                  />
+                ))}
+              </div>
+
+              <h3 className="mb-3 mt-8 text-xs font-semibold uppercase tracking-wider text-[#34c759]">
+                Revenue Generators
+              </h3>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {revenuePrograms.map((p) => (
+                  <ProgramCard
+                    key={p.id}
+                    program={p}
+                    enabled={sim.state.enabledPrograms.includes(p.id)}
+                    type="revenue"
+                    onToggle={() => sim.toggleProgram(p.id)}
+                  />
+                ))}
+              </div>
+
+              <h3 className="mb-1 mt-8 text-xs font-semibold uppercase tracking-wider text-[#af52de]">
+                Experimental
+              </h3>
+              <p className="mb-3 text-[10px] text-[#c7c7cc]">Bold ideas with real economics</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {experimentalPrograms.map((p) => (
+                  <ProgramCard
+                    key={p.id}
+                    program={p}
+                    enabled={sim.state.enabledPrograms.includes(p.id)}
+                    type={p.netCostBillions < 0 ? "revenue" : "spending"}
+                    onToggle={() => sim.toggleProgram(p.id)}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* ─── SECTION 6: Results (chart + metrics) ──────────────── */}
+            <section className="py-8">
+              <SectionHeader>Your Policy Impact</SectionHeader>
+              <SimpleView
+                todayYours={sim.todayYoursData}
+                todayActual={sim.todayActualData}
+                allData={sim.allData}
+                baselineAllData={sim.baselineAllData}
+                currentYear={sim.state.currentYear}
+                isRevisionMode={sim.isRevisionMode}
+              />
+            </section>
+
+            {/* ─── SECTION 7: Kitchen Table ──────────────────────────── */}
+            <section className="py-8">
+              <SectionHeader>Household Impact</SectionHeader>
+              <HouseholdImpact
+                taxPolicy={sim.state.taxPolicy}
+                enabledPrograms={sim.state.enabledPrograms}
+              />
+            </section>
+
+            {/* ─── SECTION 8: Personal Calculator ────────────────────── */}
+            <section className="py-8">
+              <SectionHeader>What This Means For You</SectionHeader>
+              <PersonalCalculator
+                taxPolicy={sim.state.taxPolicy}
+                enabledPrograms={sim.state.enabledPrograms}
+                whatIfEventIds={sim.state.whatIfEventIds}
+              />
+            </section>
+
+            {/* ─── SECTION 9: Compare + Share ────────────────────────── */}
+            <section className="py-8">
+              <div className="flex flex-wrap gap-3">
+                {!sim.isRevisionMode && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCompare(!showCompare)}
+                    className="rounded-xl border border-[#e5e5ea] bg-white px-6 py-3 text-sm font-semibold text-[#007AFF] shadow-sm transition-all hover:shadow-md active:scale-[0.97]"
+                  >
+                    {showCompare ? "\u2190 Back" : "\u2696\uFE0F Compare Candidates"}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShareOpen(true)}
+                  className="rounded-xl border border-[#e5e5ea] bg-white px-6 py-3 text-sm font-semibold text-[#af52de] shadow-sm transition-all hover:shadow-md active:scale-[0.97]"
+                >
+                  Share Your Policy
+                </button>
+              </div>
+
+              {showCompare && (
+                <div className="mt-6">
+                  <CompareMode />
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {/* ─── SECTION 5: Sticky Budget Bar ──────────────────────────── */}
+        {modeSelected && (
+          <div className="sticky bottom-0 z-50 border-t border-[#e5e5ea] bg-white/95 shadow-lg backdrop-blur-sm">
+            <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
+              {/* Budget bar */}
+              <div className="relative h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f5f5f7]">
+                <div
+                  className="absolute left-0 top-0 h-full rounded-l-full transition-all duration-500"
+                  style={{ width: `${revenuePct}%`, backgroundColor: "#34c759" }}
+                />
+                <div
+                  className="absolute right-0 top-0 h-full rounded-r-full transition-all duration-500"
+                  style={{ width: `${spendingPct}%`, backgroundColor: "#ff3b30" }}
+                />
+                <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#1d1d1f]/20" />
+                <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-white sm:text-xs">
+                  <span className="drop-shadow-sm">Revenue {formatB(revenue)}</span>
+                  <span className="drop-shadow-sm">Spending {formatB(spending)}</span>
+                </div>
+              </div>
+
+              {/* Deficit / surplus pill */}
+              <div
+                className="shrink-0 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap"
+                style={{
+                  backgroundColor: isSurplus ? "#34c75920" : "#ff3b3020",
+                  color: isSurplus ? "#34c759" : "#ff3b30",
+                }}
+              >
+                {isSurplus ? "+" : "-"}{formatB(Math.abs(deficit))}
+              </div>
+
+              {/* Grade */}
+              <span
+                className="shrink-0 text-2xl font-black transition-all duration-500 sm:text-3xl"
+                style={{ color: grade.color }}
+              >
+                {grade.letter}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Share Card Sheet */}
+        <ShareCard
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          taxPolicy={sim.state.taxPolicy}
+          enabledPrograms={sim.state.enabledPrograms}
+          todayYours={sim.todayYoursData}
+          todayActual={sim.todayActualData}
+          shareUrl={typeof window !== "undefined" ? window.location.href : "https://simecon.app"}
+        />
+      </div>
+    </TooltipProvider>
+  );
+}
