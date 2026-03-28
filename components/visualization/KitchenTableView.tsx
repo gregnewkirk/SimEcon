@@ -174,7 +174,7 @@ export function KitchenTableView({
   viewComplexity = "advanced",
 }: KitchenTableViewProps) {
   const [selectedId, setSelectedId] = useState<string>("median");
-  const [comparedIds, setComparedIds] = useState<string[]>([]);
+  const allHouseholdIds = useMemo(() => HOUSEHOLDS.map((h) => h.id), []);
 
   // Calculate impacts for all households
   const impacts = useMemo(() => {
@@ -247,17 +247,6 @@ export function KitchenTableView({
       };
     });
   }, [impacts]);
-
-  const addToComparison = useCallback(() => {
-    setComparedIds((prev) => {
-      if (prev.includes(selectedId) || prev.length >= 4) return prev;
-      return [...prev, selectedId];
-    });
-  }, [selectedId]);
-
-  const removeFromComparison = useCallback((id: string) => {
-    setComparedIds((prev) => prev.filter((cid) => cid !== id));
-  }, []);
 
   return (
     <div className="space-y-4">
@@ -490,105 +479,72 @@ export function KitchenTableView({
             </div>
           )}
 
-          {/* Add to comparison button */}
-          <button
-            onClick={addToComparison}
-            disabled={comparedIds.includes(selectedId) || comparedIds.length >= 4}
-            className="mt-4 w-full rounded-lg border border-[#e5e5ea] bg-[#f5f5f7] py-2 text-sm text-[#1d1d1f] transition-all hover:border-[#007AFF]/50 hover:text-[#007AFF] disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {comparedIds.includes(selectedId)
-              ? "Already in comparison"
-              : comparedIds.length >= 4
-                ? "Max 4 households"
-                : "+ Add to comparison"}
-          </button>
         </div>
       )}
 
-      {/* Comparison table */}
-      {comparedIds.length > 0 && (
-        <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#e5e5ea]">
-                <th className="p-3 text-left text-xs text-[#86868b] font-medium" />
-                {comparedIds.map((id) => {
-                  const imp = impacts.get(id);
-                  if (!imp) return null;
-                  return (
-                    <th key={id} className="p-3 text-center">
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-lg">{imp.household.icon}</span>
-                        <span className="text-xs font-medium text-[#1d1d1f]">{imp.household.label}</span>
-                        <button
-                          onClick={() => removeFromComparison(id)}
-                          className="text-[10px] text-[#86868b] hover:text-[#ff3b30] transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody className="text-xs">
-              <ComparisonRow label="Income" ids={comparedIds} impacts={impacts} render={(imp) =>
-                fmtIncome(imp.household.income) + "/yr"
-              } />
-              <ComparisonRow label="Tax Change" ids={comparedIds} impacts={impacts} render={(imp) => (
-                <span style={{ color: imp.taxChange <= 0 ? "#34c759" : "#ff3b30" }}>
-                  {imp.taxChange >= 0 ? "+" : "-"}{fmtDollars(imp.taxChange)}
-                </span>
-              )} />
-              <ComparisonRow label="Healthcare Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
-                const hb = imp.benefits.find((b) => b.programId === "healthcare");
-                return hb && hb.annualValue > 0
-                  ? <span className="text-[#34c759]">+{fmtDollars(hb.annualValue)}</span>
-                  : <span className="text-[#86868b]">&mdash;</span>;
-              }} />
-              <ComparisonRow label="College Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
-                const cb = imp.benefits.find((b) => b.programId === "college");
-                return cb && cb.annualValue > 0
-                  ? <span className="text-[#34c759]">+{fmtDollars(cb.annualValue)}</span>
-                  : <span className="text-[#86868b]">&mdash;</span>;
-              }} />
-              <ComparisonRow label="Pre-K Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
-                const pb = imp.benefits.find((b) => b.programId === "prek");
-                return pb && pb.annualValue > 0
-                  ? <span className="text-[#34c759]">+{fmtDollars(pb.annualValue)}</span>
-                  : <span className="text-[#86868b]">&mdash;</span>;
-              }} />
-              <ComparisonRow label="UBI" ids={comparedIds} impacts={impacts} render={(imp) => {
-                const ub = imp.benefits.find((b) => b.programId === "ubi");
-                return ub && ub.annualValue > 0
-                  ? <span className="text-[#34c759]">+{fmtDollars(ub.annualValue)}</span>
-                  : <span className="text-[#86868b]">&mdash;</span>;
-              }} />
-              <tr className="border-t border-[#e5e5ea] font-bold">
-                <td className="p-3 text-[#1d1d1f]">Net Impact</td>
-                {comparedIds.map((id) => {
-                  const imp = impacts.get(id);
-                  if (!imp) return <td key={id} />;
-                  return (
-                    <td key={id} className="p-3 text-center">
-                      <span
-                        className="text-base tabular-nums"
-                        style={{ color: imp.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
-                      >
-                        {imp.netImpact >= 0 ? "+" : "-"}{fmtDollars(imp.netImpact)}/yr
-                        <span className="block text-xs font-normal text-[#86868b]">
-                          ({fmtPct(imp.netImpact, imp.household.income)} of income)
-                        </span>
+      {/* All households comparison table — always visible */}
+      <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[#e5e5ea]">
+              <th className="p-3 text-left text-xs text-[#86868b] font-medium" />
+              {allHouseholdIds.map((id) => {
+                const imp = impacts.get(id);
+                if (!imp) return null;
+                const isSelected = id === selectedId;
+                return (
+                  <th key={id} className="p-2 text-center">
+                    <button
+                      onClick={() => setSelectedId(id)}
+                      className={`flex flex-col items-center gap-0.5 w-full rounded-lg p-1 transition-colors ${
+                        isSelected ? "bg-[#007AFF]/5" : "hover:bg-[#f5f5f7]"
+                      }`}
+                    >
+                      <span className="text-base">{imp.household.icon}</span>
+                      <span className={`text-[10px] font-medium leading-tight ${isSelected ? "text-[#007AFF]" : "text-[#1d1d1f]"}`}>
+                        {imp.household.label}
                       </span>
-                    </td>
-                  );
-                })}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+                      <span className="text-[9px] text-[#86868b]">{fmtIncome(imp.household.income)}</span>
+                    </button>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody className="text-xs">
+            <ComparisonRow label="Tax Change" ids={allHouseholdIds} impacts={impacts} render={(imp) => (
+              <span style={{ color: imp.taxChange <= 0 ? "#34c759" : "#ff3b30" }}>
+                {imp.taxChange >= 0 ? "+" : "-"}{fmtDollars(imp.taxChange)}
+              </span>
+            )} />
+            <ComparisonRow label="Total Benefits" ids={allHouseholdIds} impacts={impacts} render={(imp) => (
+              imp.totalBenefits > 0
+                ? <span className="text-[#34c759]">+{fmtDollars(imp.totalBenefits)}</span>
+                : <span className="text-[#86868b]">&mdash;</span>
+            )} />
+            <tr className="border-t-2 border-[#e5e5ea] font-bold">
+              <td className="p-3 text-[#1d1d1f]">Net Impact</td>
+              {allHouseholdIds.map((id) => {
+                const imp = impacts.get(id);
+                if (!imp) return <td key={id} />;
+                return (
+                  <td key={id} className="p-2 text-center">
+                    <span
+                      className="text-sm tabular-nums font-bold"
+                      style={{ color: imp.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
+                    >
+                      {imp.netImpact >= 0 ? "+" : "-"}{fmtDollars(imp.netImpact)}
+                    </span>
+                    <span className="block text-[9px] font-normal text-[#86868b]">
+                      {fmtPct(imp.netImpact, imp.household.income)}
+                    </span>
+                  </td>
+                );
+              })}
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
