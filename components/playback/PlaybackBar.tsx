@@ -3,13 +3,14 @@
 import { Slider } from "@/components/ui/slider";
 import { SpeedControl } from "./SpeedControl";
 import { VideoExport } from "@/components/shared/VideoExport";
-import { START_YEAR, DEFAULT_END_YEAR } from "@/lib/data/defaults";
 import type { YearData, TaxPolicy } from "@/lib/types";
 
 interface PlaybackBarProps {
   currentYear: number;
   isPlaying: boolean;
   speed: 1 | 5 | 10;
+  startYear: number;
+  endYear: number;
   onYearChange: (year: number) => void;
   onPlayToggle: () => void;
   onSpeedChange: (speed: 1 | 5 | 10) => void;
@@ -23,6 +24,8 @@ export function PlaybackBar({
   currentYear,
   isPlaying,
   speed,
+  startYear,
+  endYear,
   onYearChange,
   onPlayToggle,
   onSpeedChange,
@@ -54,8 +57,8 @@ export function PlaybackBar({
 
       <div className="flex-1">
         <Slider
-          min={START_YEAR}
-          max={DEFAULT_END_YEAR}
+          min={startYear}
+          max={endYear}
           value={[currentYear]}
           onValueChange={(val) => {
             if (Array.isArray(val)) onYearChange(val[0]);

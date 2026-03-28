@@ -38,3 +38,5 @@ export const WEALTH_BRACKETS: WealthBracket[] = [
 export const START_YEAR = 2000;
 export const LAST_HISTORICAL_YEAR = 2025;
 export const DEFAULT_END_YEAR = 2035;
+/** Fix This Mess mode projects 20 years forward from the present */
+export const FIX_END_YEAR = 2045;

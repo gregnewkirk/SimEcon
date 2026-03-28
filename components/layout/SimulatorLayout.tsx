@@ -6,6 +6,7 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { Header } from "./Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ViewToggle } from "@/components/visualization/ViewToggle";
+import { START_YEAR, LAST_HISTORICAL_YEAR, DEFAULT_END_YEAR, FIX_END_YEAR } from "@/lib/data/defaults";
 import { SimpleView } from "@/components/visualization/SimpleView";
 import { AdvancedView } from "@/components/visualization/AdvancedView";
 import { KitchenTableView } from "@/components/visualization/KitchenTableView";
@@ -42,10 +43,15 @@ export function SimulatorLayout() {
     sim.setIsPlaying(false);
   }, [sim.setIsPlaying]);
 
+  // Mode-aware timeline bounds
+  const playbackStartYear = sim.isRevisionMode ? START_YEAR : LAST_HISTORICAL_YEAR;
+  const playbackEndYear = sim.isRevisionMode ? DEFAULT_END_YEAR : FIX_END_YEAR;
+
   usePlayback({
     isPlaying: sim.state.isPlaying,
     speed: sim.state.playbackSpeed,
     currentYear: sim.state.currentYear,
+    endYear: playbackEndYear,
     onYearChange: sim.setCurrentYear,
     onFinished: handlePlaybackFinished,
   });
@@ -163,6 +169,8 @@ export function SimulatorLayout() {
           currentYear={sim.state.currentYear}
           isPlaying={sim.state.isPlaying}
           speed={sim.state.playbackSpeed}
+          startYear={playbackStartYear}
+          endYear={playbackEndYear}
           onYearChange={sim.setCurrentYear}
           onPlayToggle={handlePlayToggle}
           onSpeedChange={sim.setPlaybackSpeed}

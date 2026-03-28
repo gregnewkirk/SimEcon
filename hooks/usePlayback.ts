@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { DEFAULT_END_YEAR } from "@/lib/data/defaults";
 
 interface UsePlaybackOptions {
   isPlaying: boolean;
   speed: 1 | 5 | 10;
   currentYear: number;
+  endYear: number;
   onYearChange: (year: number) => void;
   onFinished: () => void;
 }
@@ -14,12 +14,13 @@ interface UsePlaybackOptions {
 /**
  * Playback hook using requestAnimationFrame.
  * Speed 1x = 1 year/sec, 5x = 5 years/sec, 10x = 10 years/sec.
- * Calls onFinished when currentYear reaches DEFAULT_END_YEAR.
+ * Calls onFinished when currentYear reaches endYear.
  */
 export function usePlayback({
   isPlaying,
   speed,
   currentYear,
+  endYear,
   onYearChange,
   onFinished,
 }: UsePlaybackOptions) {
@@ -45,12 +46,10 @@ export function usePlayback({
       if (elapsed >= msPerYear) {
         lastTickRef.current = now;
 
-        // Use functional ref to get latest currentYear via closure
-        // We read from the prop which updates each render
         const nextYear = currentYear + 1;
 
-        if (nextYear >= DEFAULT_END_YEAR) {
-          onYearChange(DEFAULT_END_YEAR);
+        if (nextYear >= endYear) {
+          onYearChange(endYear);
           onFinished();
           return;
         }
@@ -69,5 +68,5 @@ export function usePlayback({
         rafRef.current = 0;
       }
     };
-  }, [isPlaying, speed, currentYear, onYearChange, onFinished]);
+  }, [isPlaying, speed, currentYear, endYear, onYearChange, onFinished]);
 }

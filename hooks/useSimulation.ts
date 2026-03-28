@@ -10,7 +10,7 @@ import type {
   ViewComplexity,
   ViewPerspective,
 } from "@/lib/types";
-import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR, LAST_HISTORICAL_YEAR } from "@/lib/data/defaults";
+import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR, LAST_HISTORICAL_YEAR, FIX_END_YEAR } from "@/lib/data/defaults";
 import { HISTORICAL_DATA } from "@/lib/data/historical";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { WHAT_IF_EVENTS_MAP } from "@/lib/data/what-if-events";
@@ -61,7 +61,8 @@ export function useSimulation() {
     );
   }, [isRevisionMode, state.taxPolicy, state.enabledPrograms, state.assumptions, state.programCostOverrides]);
 
-  // === FIX MODE: projected data from end of historical (current behavior) ===
+  // === FIX MODE: projected data from end of historical, 20 years forward ===
+  const fixEndYear = isRevisionMode ? DEFAULT_END_YEAR : FIX_END_YEAR;
   const projectedData = useMemo(
     () =>
       simulate(
@@ -69,10 +70,10 @@ export function useSimulation() {
         state.taxPolicy,
         state.enabledPrograms,
         state.assumptions,
-        DEFAULT_END_YEAR,
+        fixEndYear,
         state.programCostOverrides
       ),
-    [state.taxPolicy, state.enabledPrograms, state.assumptions, state.programCostOverrides]
+    [state.taxPolicy, state.enabledPrograms, state.assumptions, state.programCostOverrides, fixEndYear]
   );
 
   // Baseline: current policy, no programs, default assumptions (for comparison KPIs)
@@ -83,9 +84,9 @@ export function useSimulation() {
         CURRENT_POLICY,
         [],
         DEFAULT_ASSUMPTIONS,
-        DEFAULT_END_YEAR
+        fixEndYear
       ),
-    []
+    [fixEndYear]
   );
 
   // Combined timelines — mode-aware
@@ -95,8 +96,9 @@ export function useSimulation() {
       const seed = HISTORICAL_DATA[0]; // year 2000 as anchor
       return [seed, ...revisionData];
     }
-    // Fix mode (and forward/whatif): historical + projections
-    return [...HISTORICAL_DATA, ...projectedData];
+    // Fix mode: start from present day (2025) and project forward only
+    const lastHistorical = HISTORICAL_DATA[HISTORICAL_DATA.length - 1];
+    return [lastHistorical, ...projectedData];
   }, [isRevisionMode, revisionData, projectedData]);
 
   const baselineAllData: YearData[] = useMemo(
@@ -228,7 +230,13 @@ export function useSimulation() {
   }, []);
 
   const setMode = useCallback((mode: SimMode) => {
-    setState((prev) => ({ ...prev, mode }));
+    setState((prev) => ({
+      ...prev,
+      mode,
+      // Reset playback to the start of the relevant timeline
+      currentYear: mode === "revision" ? START_YEAR : LAST_HISTORICAL_YEAR,
+      isPlaying: false,
+    }));
   }, []);
 
   const setViewComplexity = useCallback((viewComplexity: ViewComplexity) => {
