@@ -113,9 +113,10 @@ export function SimulatorLayout() {
             </button>
 
             <KPICards
-              current={sim.currentYearData}
-              baseline={sim.baselineYearData}
-              currentYear={sim.state.currentYear}
+              todayYours={sim.todayYoursData}
+              todayActual={sim.todayActualData}
+              projectedYours={sim.state.currentYear > 2025 ? sim.currentYearData : undefined}
+              playbackYear={sim.state.currentYear}
             />
             <VisualizationTabs
               chartsContent={

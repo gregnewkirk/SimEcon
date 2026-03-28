@@ -8,7 +8,7 @@ import type {
   AdvancedAssumptions,
   YearData,
 } from "@/lib/types";
-import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR } from "@/lib/data/defaults";
+import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR, LAST_HISTORICAL_YEAR } from "@/lib/data/defaults";
 import { HISTORICAL_DATA } from "@/lib/data/historical";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { WHAT_IF_EVENTS_MAP } from "@/lib/data/what-if-events";
@@ -100,6 +100,17 @@ export function useSimulation() {
   const baselineYearData = useMemo(
     () => baselineAllData.find((d) => d.year === state.currentYear) ?? baselineAllData[0],
     [baselineAllData, state.currentYear]
+  );
+
+  // "Today" data — always anchored to the last historical year (present day)
+  const todayYoursData = useMemo(
+    () => allData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? allData[0],
+    [allData]
+  );
+
+  const todayActualData = useMemo(
+    () => baselineAllData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? baselineAllData[0],
+    [baselineAllData]
   );
 
   // Actions
@@ -221,6 +232,8 @@ export function useSimulation() {
     baselineAllData,
     currentYearData,
     baselineYearData,
+    todayYoursData,
+    todayActualData,
     whatIfData,
     whatIfDelta,
     setTaxPolicy,
