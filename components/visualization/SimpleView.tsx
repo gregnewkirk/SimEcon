@@ -197,7 +197,11 @@ export function SimpleView({
                 color: "#1d1d1f",
               }}
               labelStyle={{ color: "#86868b" }}
-              formatter={(value) => [`$${Number(value).toFixed(2)}T`, ""]}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(value: any, name: any) => [
+                `$${Number(value).toFixed(2)}T`,
+                name === "yours" ? "Your Policy" : "Baseline",
+              ]}
             />
             {/* Shaded region for projected data (after 2025) */}
             <ReferenceArea

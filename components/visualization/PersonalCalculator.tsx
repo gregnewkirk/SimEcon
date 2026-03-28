@@ -104,11 +104,75 @@ function estimateBenefits(
         break;
       case "infrastructure":
         value = 0;
-        desc = "Indirect benefits (jobs, infrastructure)";
+        desc = "Better roads & broadband";
+        break;
+      case "ss_cap":
+        value = 0;
+        desc = "Social Security stays solvent";
+        break;
+      case "irs_enforcement":
+        value = 0;
+        desc = "Tax cheats pay their share";
+        break;
+      case "defense_cut":
+        value = 0;
+        desc = "Reduced military spending";
+        break;
+      case "carbon_tax":
+        value = 0;
+        desc = "Cleaner air & climate action";
+        break;
+      case "financial_tx_tax":
+        value = 0;
+        desc = "Wall Street pays more";
+        break;
+      case "medicare_negotiation":
+        value = income < 100000 ? 500 : 0;
+        desc = income < 100000 ? "Lower drug prices" : "Lower drug prices";
+        break;
+      case "wealth_tax":
+        value = 0;
+        desc = "Billionaires pay fair share";
+        break;
+      case "sports_betting_tax":
+        value = 0;
+        desc = "Gambling funds public services";
+        break;
+      case "robot_tax":
+        value = 0;
+        desc = "Worker retraining funded";
+        break;
+      case "sugar_tax":
+        value = 0;
+        desc = "Healthier food incentives";
+        break;
+      case "land_value_tax":
+        value = 0;
+        desc = "More affordable housing";
+        break;
+      case "baby_bonds":
+        value = hh.kids > 0 ? 1000 : 0;
+        desc = hh.kids > 0 ? "$1K/child at birth" : "Wealth gap closes";
+        break;
+      case "mental_health":
+        value = hh.adults * 2000;
+        desc = "Free therapy access";
+        break;
+      case "public_internet":
+        value = income < 100000 ? 1200 : 0;
+        desc = income < 100000 ? "~$100/mo broadband" : "Faster internet";
+        break;
+      case "green_jobs":
+        value = 0;
+        desc = "Clean energy jobs";
+        break;
+      case "rd_moonshot":
+        value = 0;
+        desc = "Next-gen innovation";
         break;
       default:
         value = 0;
-        desc = "Indirect benefit";
+        desc = prog.netCostBillions < 0 ? "Deficit reduction" : "Public investment";
         break;
     }
 
