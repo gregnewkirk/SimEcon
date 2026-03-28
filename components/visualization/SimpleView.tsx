@@ -33,7 +33,8 @@ function fmtB(value: number): string {
 }
 
 function fmtPct(ratio: number): string {
-  return `${(ratio * 100).toFixed(1)}%`;
+  // debtToGdpRatio is already a percentage (e.g. 128 = 128%)
+  return `${ratio.toFixed(1)}%`;
 }
 
 // ─── Debt-to-GDP Semicircular Gauge ──────────────────────────────────
@@ -46,10 +47,12 @@ function DebtGdpGauge({ actualRatio, yoursRatio }: { actualRatio: number; yoursR
   const r = 110;
   const strokeW = 18;
 
-  // Convert a percentage (0-150) to an angle in radians (PI to 0, left to right)
+  // Convert a percentage (0-150) to an angle in radians.
+  // 0% = right side of semicircle (angle 0), 150% = left side (angle PI).
+  // This puts green/healthy (low debt) on the left and red/crisis (high debt) on the right.
   const pctToAngle = (pct: number) => {
     const clamped = Math.max(0, Math.min(pct, MAX_PCT));
-    return Math.PI - (clamped / MAX_PCT) * Math.PI;
+    return (clamped / MAX_PCT) * Math.PI;
   };
 
   // Convert angle to SVG coordinates on the arc
@@ -64,13 +67,14 @@ function DebtGdpGauge({ actualRatio, yoursRatio }: { actualRatio: number; yoursR
     const a2 = pctToAngle(endPct);
     const start = angleToXY(a1);
     const end = angleToXY(a2);
-    const sweep = a1 > a2 ? 0 : 1;
+    const sweep = a1 < a2 ? 0 : 1;
     const largeArc = Math.abs(a1 - a2) > Math.PI ? 1 : 0;
     return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${end.x} ${end.y}`;
   };
 
-  const actualPct = actualRatio * 100;
-  const yoursPct = yoursRatio * 100;
+  // debtToGdpRatio is already a percentage (e.g. 128 = 128%)
+  const actualPct = actualRatio;
+  const yoursPct = yoursRatio;
 
   // Needle endpoint for user value
   const needleAngle = pctToAngle(Math.max(0, Math.min(yoursPct, MAX_PCT)));
@@ -364,8 +368,8 @@ export function SimpleView({
         </ResponsiveContainer>
       </div>
 
-      {/* Three stat cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {/* Two stat cards + gauge */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {/* Revenue change */}
         <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
           <p className="text-xs uppercase tracking-wider text-[#86868b]">Revenue change</p>
@@ -375,6 +379,11 @@ export function SimpleView({
           >
             {revChange >= 0 ? "+" : "-"}{fmtB(revChange)}/yr
           </p>
+          {todayActual.revenueBillions > 0 && (
+            <p className="mt-0.5 text-xs text-[#86868b]">
+              {((revChange / todayActual.revenueBillions) * 100).toFixed(1)}% change
+            </p>
+          )}
         </div>
 
         {/* Annual deficit */}
@@ -393,25 +402,15 @@ export function SimpleView({
               {"\u2192"} {fmtB(Math.abs(deficitYours))}
             </span>
           </p>
-        </div>
-
-        {/* Debt-to-GDP */}
-        <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
-          <p className="text-xs uppercase tracking-wider text-[#86868b]">Debt / GDP</p>
-          <p className="mt-1 text-xl font-bold tabular-nums text-[#1d1d1f]">
-            {fmtPct(dgdpActual)}{" "}
-            <span
-              style={{
-                color: dgdpYours < dgdpActual ? "#34c759" : "#ff3b30",
-              }}
-            >
-              {"\u2192"} {fmtPct(dgdpYours)}
-            </span>
-          </p>
+          {deficitActual !== 0 && (
+            <p className="mt-0.5 text-xs text-[#86868b]">
+              {(((Math.abs(deficitYours) - Math.abs(deficitActual)) / Math.abs(deficitActual)) * 100).toFixed(1)}% change
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Debt-to-GDP Gauge */}
+      {/* Debt-to-GDP Gauge (replaces the old stat card) */}
       <DebtGdpGauge actualRatio={dgdpActual} yoursRatio={dgdpYours} />
     </div>
   );
