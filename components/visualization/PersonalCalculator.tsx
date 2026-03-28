@@ -304,10 +304,13 @@ export function PersonalCalculator({
                   style={{ color: calc.annualNet >= 0 ? "#34c759" : "#ff3b30" }}
                 >
                   {calc.annualNet >= 0 ? "+" : "-"}{fmtDollars(calc.annualNet)}/yr
+                  <span className="text-sm font-medium ml-2">
+                    ({income > 0 ? ((Math.abs(calc.annualNet) / income) * 100).toFixed(1) : "0"}% {calc.annualNet >= 0 ? "raise" : "cut"})
+                  </span>
                 </span>
               </div>
               <p className="text-xs text-[#86868b] text-right mt-0.5">
-                ({calc.lifetimeNet >= 0 ? "+" : "-"}{fmtDollarsExact(calc.lifetimeNet)} lifetime)
+                {calc.lifetimeNet >= 0 ? "+" : "-"}{fmtDollarsExact(calc.lifetimeNet)} over 40 years &middot; effective income: {fmtDollarsExact(income + calc.annualNet)}/yr
               </p>
             </div>
           </div>
