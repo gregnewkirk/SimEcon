@@ -190,8 +190,8 @@ export function BudgetGame({
         </div>
       </div>
 
-      {/* Program Toggle Cards */}
-      <div className="space-y-3">
+      {/* Program Toggle Cards — hidden on desktop where sidebar has them */}
+      <div className="space-y-3 lg:hidden">
         {/* Revenue generators */}
         <div>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#86868b]">
