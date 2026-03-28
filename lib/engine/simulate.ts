@@ -50,7 +50,8 @@ export function simulate(
     const deficitBillions = -(spendingBillions - revenueBillions);
 
     // 6. Debt: subtract deficit (negative deficit = increases debt)
-    const debtTrillions = prev.debtTrillions - deficitBillions / 1000;
+    // Clamp to 0 — in the real world you can't have negative debt
+    const debtTrillions = Math.max(0, prev.debtTrillions - deficitBillions / 1000);
 
     // 7. Wealth redistribution
     const wealthShares = redistributeWealth(

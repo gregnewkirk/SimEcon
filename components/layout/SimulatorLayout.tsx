@@ -94,6 +94,7 @@ export function SimulatorLayout() {
             <KPICards
               current={sim.currentYearData}
               baseline={sim.baselineYearData}
+              currentYear={sim.state.currentYear}
             />
             <VisualizationTabs
               chartsContent={

@@ -50,7 +50,9 @@ export function DebtDeficitChart({
 
   const deltaLabel =
     whatIfDelta != null
-      ? `Debt difference: ${whatIfDelta.debtDeltaTrillions >= 0 ? "+" : ""}$${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(2)}T`
+      ? whatIfDelta.debtDeltaTrillions >= 0
+        ? `Without these events, debt would be $${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(2)}T higher`
+        : `Without these events, debt would be $${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(2)}T lower`
       : null;
 
   return (
@@ -112,7 +114,7 @@ export function DebtDeficitChart({
           <Line
             type="monotone"
             dataKey="baselineDebt"
-            name="Baseline Debt"
+            name="Current Policy (no changes)"
             stroke="#444"
             strokeDasharray="5 5"
             dot={false}
@@ -121,7 +123,7 @@ export function DebtDeficitChart({
           <Line
             type="monotone"
             dataKey="debt"
-            name="National Debt"
+            name="Your Policy"
             stroke="#e94560"
             strokeWidth={2}
             dot={false}
@@ -130,7 +132,7 @@ export function DebtDeficitChart({
             <Line
               type="monotone"
               dataKey="counterfactualDebt"
-              name="Counterfactual Debt"
+              name="What Would Have Been"
               stroke="#4ecca3"
               strokeWidth={2}
               strokeDasharray="6 3"

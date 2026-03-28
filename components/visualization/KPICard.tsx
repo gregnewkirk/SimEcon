@@ -1,28 +1,32 @@
 interface KPICardProps {
   label: string;
-  value: string;
-  delta: number;
+  actualValue: string;
+  yourValue: string;
+  year: number;
   color: string;
 }
 
-export function KPICard({ label, value, delta, color }: KPICardProps) {
-  const isWorse = delta > 0;
-  const arrow = delta > 0 ? "\u2191" : "\u2193";
-  const deltaColor = isWorse ? "text-red-400" : "text-teal-400";
+export function KPICard({ label, actualValue, yourValue, year, color }: KPICardProps) {
+  const isSame = actualValue === yourValue;
 
   return (
     <div className="bg-card rounded-lg border p-3 text-center">
       <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-        {label}
+        {label} ({year})
       </p>
-      <p className="mt-1 font-mono text-xl font-bold" style={{ color }}>
-        {value}
-      </p>
-      {delta !== 0 && (
-        <p className={`mt-0.5 font-mono text-xs ${deltaColor}`}>
-          {arrow}
-          {Math.abs(delta).toFixed(1)}%
+      {isSame ? (
+        <p className="mt-1 font-mono text-lg font-bold" style={{ color }}>
+          {actualValue}
         </p>
+      ) : (
+        <div className="mt-1 space-y-0.5">
+          <p className="font-mono text-xs text-zinc-500">
+            Actual: <span className="text-zinc-300">{actualValue}</span>
+          </p>
+          <p className="font-mono text-lg font-bold" style={{ color }}>
+            Yours: {yourValue}
+          </p>
+        </div>
       )}
     </div>
   );

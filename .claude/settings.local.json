@@ -18,7 +18,8 @@
       "mcp__mcp-registry__search_mcp_registry",
       "mcp__obsidian__search_notes",
       "Bash(curl -s -X POST https://api.porkbun.com/api/json/v3/dns/retrieve/simecon.app -H \"Content-Type: application/json\" -d '{:*)",
-      "Bash(nslookup simecon.app 8.8.8.8)"
+      "Bash(nslookup simecon.app 8.8.8.8)",
+      "Bash(npx vercel:*)"
     ]
   }
 }
