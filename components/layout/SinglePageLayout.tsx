@@ -404,7 +404,7 @@ export function SinglePageLayout() {
                   onChange={(v) => handleTaxChange("corporateRate", v)}
                   color="#af52de"
                   min={0}
-                  max={50}
+                  max={100}
                   step={1}
                 />
                 <TaxSlider
@@ -414,7 +414,7 @@ export function SinglePageLayout() {
                   onChange={(v) => handleTaxChange("capitalGainsRate", v)}
                   color="#34c759"
                   min={0}
-                  max={50}
+                  max={100}
                   step={1}
                 />
                 <TaxSlider
@@ -424,7 +424,7 @@ export function SinglePageLayout() {
                   onChange={(v) => handleTaxChange("estateRate", v)}
                   color="#ff9500"
                   min={0}
-                  max={70}
+                  max={100}
                   step={1}
                 />
               </div>
