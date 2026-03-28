@@ -11,7 +11,7 @@ export function LandingPage({ onSelectMode }: LandingPageProps) {
         {/* Title */}
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] sm:text-4xl">
-            SimEcon &mdash; What would <em>YOU</em> do with $36&nbsp;trillion?
+            SimEcon &mdash; What would <em className="not-italic font-black">YOU</em>{" "}do with $36&nbsp;trillion?
           </h1>
           <p className="mt-3 text-base text-[#86868b]">
             The U.S. national debt is $36&nbsp;trillion. That&rsquo;s $108,000 per person.
