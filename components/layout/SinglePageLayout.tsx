@@ -53,7 +53,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── Program Card ────────────────────────────────────────────────────── */
+/* ── Program Card (tap to expand, separate toggle) ──────────────────── */
 
 function ProgramCard({
   program,
@@ -66,47 +66,80 @@ function ProgramCard({
   type: "revenue" | "spending";
   onToggle: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const isRevenue = type === "revenue";
   const accentColor = isRevenue ? "#34c759" : "#ff3b30";
+  const explainer = EXPLAINERS[program.id];
 
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="flex items-center gap-3 rounded-xl border bg-white p-3 text-left shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+    <div
+      className="rounded-xl border bg-white shadow-sm transition-all duration-200"
       style={{
         borderColor: enabled ? accentColor : "#e5e5ea",
         boxShadow: enabled
-          ? `0 0 0 1px ${accentColor}, 0 0 16px ${accentColor}30`
+          ? `0 0 0 1px ${accentColor}, 0 0 12px ${accentColor}25`
           : undefined,
       }}
     >
-      <span className="text-xl">{program.icon}</span>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-xs font-semibold text-[#1d1d1f]">{program.name}</div>
-        {EXPLAINERS[program.id] && (
-          <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-[#86868b]">
-            {EXPLAINERS[program.id].simple}
-          </div>
-        )}
-        <div
-          className="mt-0.5 font-mono text-xs transition-colors duration-200"
-          style={{ color: enabled ? accentColor : "#86868b" }}
+      {/* Top row: icon, name, cost, toggle */}
+      <div className="flex items-center gap-2.5 p-3">
+        <span className="text-xl shrink-0">{program.icon}</span>
+        {/* Tap card body to expand */}
+        <button
+          type="button"
+          onClick={() => setExpanded((e) => !e)}
+          className="min-w-0 flex-1 text-left"
         >
-          {isRevenue ? "+" : "-"}{formatB(Math.abs(program.netCostBillions))}/yr
+          <div className="text-sm font-semibold text-[#1d1d1f] leading-tight">{program.name}</div>
+          <div
+            className="mt-0.5 font-mono text-xs font-bold"
+            style={{ color: enabled ? accentColor : "#86868b" }}
+          >
+            {isRevenue ? "+" : "−"}{formatB(Math.abs(program.netCostBillions))}/yr
+          </div>
+        </button>
+        {/* Toggle pill — separate from expand tap */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          className="flex h-7 w-12 shrink-0 items-center rounded-full p-0.5 transition-all duration-200"
+          style={{ backgroundColor: enabled ? accentColor : "#d1d1d6" }}
+          aria-label={`Toggle ${program.name}`}
+        >
+          <div
+            className="size-6 rounded-full bg-white shadow transition-all duration-200"
+            style={{ transform: enabled ? "translateX(20px)" : "translateX(0px)" }}
+          />
+        </button>
+      </div>
+
+      {/* Expanded detail (tap card to show/hide) */}
+      {expanded && explainer && (
+        <div className="border-t border-[#f0f0f0] px-3 pb-3 pt-2">
+          <p className="text-xs text-[#1d1d1f] leading-relaxed">{explainer.simple}</p>
+          <p className="mt-2 text-[11px] text-[#86868b] leading-relaxed">{explainer.detail}</p>
+          <p className="mt-1.5 text-[10px] text-[#c7c7cc] italic">
+            Source: {program.source.agency} ({program.source.year})
+          </p>
         </div>
-      </div>
-      {/* Toggle pill */}
-      <div
-        className="flex h-6 w-10 shrink-0 items-center rounded-full p-0.5 transition-all duration-200"
-        style={{ backgroundColor: enabled ? accentColor : "#e5e5ea" }}
-      >
-        <div
-          className="size-5 rounded-full bg-white shadow-sm transition-all duration-200"
-          style={{ transform: enabled ? "translateX(16px)" : "translateX(0px)" }}
-        />
-      </div>
-    </button>
+      )}
+
+      {/* Collapsed hint */}
+      {!expanded && (
+        <div className="px-3 pb-2">
+          <p className="text-[11px] text-[#86868b] leading-snug">
+            {explainer ? explainer.simple.slice(0, 80) + (explainer.simple.length > 80 ? "…" : "") : program.description.slice(0, 80) + "…"}
+          </p>
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            className="mt-0.5 text-[10px] font-semibold text-[#007AFF]"
+          >
+            Learn more ↓
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
