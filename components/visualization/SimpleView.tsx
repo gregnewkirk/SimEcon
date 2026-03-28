@@ -36,6 +36,207 @@ function fmtPct(ratio: number): string {
   return `${(ratio * 100).toFixed(1)}%`;
 }
 
+// ─── Debt-to-GDP Semicircular Gauge ──────────────────────────────────
+
+function DebtGdpGauge({ actualRatio, yoursRatio }: { actualRatio: number; yoursRatio: number }) {
+  // Gauge range: 0% to 150%. Values beyond 150% are clamped visually.
+  const MAX_PCT = 150;
+  const cx = 160;
+  const cy = 140;
+  const r = 110;
+  const strokeW = 18;
+
+  // Convert a percentage (0-150) to an angle in radians (PI to 0, left to right)
+  const pctToAngle = (pct: number) => {
+    const clamped = Math.max(0, Math.min(pct, MAX_PCT));
+    return Math.PI - (clamped / MAX_PCT) * Math.PI;
+  };
+
+  // Convert angle to SVG coordinates on the arc
+  const angleToXY = (angle: number) => ({
+    x: cx + r * Math.cos(angle),
+    y: cy - r * Math.sin(angle),
+  });
+
+  // Build an arc path from startPct to endPct
+  const arcPath = (startPct: number, endPct: number) => {
+    const a1 = pctToAngle(startPct);
+    const a2 = pctToAngle(endPct);
+    const start = angleToXY(a1);
+    const end = angleToXY(a2);
+    const sweep = a1 > a2 ? 0 : 1;
+    const largeArc = Math.abs(a1 - a2) > Math.PI ? 1 : 0;
+    return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${end.x} ${end.y}`;
+  };
+
+  const actualPct = actualRatio * 100;
+  const yoursPct = yoursRatio * 100;
+
+  // Needle endpoint for user value
+  const needleAngle = pctToAngle(Math.max(0, Math.min(yoursPct, MAX_PCT)));
+  const needleTip = angleToXY(needleAngle);
+  const needleLen = r - strokeW / 2 - 8;
+  const needleTipInner = {
+    x: cx + needleLen * Math.cos(needleAngle),
+    y: cy - needleLen * Math.sin(needleAngle),
+  };
+
+  // Actual value marker position (small triangle on the outer edge)
+  const actualAngle = pctToAngle(Math.max(0, Math.min(actualPct, MAX_PCT)));
+  const markerOuter = {
+    x: cx + (r + strokeW / 2 + 6) * Math.cos(actualAngle),
+    y: cy - (r + strokeW / 2 + 6) * Math.sin(actualAngle),
+  };
+  const markerLeft = {
+    x: cx + (r + strokeW / 2 + 14) * Math.cos(actualAngle + 0.06),
+    y: cy - (r + strokeW / 2 + 14) * Math.sin(actualAngle + 0.06),
+  };
+  const markerRight = {
+    x: cx + (r + strokeW / 2 + 14) * Math.cos(actualAngle - 0.06),
+    y: cy - (r + strokeW / 2 + 14) * Math.sin(actualAngle - 0.06),
+  };
+
+  const yoursColor = yoursPct <= 60 ? "#34c759" : yoursPct <= 90 ? "#ff9500" : "#ff3b30";
+
+  // Label positions along the arc
+  const label60 = angleToXY(pctToAngle(60));
+  const label90 = angleToXY(pctToAngle(90));
+
+  return (
+    <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm p-5">
+      <h3 className="text-sm font-semibold text-[#1d1d1f] mb-0.5">Debt-to-GDP Ratio</h3>
+      <p className="text-xs text-[#86868b] mb-3">
+        How much the country owes relative to its annual output. Lower is better.
+      </p>
+      <div className="flex justify-center">
+        <svg viewBox="0 0 320 185" width="100%" style={{ maxWidth: 400 }}>
+          {/* Background track */}
+          <path
+            d={arcPath(0, MAX_PCT)}
+            fill="none"
+            stroke="#f0f0f0"
+            strokeWidth={strokeW}
+            strokeLinecap="round"
+          />
+          {/* Green zone: 0-60% */}
+          <path
+            d={arcPath(0, 60)}
+            fill="none"
+            stroke="#34c759"
+            strokeWidth={strokeW}
+            strokeLinecap="round"
+            opacity={0.3}
+          />
+          {/* Yellow zone: 60-90% */}
+          <path
+            d={arcPath(60, 90)}
+            fill="none"
+            stroke="#ff9500"
+            strokeWidth={strokeW}
+            opacity={0.3}
+          />
+          {/* Red zone: 90-150% */}
+          <path
+            d={arcPath(90, MAX_PCT)}
+            fill="none"
+            stroke="#ff3b30"
+            strokeWidth={strokeW}
+            strokeLinecap="round"
+            opacity={0.3}
+          />
+
+          {/* Zone boundary ticks */}
+          <line
+            x1={label60.x}
+            y1={label60.y - strokeW / 2 - 2}
+            x2={label60.x}
+            y2={label60.y + strokeW / 2 + 2}
+            stroke="#86868b"
+            strokeWidth={1}
+            opacity={0.4}
+          />
+          <line
+            x1={label90.x}
+            y1={label90.y - strokeW / 2 - 2}
+            x2={label90.x}
+            y2={label90.y + strokeW / 2 + 2}
+            stroke="#86868b"
+            strokeWidth={1}
+            opacity={0.4}
+          />
+
+          {/* Zone labels */}
+          <text x={angleToXY(pctToAngle(30)).x} y={cy + 24} textAnchor="middle" fill="#34c759" fontSize="9" fontWeight="600">
+            Healthy
+          </text>
+          <text x={label60.x + 16} y={cy + 24} textAnchor="middle" fill="#ff9500" fontSize="9" fontWeight="600">
+            Warning
+          </text>
+          <text x={angleToXY(pctToAngle(120)).x} y={cy + 24} textAnchor="middle" fill="#ff3b30" fontSize="9" fontWeight="600">
+            Crisis
+          </text>
+
+          {/* Scale labels */}
+          <text x={angleToXY(pctToAngle(0)).x} y={cy + 14} textAnchor="middle" fill="#86868b" fontSize="9">
+            0%
+          </text>
+          <text x={label60.x} y={label60.y - strokeW / 2 - 6} textAnchor="middle" fill="#86868b" fontSize="8">
+            60%
+          </text>
+          <text x={label90.x} y={label90.y - strokeW / 2 - 6} textAnchor="middle" fill="#86868b" fontSize="8">
+            90%
+          </text>
+          <text x={angleToXY(pctToAngle(MAX_PCT)).x} y={cy + 14} textAnchor="middle" fill="#86868b" fontSize="9">
+            150%+
+          </text>
+
+          {/* Actual value triangle marker on arc */}
+          <polygon
+            points={`${markerOuter.x},${markerOuter.y} ${markerLeft.x},${markerLeft.y} ${markerRight.x},${markerRight.y}`}
+            fill="#86868b"
+          />
+
+          {/* Needle for user value */}
+          <line
+            x1={cx}
+            y1={cy}
+            x2={needleTipInner.x}
+            y2={needleTipInner.y}
+            stroke={yoursColor}
+            strokeWidth={3}
+            strokeLinecap="round"
+          />
+          {/* Needle hub */}
+          <circle cx={cx} cy={cy} r={6} fill={yoursColor} />
+          <circle cx={cx} cy={cy} r={3} fill="white" />
+
+          {/* Needle tip dot */}
+          <circle cx={needleTip.x} cy={needleTip.y} r={5} fill={yoursColor} />
+
+          {/* Center values */}
+          <text x={cx} y={cy - 24} textAnchor="middle" fill="#86868b" fontSize="10">
+            Yours
+          </text>
+          <text x={cx} y={cy - 8} textAnchor="middle" fill={yoursColor} fontSize="22" fontWeight="800">
+            {yoursPct.toFixed(0)}%
+          </text>
+        </svg>
+      </div>
+      {/* Legend below gauge */}
+      <div className="flex items-center justify-center gap-6 mt-1 text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: "#86868b" }} />
+          <span className="text-[#86868b]">Actual: <span className="font-semibold text-[#1d1d1f]">{actualPct.toFixed(0)}%</span></span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: yoursColor }} />
+          <span className="text-[#86868b]">Yours: <span className="font-semibold" style={{ color: yoursColor }}>{yoursPct.toFixed(0)}%</span></span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SimpleView({
   todayYours,
   todayActual,
@@ -209,6 +410,9 @@ export function SimpleView({
           </p>
         </div>
       </div>
+
+      {/* Debt-to-GDP Gauge */}
+      <DebtGdpGauge actualRatio={dgdpActual} yoursRatio={dgdpYours} />
     </div>
   );
 }

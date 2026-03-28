@@ -133,6 +133,7 @@ export function SimulatorLayout() {
               <KitchenTableView
                 taxPolicy={sim.state.taxPolicy}
                 enabledPrograms={sim.state.enabledPrograms}
+                viewComplexity={sim.state.viewComplexity}
               />
             ) : sim.state.viewComplexity === "simple" ? (
               <SimpleView

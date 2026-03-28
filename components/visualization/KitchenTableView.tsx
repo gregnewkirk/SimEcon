@@ -131,6 +131,12 @@ function estimateBenefits(
 
 // ─── Format helpers ───────────────────────────────────────────────────
 
+function fmtPct(value: number, income: number): string {
+  if (income === 0) return "";
+  const pct = Math.abs(value / income) * 100;
+  return pct < 0.1 ? "<0.1%" : `${pct.toFixed(1)}%`;
+}
+
 function fmtDollars(value: number): string {
   const abs = Math.abs(value);
   if (abs >= 1_000_000) return `$${(abs / 1_000_000).toFixed(1)}M`;
@@ -157,6 +163,7 @@ interface HouseholdImpactData {
 interface KitchenTableViewProps {
   taxPolicy: TaxPolicy;
   enabledPrograms: string[];
+  viewComplexity?: "simple" | "advanced";
 }
 
 // ─── Main component ───────────────────────────────────────────────────
@@ -164,6 +171,7 @@ interface KitchenTableViewProps {
 export function KitchenTableView({
   taxPolicy,
   enabledPrograms,
+  viewComplexity = "advanced",
 }: KitchenTableViewProps) {
   const [selectedId, setSelectedId] = useState<string>("median");
   const [comparedIds, setComparedIds] = useState<string[]>([]);
@@ -189,6 +197,43 @@ export function KitchenTableView({
   }, [taxPolicy, enabledPrograms]);
 
   const selected = impacts.get(selectedId);
+
+  // ─── Simple view ────────────────────────────────────────────────────
+  if (viewComplexity === "simple") {
+    const median = impacts.get("median");
+    const top1 = impacts.get("top1");
+    if (!median || !top1) return null;
+
+    const verdictParts: string[] = [];
+    if (median.netImpact >= 0) {
+      verdictParts.push(`Your policy helps middle-income families by +${fmtDollars(median.netImpact)}/yr`);
+    } else {
+      verdictParts.push(`Your policy costs middle-income families -${fmtDollars(median.netImpact)}/yr`);
+    }
+    if (top1.taxChange > 0) {
+      verdictParts.push(`the top 1% pays +${fmtDollars(top1.taxChange)} more`);
+    } else if (top1.taxChange < 0) {
+      verdictParts.push(`the top 1% saves ${fmtDollars(Math.abs(top1.taxChange))}`);
+    } else {
+      verdictParts.push(`the top 1% sees no tax change`);
+    }
+    const verdict = verdictParts.join(" while ");
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Median Household card */}
+          <SimpleHouseholdCard impact={median} subtitle="$75K" />
+          {/* Top 1% card */}
+          <SimpleHouseholdCard impact={top1} subtitle="$800K+" />
+        </div>
+        {/* Verdict */}
+        <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm px-5 py-4 text-center">
+          <p className="text-sm text-[#1d1d1f]">{verdict}</p>
+        </div>
+      </div>
+    );
+  }
 
   // Bar chart data for all households
   const barChartData = useMemo(() => {
@@ -402,6 +447,7 @@ export function KitchenTableView({
               style={{ color: selected.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
             >
               {selected.netImpact >= 0 ? "+" : "-"}{fmtDollars(selected.netImpact)}/yr
+              <span className="text-base font-medium ml-2">({fmtPct(selected.netImpact, selected.household.income)} of income)</span>
             </p>
             <p className="mt-1 text-xs text-[#86868b]">
               {selected.netImpact >= 0
@@ -499,25 +545,25 @@ export function KitchenTableView({
                 const hb = imp.benefits.find((b) => b.programId === "healthcare");
                 return hb && hb.annualValue > 0
                   ? <span className="text-[#34c759]">+{fmtDollars(hb.annualValue)}</span>
-                  : <span className="text-[#86868b]">\u2014</span>;
+                  : <span className="text-[#86868b]">&mdash;</span>;
               }} />
               <ComparisonRow label="College Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const cb = imp.benefits.find((b) => b.programId === "college");
                 return cb && cb.annualValue > 0
                   ? <span className="text-[#34c759]">+{fmtDollars(cb.annualValue)}</span>
-                  : <span className="text-[#86868b]">\u2014</span>;
+                  : <span className="text-[#86868b]">&mdash;</span>;
               }} />
               <ComparisonRow label="Pre-K Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const pb = imp.benefits.find((b) => b.programId === "prek");
                 return pb && pb.annualValue > 0
                   ? <span className="text-[#34c759]">+{fmtDollars(pb.annualValue)}</span>
-                  : <span className="text-[#86868b]">\u2014</span>;
+                  : <span className="text-[#86868b]">&mdash;</span>;
               }} />
               <ComparisonRow label="UBI" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const ub = imp.benefits.find((b) => b.programId === "ubi");
                 return ub && ub.annualValue > 0
                   ? <span className="text-[#34c759]">+{fmtDollars(ub.annualValue)}</span>
-                  : <span className="text-[#86868b]">\u2014</span>;
+                  : <span className="text-[#86868b]">&mdash;</span>;
               }} />
               <tr className="border-t border-[#e5e5ea] font-bold">
                 <td className="p-3 text-[#1d1d1f]">Net Impact</td>
@@ -531,6 +577,9 @@ export function KitchenTableView({
                         style={{ color: imp.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
                       >
                         {imp.netImpact >= 0 ? "+" : "-"}{fmtDollars(imp.netImpact)}/yr
+                        <span className="block text-xs font-normal text-[#86868b]">
+                          ({fmtPct(imp.netImpact, imp.household.income)} of income)
+                        </span>
                       </span>
                     </td>
                   );
@@ -540,6 +589,63 @@ export function KitchenTableView({
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Simple household card for simple view ───────────────────────────
+
+function SimpleHouseholdCard({ impact, subtitle }: { impact: HouseholdImpactData; subtitle: string }) {
+  const netPositive = impact.netImpact >= 0;
+  const netColor = netPositive ? "#34c759" : "#ff3b30";
+
+  return (
+    <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm p-5 flex flex-col items-center text-center">
+      <span className="text-3xl mb-2">{impact.household.icon}</span>
+      <h3 className="text-sm font-semibold text-[#1d1d1f]">{impact.household.label}</h3>
+      <p className="text-xs text-[#86868b] mb-4">({subtitle})</p>
+
+      {/* Hero net impact */}
+      <p
+        className="text-3xl font-extrabold tabular-nums"
+        style={{ color: netColor }}
+      >
+        {netPositive ? "+" : "-"}{fmtDollars(impact.netImpact)}<span className="text-lg font-bold">/yr</span>
+      </p>
+      <p className="text-sm font-medium text-[#86868b] mt-1">
+        {fmtPct(impact.netImpact, impact.household.income)} of income
+      </p>
+      <p className="text-xs text-[#86868b] mt-0.5 mb-3">
+        {netPositive ? "Better off" : "Worse off"} under your policy
+      </p>
+
+      {/* Breakdown */}
+      <div className="w-full border-t border-[#e5e5ea] pt-3 space-y-1.5 text-xs">
+        <div className="flex justify-between">
+          <span className="text-[#86868b]">Tax change</span>
+          <span
+            className="font-semibold tabular-nums"
+            style={{ color: impact.taxChange <= 0 ? "#34c759" : "#ff3b30" }}
+          >
+            {impact.taxChange >= 0 ? "+" : "-"}{fmtDollars(impact.taxChange)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#86868b]">Benefits</span>
+          <span className="font-semibold tabular-nums text-[#34c759]">
+            +{fmtDollars(impact.totalBenefits)}
+          </span>
+        </div>
+        <div className="flex justify-between border-t border-[#e5e5ea] pt-1.5">
+          <span className="text-[#86868b] font-medium">Net</span>
+          <span
+            className="font-bold tabular-nums"
+            style={{ color: netColor }}
+          >
+            {netPositive ? "+" : "-"}{fmtDollars(impact.netImpact)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
