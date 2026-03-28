@@ -25,6 +25,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "current",
     name: "Current Policy",
+    mode: "both",
     description: "Maintain existing tax rates and no new programs. The CBO baseline projection.",
     policy: {
       topMarginalRate: 37,
@@ -39,6 +40,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "nordic",
     name: "Nordic Model",
+    mode: "both",
     description:
       "High taxes funding universal healthcare, education, and childcare — modeled on Scandinavian welfare states.",
     policy: {
@@ -54,6 +56,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "warren",
     name: "Warren Plan",
+    mode: "revision",
     description:
       "Wealth tax on ultra-millionaires, higher capital gains, funding healthcare and infrastructure.",
     policy: {
@@ -69,6 +72,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "sanders",
     name: "Sanders Plan",
+    mode: "revision",
     description:
       "Aggressive progressive taxation funding Medicare for All, free college, housing, and infrastructure.",
     policy: {
@@ -84,6 +88,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "eisenhower",
     name: "Eisenhower Era",
+    mode: "revision",
     description:
       "1950s-era tax rates when top marginal rate was 91%. No new social programs in this model.",
     policy: {
@@ -99,6 +104,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "libertarian",
     name: "Libertarian",
+    mode: "both",
     description:
       "Minimal taxation, no new social programs. Relies on free-market solutions and reduced government spending.",
     policy: {
@@ -117,6 +123,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "trump2025",
     name: "Trump 2025 Plan",
+    mode: "fix",
     description:
       "Extend TCJA tax cuts permanently, reduce corporate rate to 15%, no new social programs, tariff revenue. Based on 2024 campaign platform and executive actions.",
     policy: {
@@ -132,6 +139,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "harris2024",
     name: "Harris 2024 Plan",
+    mode: "fix",
     description:
       "Raise taxes on income over $400K, increase corporate rate to 28%, expand child tax credit, invest in housing and healthcare access. Based on 2024 campaign platform.",
     policy: {
@@ -147,6 +155,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "progressive2025",
     name: "Progressive Caucus",
+    mode: "fix",
     description:
       "Medicare for All, free college, Green New Deal infrastructure, funded by wealth tax and corporate rate increase. Based on Congressional Progressive Caucus Budget.",
     policy: {
@@ -171,6 +180,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "moderate2025",
     name: "Bipartisan Moderate",
+    mode: "fix",
     description:
       "Modest tax increases on high earners, targeted spending on infrastructure and pre-K, IRS enforcement funding. Deficit reduction focus. Based on Problem Solvers Caucus proposals.",
     policy: {

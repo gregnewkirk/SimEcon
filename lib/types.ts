@@ -57,6 +57,8 @@ export interface Scenario {
   policy: TaxPolicy;
   programs: string[];
   source?: string;
+  /** Which mode this scenario belongs to. "both" = shown in both modes. */
+  mode?: "revision" | "fix" | "both";
 }
 
 export interface WealthBracket {

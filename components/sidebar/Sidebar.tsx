@@ -56,6 +56,7 @@ export function Sidebar({
 
       <ScenarioSelector
         scenarioId={state.scenarioId}
+        mode={state.mode}
         onSelect={onScenarioChange}
       />
 

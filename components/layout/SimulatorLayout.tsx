@@ -137,12 +137,15 @@ export function SimulatorLayout() {
                   onComplexityChange={sim.setViewComplexity}
                   onPerspectiveChange={sim.setViewPerspective}
                 />
-                <button
-                  onClick={() => setShowCompare(!showCompare)}
-                  className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#007AFF] hover:bg-[#f5f5f7] transition-all"
-                >
-                  {showCompare ? "\u2190 Back to Simulator" : "\u2696\uFE0F Compare Candidates"}
-                </button>
+                {/* Compare Candidates — only in Fix mode (forward-looking) */}
+                {!sim.isRevisionMode && (
+                  <button
+                    onClick={() => setShowCompare(!showCompare)}
+                    className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#007AFF] hover:bg-[#f5f5f7] transition-all"
+                  >
+                    {showCompare ? "\u2190 Back to Simulator" : "\u2696\uFE0F Compare Candidates"}
+                  </button>
+                )}
               </div>
 
               {/* Conditional rendering based on view */}
