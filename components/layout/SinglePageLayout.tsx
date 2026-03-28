@@ -192,30 +192,38 @@ export function SinglePageLayout() {
             What would you do with $36 trillion?
           </p>
 
-          <div className="mx-auto flex max-w-md gap-3">
+          <div className="mx-auto flex max-w-lg gap-4">
             <button
               type="button"
               onClick={() => handleModeSelect("revision")}
-              className="flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
+              className="flex-1 rounded-xl border-2 px-4 py-4 text-left transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
               style={{
                 borderColor: sim.state.mode === "revision" && modeSelected ? "#af52de" : "#e5e5ea",
                 backgroundColor: sim.state.mode === "revision" && modeSelected ? "#af52de10" : "white",
-                color: sim.state.mode === "revision" && modeSelected ? "#af52de" : "#1d1d1f",
               }}
             >
-              What If We Had...
+              <div className="text-lg font-bold" style={{ color: sim.state.mode === "revision" && modeSelected ? "#af52de" : "#1d1d1f" }}>
+                🕰️ What If We Had...
+              </div>
+              <p className="mt-1 text-xs text-[#86868b] leading-snug">
+                Explore alternate history. What if the Bush tax cuts never happened? What if we didn&apos;t go to war? See what America traded away.
+              </p>
             </button>
             <button
               type="button"
               onClick={() => handleModeSelect("fix")}
-              className="flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
+              className="flex-1 rounded-xl border-2 px-4 py-4 text-left transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
               style={{
                 borderColor: sim.state.mode === "fix" && modeSelected ? "#007AFF" : "#e5e5ea",
                 backgroundColor: sim.state.mode === "fix" && modeSelected ? "#007AFF10" : "white",
-                color: sim.state.mode === "fix" && modeSelected ? "#007AFF" : "#1d1d1f",
               }}
             >
-              Fix This Mess
+              <div className="text-lg font-bold" style={{ color: sim.state.mode === "fix" && modeSelected ? "#007AFF" : "#1d1d1f" }}>
+                🔧 Fix This Mess
+              </div>
+              <p className="mt-1 text-xs text-[#86868b] leading-snug">
+                Starting from today&apos;s $36T debt. Pick programs, set tax rates, toggle revenue generators. Can you actually balance the budget?
+              </p>
             </button>
           </div>
         </section>
