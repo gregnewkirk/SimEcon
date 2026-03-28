@@ -6,6 +6,7 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { Header } from "./Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ViewToggle } from "@/components/visualization/ViewToggle";
+import { ModeToggle } from "@/components/sidebar/ModeToggle";
 import { START_YEAR, LAST_HISTORICAL_YEAR, DEFAULT_END_YEAR, FIX_END_YEAR } from "@/lib/data/defaults";
 import { SimpleView } from "@/components/visualization/SimpleView";
 import { AdvancedView } from "@/components/visualization/AdvancedView";
@@ -109,17 +110,36 @@ export function SimulatorLayout() {
           )}
 
           <main className="flex-1 space-y-4 overflow-y-auto bg-[#fafafa] p-4">
-            {/* Play Simulation button at top of viz area */}
-            <button
-              onClick={handleScrollToPlayback}
-              className="flex items-center gap-2 rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#86868b] transition-all hover:border-[#007AFF]/50 hover:text-[#1d1d1f] hover:bg-[#f5f5f7]"
-            >
-              <span className={`inline-flex size-6 items-center justify-center rounded-full bg-[#007AFF] text-white text-xs ${!sim.state.isPlaying ? 'animate-pulse' : ''}`}>
-                {sim.state.isPlaying ? "\u23F8" : "\u25B6"}
-              </span>
-              <span>{sim.state.isPlaying ? "Playing..." : "Play Simulation"}</span>
-              <span className="font-mono text-[#c7c7cc]">{sim.state.currentYear}</span>
-            </button>
+            {/* Mode toggle — visible on mobile where sidebar is hidden */}
+            <div className="lg:hidden">
+              <ModeToggle mode={sim.state.mode} onModeChange={sim.setMode} />
+            </div>
+
+            {/* Play Simulation button */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleScrollToPlayback}
+                className="flex items-center gap-2 rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#86868b] transition-all hover:border-[#007AFF]/50 hover:text-[#1d1d1f] hover:bg-[#f5f5f7]"
+              >
+                <span className={`inline-flex size-6 items-center justify-center rounded-full bg-[#007AFF] text-white text-xs ${!sim.state.isPlaying ? 'animate-pulse' : ''}`}>
+                  {sim.state.isPlaying ? "\u23F8" : "\u25B6"}
+                </span>
+                <span>{sim.state.isPlaying ? "Playing..." : "Play Simulation"}</span>
+                <span className="font-mono text-[#c7c7cc]">{sim.state.currentYear}</span>
+              </button>
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden flex items-center gap-1.5 rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-3 py-2 text-sm text-[#007AFF] transition-all hover:bg-[#f5f5f7]"
+              >
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <line x1="3" y1="6" x2="17" y2="6" />
+                  <line x1="3" y1="10" x2="17" y2="10" />
+                  <line x1="3" y1="14" x2="17" y2="14" />
+                </svg>
+                Adjust Policy
+              </button>
+            </div>
 
             {/* View toggles */}
             <ViewToggle

@@ -111,6 +111,117 @@ export const PROGRAMS: Program[] = [
     description:
       "ASCE estimates a $3.7T investment gap over 2024-2033 (~$370B/yr) across roads, bridges, broadband, water systems, and the electric grid. The 2021 IIJA provided ~$240B/yr but authorizations expire in 2026.",
   },
+
+  // ─── REVENUE GENERATORS (negative net cost = makes money) ───
+
+  {
+    id: "ss_cap",
+    name: "Remove SS Tax Cap",
+    icon: "\uD83D\uDCCA",
+    annualCostBillions: 0,
+    annualSavingsBillions: 150,
+    netCostBillions: -150,
+    source: {
+      value: 150,
+      agency: "Congressional Budget Office",
+      dataset: "Options for Reducing the Deficit: Social Security",
+      year: 2023,
+      url: "https://www.cbo.gov/budget-options",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Currently, Social Security payroll tax (12.4%) only applies to the first ~$168K of income. Removing the cap taxes all earned income equally. CBO estimates this generates $150B+/yr and extends SS solvency by 40+ years.",
+  },
+  {
+    id: "irs_enforcement",
+    name: "IRS Enforcement Funding",
+    icon: "\uD83D\uDD0D",
+    annualCostBillions: 15,
+    annualSavingsBillions: 90,
+    netCostBillions: -75,
+    source: {
+      value: 75,
+      agency: "Congressional Budget Office",
+      dataset: "IRS Enforcement Initiative Revenue Estimates",
+      year: 2023,
+      url: "https://www.cbo.gov/publication/57444",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Fund 87,000 IRS agents to close the $600B+ annual tax gap. CBO estimates every $1 spent on enforcement returns $5-6 in revenue. The 2022 IRA allocated $80B over 10 years; this models sustained funding at $15B/yr.",
+  },
+  {
+    id: "defense_cut",
+    name: "Defense Budget Reduction",
+    icon: "\u2694\uFE0F",
+    annualCostBillions: 0,
+    annualSavingsBillions: 100,
+    netCostBillions: -100,
+    source: {
+      value: 100,
+      agency: "Congressional Budget Office",
+      dataset: "Budget Options: National Defense",
+      year: 2024,
+      url: "https://www.cbo.gov/budget-options",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Reduce the ~$900B/yr defense budget by ~10%. Proposals include base closures, equipment modernization reform, and reducing overseas deployments. Savings of ~$100B/yr. Adjustable via cost slider.",
+  },
+  {
+    id: "carbon_tax",
+    name: "Carbon Tax",
+    icon: "\uD83C\uDF0D",
+    annualCostBillions: 0,
+    annualSavingsBillions: 120,
+    netCostBillions: -120,
+    source: {
+      value: 120,
+      agency: "Congressional Budget Office",
+      dataset: "Effects of a Carbon Tax on the Economy and the Environment",
+      year: 2023,
+      url: "https://www.cbo.gov/publication/58861",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "A $25/ton carbon tax rising 5% annually. CBO estimates ~$120B/yr in revenue. Also reduces emissions 10-15%. Revenue can offset costs to low-income households via rebates (not modeled here).",
+  },
+  {
+    id: "financial_tx_tax",
+    name: "Financial Transaction Tax",
+    icon: "\uD83D\uDCB1",
+    annualCostBillions: 0,
+    annualSavingsBillions: 55,
+    netCostBillions: -55,
+    source: {
+      value: 55,
+      agency: "Congressional Budget Office",
+      dataset: "Impose a Tax on Financial Transactions",
+      year: 2023,
+      url: "https://www.cbo.gov/budget-options",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "A 0.1% tax on stock, bond, and derivative trades. Used in 40+ countries (UK stamp duty, EU proposals). CBO estimates ~$55B/yr. Reduces high-frequency speculation while barely affecting long-term investors.",
+  },
+  {
+    id: "medicare_negotiation",
+    name: "Medicare Drug Negotiation",
+    icon: "\uD83D\uDC8A",
+    annualCostBillions: 0,
+    annualSavingsBillions: 100,
+    netCostBillions: -100,
+    source: {
+      value: 100,
+      agency: "Congressional Budget Office",
+      dataset: "Medicare Drug Price Negotiation Estimates",
+      year: 2024,
+      url: "https://www.cbo.gov/publication/59800",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Expand the 2022 IRA drug negotiation provisions to all Medicare drugs (currently limited to 20). CBO estimates full negotiation saves ~$100B/yr. The VA already negotiates and pays 40-50% less than Medicare.",
+  },
 ];
 
 export const PROGRAMS_MAP = new Map(PROGRAMS.map((p) => [p.id, p]));
