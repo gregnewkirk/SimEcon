@@ -135,6 +135,10 @@ export function SimulatorLayout() {
               }
               taxPolicy={sim.state.taxPolicy}
               enabledPrograms={sim.state.enabledPrograms}
+              assumptions={sim.state.assumptions}
+              currentYearData={sim.currentYearData}
+              allData={sim.allData}
+              currentYear={sim.state.currentYear}
             />
             <TransparencyBanner />
           </main>
