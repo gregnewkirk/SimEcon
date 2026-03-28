@@ -14,6 +14,7 @@ import { KitchenTableView } from "@/components/visualization/KitchenTableView";
 import { HouseholdImpact } from "@/components/visualization/HouseholdImpact";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
 import { ShowYourWork } from "@/components/shared/ShowYourWork";
+import { ShareCard } from "@/components/shared/ShareCard";
 import { LandingPage } from "./LandingPage";
 import { TradeOffCards } from "@/components/visualization/TradeOffCards";
 import { useCallback, useState } from "react";
@@ -23,6 +24,7 @@ export function SimulatorLayout() {
   const sim = useSimulation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showYourWorkOpen, setShowYourWorkOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
 
   const handleModeSelect = useCallback((mode: "revision" | "fix") => {
@@ -73,6 +75,7 @@ export function SimulatorLayout() {
         <Header
           onMenuToggle={() => setSidebarOpen((o) => !o)}
           onShowYourWork={() => setShowYourWorkOpen(true)}
+          onShare={() => setShareOpen(true)}
         />
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop sidebar -- always visible at lg+ */}
@@ -193,6 +196,15 @@ export function SimulatorLayout() {
           onReset={sim.reset}
           open={showYourWorkOpen}
           onOpenChange={setShowYourWorkOpen}
+        />
+        <ShareCard
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          taxPolicy={sim.state.taxPolicy}
+          enabledPrograms={sim.state.enabledPrograms}
+          todayYours={sim.todayYoursData}
+          todayActual={sim.todayActualData}
+          shareUrl={typeof window !== "undefined" ? window.location.href : "https://simecon.app"}
         />
       </div>
     </TooltipProvider>

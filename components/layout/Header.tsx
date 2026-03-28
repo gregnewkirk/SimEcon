@@ -1,24 +1,16 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
 interface HeaderProps {
   onMenuToggle?: () => void;
   onShowYourWork?: () => void;
+  onShare?: () => void;
 }
 
 export function Header({
   onMenuToggle,
   onShowYourWork,
+  onShare,
 }: HeaderProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleShare = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }, []);
 
   return (
     <header className="flex items-center justify-between border-b border-[#e5e5ea] bg-white px-4 py-2">
@@ -84,12 +76,14 @@ export function Header({
             </span>
           </button>
         )}
-        <button
-          onClick={handleShare}
-          className="rounded-md border border-[#e5e5ea] px-3 py-1 text-xs text-[#007AFF] transition-colors hover:bg-[#f5f5f7]"
-        >
-          {copied ? "Copied!" : "Share"}
-        </button>
+        {onShare && (
+          <button
+            onClick={onShare}
+            className="rounded-md border border-[#e5e5ea] px-3 py-1 text-xs text-[#007AFF] transition-colors hover:bg-[#f5f5f7]"
+          >
+            Share
+          </button>
+        )}
       </div>
     </header>
   );
