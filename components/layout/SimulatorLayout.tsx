@@ -9,6 +9,7 @@ import { ViewToggle } from "@/components/visualization/ViewToggle";
 import { ModeToggle } from "@/components/sidebar/ModeToggle";
 import { START_YEAR, LAST_HISTORICAL_YEAR, DEFAULT_END_YEAR, FIX_END_YEAR } from "@/lib/data/defaults";
 import { SimpleView } from "@/components/visualization/SimpleView";
+import { BudgetGame } from "@/components/visualization/BudgetGame";
 import { AdvancedView } from "@/components/visualization/AdvancedView";
 import { KitchenTableView } from "@/components/visualization/KitchenTableView";
 import { HouseholdImpact } from "@/components/visualization/HouseholdImpact";
@@ -162,14 +163,23 @@ export function SimulatorLayout() {
                 viewComplexity={sim.state.viewComplexity}
               />
             ) : sim.state.viewComplexity === "simple" ? (
-              <SimpleView
-                todayYours={sim.todayYoursData}
-                todayActual={sim.todayActualData}
-                allData={sim.allData}
-                baselineAllData={sim.baselineAllData}
-                currentYear={sim.state.currentYear}
-                isRevisionMode={sim.isRevisionMode}
-              />
+              <>
+                <BudgetGame
+                  taxPolicy={sim.state.taxPolicy}
+                  enabledPrograms={sim.state.enabledPrograms}
+                  onToggleProgram={sim.toggleProgram}
+                  todayYours={sim.todayYoursData}
+                  todayActual={sim.todayActualData}
+                />
+                <SimpleView
+                  todayYours={sim.todayYoursData}
+                  todayActual={sim.todayActualData}
+                  allData={sim.allData}
+                  baselineAllData={sim.baselineAllData}
+                  currentYear={sim.state.currentYear}
+                  isRevisionMode={sim.isRevisionMode}
+                />
+              </>
             ) : (
               <AdvancedView
                 todayYours={sim.todayYoursData}
