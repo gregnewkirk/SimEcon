@@ -10,12 +10,14 @@ import { DebtDeficitChart } from "@/components/visualization/DebtDeficitChart";
 import { WealthDistributionChart } from "@/components/visualization/WealthDistributionChart";
 import { PlaybackBar } from "@/components/playback/PlaybackBar";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
+import { ShowYourWork } from "@/components/shared/ShowYourWork";
 import { useCallback, useState } from "react";
 import type { TaxPolicy, AdvancedAssumptions } from "@/lib/types";
 
 export function SimulatorLayout() {
   const sim = useSimulation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showYourWorkOpen, setShowYourWorkOpen] = useState(false);
 
   const handleTaxChange = useCallback(
     (field: keyof TaxPolicy, value: number) => {
@@ -68,6 +70,7 @@ export function SimulatorLayout() {
           whatIfEventId={sim.state.whatIfEventId}
           onModeChange={sim.setMode}
           onEventChange={sim.setWhatIfEvent}
+          onShowYourWork={() => setShowYourWorkOpen(true)}
         />
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop sidebar — always visible at lg+ */}
@@ -112,6 +115,17 @@ export function SimulatorLayout() {
           onYearChange={sim.setCurrentYear}
           onPlayToggle={handlePlayToggle}
           onSpeedChange={sim.setPlaybackSpeed}
+          allData={sim.allData}
+          taxPolicy={sim.state.taxPolicy}
+          enabledPrograms={sim.state.enabledPrograms}
+          shareUrl={typeof window !== "undefined" ? window.location.href : ""}
+        />
+        <ShowYourWork
+          assumptions={sim.state.assumptions}
+          onAssumptionsChange={handleAssumptionsChange}
+          onReset={sim.reset}
+          open={showYourWorkOpen}
+          onOpenChange={setShowYourWorkOpen}
         />
       </div>
     </TooltipProvider>
