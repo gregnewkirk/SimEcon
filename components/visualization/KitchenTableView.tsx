@@ -4,6 +4,17 @@ import { useState, useMemo, useCallback } from "react";
 import type { TaxPolicy } from "@/lib/types";
 import { CURRENT_POLICY } from "@/lib/data/defaults";
 import { PROGRAMS_MAP } from "@/lib/data/programs";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 // ─── Household definitions ────────────────────────────────────────────
 
@@ -18,6 +29,7 @@ interface Household {
 }
 
 const HOUSEHOLDS: Household[] = [
+  { id: "median", label: "Median US Household", income: 75000, icon: "\u{1F3E0}", adults: 2, kids: 1, students: 0 },
   { id: "nurse", label: "Single Nurse", income: 55000, icon: "\u{1F3E5}", adults: 1, kids: 0, students: 0 },
   { id: "teacher", label: "Teacher Family", income: 85000, icon: "\u{1F4DA}", adults: 2, kids: 2, students: 0 },
   { id: "smallbiz", label: "Small Business Owner", income: 150000, icon: "\u{1F3EA}", adults: 2, kids: 1, students: 0 },
@@ -153,7 +165,7 @@ export function KitchenTableView({
   taxPolicy,
   enabledPrograms,
 }: KitchenTableViewProps) {
-  const [selectedId, setSelectedId] = useState<string>("teacher");
+  const [selectedId, setSelectedId] = useState<string>("median");
   const [comparedIds, setComparedIds] = useState<string[]>([]);
 
   // Calculate impacts for all households
@@ -178,6 +190,19 @@ export function KitchenTableView({
 
   const selected = impacts.get(selectedId);
 
+  // Bar chart data for all households
+  const barChartData = useMemo(() => {
+    return HOUSEHOLDS.map((h) => {
+      const impact = impacts.get(h.id);
+      return {
+        name: h.label,
+        icon: h.icon,
+        netImpact: impact?.netImpact ?? 0,
+        id: h.id,
+      };
+    });
+  }, [impacts]);
+
   const addToComparison = useCallback(() => {
     setComparedIds((prev) => {
       if (prev.includes(selectedId) || prev.length >= 4) return prev;
@@ -199,18 +224,116 @@ export function KitchenTableView({
             <button
               key={h.id}
               onClick={() => setSelectedId(h.id)}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+              className={`relative flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                 isActive
-                  ? "border-[#007AFF]/50 bg-[#007AFF]/10 text-[#007AFF]"
+                  ? "border-[#007AFF] bg-[#007AFF]/10 text-[#007AFF] shadow-[0_0_0_1px_rgba(0,122,255,0.3)]"
                   : "border-[#e5e5ea] bg-white text-[#86868b] hover:border-[#c7c7cc] hover:text-[#1d1d1f]"
               }`}
             >
               <span>{h.icon}</span>
               <span>{h.label}</span>
-              <span className="text-[#86868b]">({fmtIncome(h.income)})</span>
+              <span className={isActive ? "text-[#007AFF]/60" : "text-[#86868b]"}>({fmtIncome(h.income)})</span>
+              {isActive && (
+                <span className="ml-0.5 inline-flex items-center gap-0.5 rounded-full bg-[#007AFF] px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
+                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="shrink-0"><path d="M2 6.5L4.5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  Your pick
+                </span>
+              )}
             </button>
           );
         })}
+      </div>
+
+      {/* All Households bar chart */}
+      <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm p-5">
+        <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Impact Across All Households</h3>
+        <div style={{ width: "100%", height: 280 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              layout="vertical"
+              data={barChartData}
+              margin={{ top: 4, right: 30, left: 8, bottom: 4 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5ea" horizontal={false} />
+              <XAxis
+                type="number"
+                tick={{ fill: "#86868b", fontSize: 11 }}
+                axisLine={{ stroke: "#e5e5ea" }}
+                tickLine={{ stroke: "#e5e5ea" }}
+                tickFormatter={(v: number) => {
+                  if (v === 0) return "$0";
+                  const abs = Math.abs(v);
+                  if (abs >= 1000) return `${v < 0 ? "-" : ""}$${(abs / 1000).toFixed(0)}K`;
+                  return `$${v}`;
+                }}
+              />
+              <YAxis
+                dataKey="name"
+                type="category"
+                width={160}
+                tick={(props: Record<string, unknown>) => {
+                  const x = Number(props.x ?? 0);
+                  const y = Number(props.y ?? 0);
+                  const payload = props.payload as { value: string; index: number };
+                  const entry = barChartData[payload.index];
+                  const isSelected = entry?.id === selectedId;
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      textAnchor="end"
+                      dominantBaseline="central"
+                      fill={isSelected ? "#007AFF" : "#86868b"}
+                      fontSize={11}
+                      fontWeight={isSelected ? 600 : 400}
+                    >
+                      {entry ? `${entry.icon} ${payload.value}` : payload.value}
+                    </text>
+                  );
+                }}
+                axisLine={{ stroke: "#e5e5ea" }}
+                tickLine={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  border: "1px solid #e5e5ea",
+                  borderRadius: 8,
+                  color: "#1d1d1f",
+                  fontSize: 13,
+                }}
+                formatter={(value: unknown) => {
+                  const num = Number(value ?? 0);
+                  const sign = num >= 0 ? "+" : "-";
+                  const formatted = `${sign}${fmtDollars(num)}/yr`;
+                  const verdict = num >= 0 ? "better off" : "worse off";
+                  return [`${formatted} (${verdict})`, "Net Impact"];
+                }}
+                labelFormatter={(label: unknown) => {
+                  const str = String(label ?? "");
+                  const entry = barChartData.find((d) => d.name === str);
+                  return entry ? `${entry.icon} ${str}` : str;
+                }}
+              />
+              <ReferenceLine x={0} stroke="#86868b" strokeWidth={1} />
+              <Bar dataKey="netImpact" radius={[0, 4, 4, 0]} maxBarSize={28}>
+                {barChartData.map((entry) => {
+                  const isSelected = entry.id === selectedId;
+                  const fillColor = entry.netImpact >= 0 ? "#34c759" : "#ff3b30";
+                  return (
+                    <Cell
+                      key={entry.id}
+                      fill={isSelected ? fillColor : `${fillColor}99`}
+                      stroke={isSelected ? fillColor : "none"}
+                      strokeWidth={isSelected ? 2 : 0}
+                      style={isSelected ? { filter: `drop-shadow(0 0 4px ${fillColor}66)` } : undefined}
+                    />
+                  );
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Selected household detail card */}

@@ -167,7 +167,7 @@ export function SimpleView({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {/* Revenue change */}
         <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Revenue change</p>
+          <p className="text-xs uppercase tracking-wider text-[#86868b]">Revenue change</p>
           <p
             className="mt-1 text-xl font-bold tabular-nums"
             style={{ color: revChange >= 0 ? "#34c759" : "#ff3b30" }}
@@ -178,7 +178,7 @@ export function SimpleView({
 
         {/* Annual deficit */}
         <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Annual deficit</p>
+          <p className="text-xs uppercase tracking-wider text-[#86868b]">Annual deficit</p>
           <p className="mt-1 text-xl font-bold tabular-nums text-[#1d1d1f]">
             {fmtB(Math.abs(deficitActual))}{" "}
             <span
@@ -196,7 +196,7 @@ export function SimpleView({
 
         {/* Debt-to-GDP */}
         <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Debt / GDP</p>
+          <p className="text-xs uppercase tracking-wider text-[#86868b]">Debt / GDP</p>
           <p className="mt-1 text-xl font-bold tabular-nums text-[#1d1d1f]">
             {fmtPct(dgdpActual)}{" "}
             <span

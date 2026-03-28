@@ -34,7 +34,7 @@ export function ProgramToggles({
 }: ProgramTogglesProps) {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+      <span className="text-xs uppercase tracking-wider font-semibold text-[#86868b]">
         Programs
       </span>
 

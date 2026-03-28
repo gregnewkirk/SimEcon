@@ -13,7 +13,7 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
 
   return (
     <div className="space-y-1.5">
-      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+      <span className="text-xs uppercase tracking-wider font-semibold text-[#86868b]">
         Simulation Mode
       </span>
       <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "var(--simecon-border)" }}>
@@ -33,7 +33,7 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
           >
             What If We Had...
           </div>
-          <div className="text-[9px] text-[#86868b] leading-tight mt-0.5">
+          <div className="text-[11px] text-[#86868b] leading-tight mt-0.5">
             Rewrite history with your policy
           </div>
         </button>
@@ -52,7 +52,7 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
           >
             Fix This Mess
           </div>
-          <div className="text-[9px] text-[#86868b] leading-tight mt-0.5">
+          <div className="text-[11px] text-[#86868b] leading-tight mt-0.5">
             Change policy going forward
           </div>
         </button>

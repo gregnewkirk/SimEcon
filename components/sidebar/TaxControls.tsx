@@ -41,7 +41,7 @@ export function TaxControls({
 
   return (
     <div className="space-y-3">
-      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+      <span className="text-xs uppercase tracking-wider font-semibold text-[#86868b]">
         Tax Rates
       </span>
 
@@ -54,8 +54,8 @@ export function TaxControls({
       />
 
       <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-[#86868b] hover:text-[#1d1d1f] transition-colors">
-          <span className="text-[8px]">{open ? "\u25BE" : "\u25B8"}</span>
+        <CollapsibleTrigger className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+          <span className="text-[10px]">{open ? "\u25BE" : "\u25B8"}</span>
           All Tax Brackets
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2 space-y-3">
@@ -80,7 +80,7 @@ export function TaxControls({
           })}
 
           <div className="mt-1 border-t border-[#e5e5ea] pt-3">
-            <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+            <span className="text-xs uppercase tracking-wider font-semibold text-[#86868b]">
               Other Rates
             </span>
           </div>

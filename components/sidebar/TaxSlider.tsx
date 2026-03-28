@@ -38,7 +38,7 @@ export function TaxSlider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+        <span className="text-xs uppercase tracking-wider text-[#86868b]">
           {label}
         </span>
         <TooltipProvider>

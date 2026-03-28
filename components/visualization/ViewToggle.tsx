@@ -23,7 +23,7 @@ function ToggleButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
+      className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
         active
           ? "text-white shadow-sm"
           : "bg-transparent text-[#86868b] hover:text-[#1d1d1f]"

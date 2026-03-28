@@ -26,10 +26,10 @@ export function WhatIfToggles({
   return (
     <div className="space-y-2">
       <div>
-        <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
+        <span className="text-xs uppercase tracking-wider font-semibold text-[#86868b]">
           What If...?
         </span>
-        <p className="text-[9px] text-[#86868b] mt-0.5">
+        <p className="text-[11px] text-[#86868b] mt-0.5">
           Remove historical events
         </p>
       </div>
@@ -50,13 +50,13 @@ export function WhatIfToggles({
                     }`}
                     onClick={() => onToggleEvent(event.id)}
                   >
-                    <span className="text-[#86868b] text-[10px] font-mono shrink-0">
+                    <span className="text-[#86868b] text-xs font-mono shrink-0">
                       {event.year}
                     </span>
                     <span className="leading-tight">
                       {event.name}
                       {event.totalCostTrillions != null && (
-                        <span className="text-[10px] text-[#ff3b30] ml-1">
+                        <span className="text-xs text-[#ff3b30] ml-1">
                           ({formatCost(event.totalCostTrillions)})
                         </span>
                       )}

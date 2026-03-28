@@ -38,19 +38,19 @@ export function KPICard({
 
   const card = (
     <div className="bg-white shadow-sm rounded-lg border border-[#e5e5ea] p-3">
-      <p className="text-[10px] uppercase tracking-wider text-[#86868b] mb-2">
+      <p className="text-xs uppercase tracking-wider text-[#86868b] mb-2">
         {label}
       </p>
 
       {/* Today's actual */}
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[10px] text-[#86868b]">Today</span>
+        <span className="text-xs text-[#86868b]">Today</span>
         <span className="font-mono text-sm text-[#1d1d1f]">{actualValue}</span>
       </div>
 
       {/* Your policy */}
       <div className="flex items-baseline justify-between">
-        <span className="text-[10px] font-medium" style={{ color }}>
+        <span className="text-xs font-medium" style={{ color }}>
           Your policy
         </span>
         <span className="font-mono text-lg font-bold" style={{ color }}>
