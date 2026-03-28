@@ -2,9 +2,12 @@
 
 import type { TaxPolicy, AdvancedAssumptions, YearData } from "@/lib/types";
 import { KPICards } from "./KPICards";
-import { VisualizationTabs } from "./VisualizationTabs";
 import { DebtDeficitChart } from "./DebtDeficitChart";
 import { WealthDistributionChart } from "./WealthDistributionChart";
+import { HouseholdImpact } from "./HouseholdImpact";
+import { WaterfallChart } from "./WaterfallChart";
+import { RevenueSpendingChart } from "./RevenueSpendingChart";
+import { TornadoChart } from "./TornadoChart";
 
 interface AdvancedViewProps {
   todayYours: YearData;
@@ -41,35 +44,45 @@ export function AdvancedView({
 }: AdvancedViewProps) {
   return (
     <div className="space-y-4">
+      {/* KPI summary cards */}
       <KPICards
         todayYours={todayYours}
         todayActual={todayActual}
         projectedYours={projectedYours}
         playbackYear={playbackYear}
       />
-      <VisualizationTabs
-        chartsContent={
-          <>
-            <DebtDeficitChart
-              data={allData}
-              baselineData={baselineAllData}
-              currentYear={currentYear}
-              whatIfCounterfactual={whatIfCounterfactual}
-              whatIfDelta={whatIfDelta}
-              isRevisionMode={isRevisionMode}
-            />
-            <WealthDistributionChart
-              data={allData}
-              currentYear={currentYear}
-            />
-          </>
-        }
+
+      {/* All charts in one scrollable view — no tabs */}
+
+      {/* Overview */}
+      <DebtDeficitChart
+        data={allData}
+        baselineData={baselineAllData}
+        currentYear={currentYear}
+        whatIfCounterfactual={whatIfCounterfactual}
+        whatIfDelta={whatIfDelta}
+        isRevisionMode={isRevisionMode}
+      />
+      <WealthDistributionChart
+        data={allData}
+        currentYear={currentYear}
+      />
+
+      {/* Budget */}
+      <WaterfallChart yearData={currentYearData} />
+      <RevenueSpendingChart data={allData} currentYear={currentYear} />
+
+      {/* Sensitivity */}
+      <TornadoChart
         taxPolicy={taxPolicy}
-        enabledPrograms={enabledPrograms}
         assumptions={assumptions}
         currentYearData={currentYearData}
-        allData={allData}
-        currentYear={currentYear}
+      />
+
+      {/* Household Impact */}
+      <HouseholdImpact
+        taxPolicy={taxPolicy}
+        enabledPrograms={enabledPrograms}
       />
     </div>
   );

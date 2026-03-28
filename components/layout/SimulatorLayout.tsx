@@ -10,6 +10,7 @@ import { START_YEAR, LAST_HISTORICAL_YEAR, DEFAULT_END_YEAR, FIX_END_YEAR } from
 import { SimpleView } from "@/components/visualization/SimpleView";
 import { AdvancedView } from "@/components/visualization/AdvancedView";
 import { KitchenTableView } from "@/components/visualization/KitchenTableView";
+import { HouseholdImpact } from "@/components/visualization/HouseholdImpact";
 import { PlaybackBar } from "@/components/playback/PlaybackBar";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
 import { ShowYourWork } from "@/components/shared/ShowYourWork";
@@ -129,7 +130,12 @@ export function SimulatorLayout() {
             />
 
             {/* Conditional rendering based on view */}
-            {sim.state.viewPerspective === "kitchen" ? (
+            {sim.state.viewPerspective === "kitchen" && sim.state.viewComplexity === "simple" ? (
+              <HouseholdImpact
+                taxPolicy={sim.state.taxPolicy}
+                enabledPrograms={sim.state.enabledPrograms}
+              />
+            ) : sim.state.viewPerspective === "kitchen" ? (
               <KitchenTableView
                 taxPolicy={sim.state.taxPolicy}
                 enabledPrograms={sim.state.enabledPrograms}
