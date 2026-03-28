@@ -41,10 +41,7 @@ export function Header({
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <span className="text-xl" role="img" aria-label="lightning">
-            &#9889;
-          </span>
-          <span className="text-xl font-black tracking-tight text-3d-blue text-[#007AFF]">SimEcon</span>
+          <span className="text-lg font-black tracking-tight text-brand">SimEcon</span>
         </button>
         <span className="hidden text-sm text-[#86868b] sm:inline">
           Economic Policy Simulator
