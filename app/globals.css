@@ -162,14 +162,23 @@
   background-color: #f5f8fc !important;
 }
 
-/* Playback button pulse animation */
-@keyframes playback-pulse {
-  0%, 100% {
-    box-shadow: 0 0 8px rgba(0, 122, 255, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 122, 255, 0.7);
-  }
+/* 3D text effect for branding */
+.text-3d {
+  text-shadow:
+    0 1px 0 #c7c7cc,
+    0 2px 0 #b8b8be,
+    0 3px 0 #a9a9af,
+    0 4px 0 #9a9aa0,
+    0 5px 10px rgba(0, 0, 0, 0.1),
+    0 5px 20px rgba(0, 0, 0, 0.05);
+}
+.text-3d-blue {
+  text-shadow:
+    0 1px 0 #0066d6,
+    0 2px 0 #005cc0,
+    0 3px 0 #0052aa,
+    0 4px 6px rgba(0, 122, 255, 0.25),
+    0 6px 20px rgba(0, 122, 255, 0.1);
 }
 
 .animate-playback-pulse {

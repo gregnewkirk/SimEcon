@@ -226,14 +226,6 @@ export function useSimulation() {
     setState((prev) => ({ ...prev, currentYear: year }));
   }, []);
 
-  const setIsPlaying = useCallback((isPlaying: boolean) => {
-    setState((prev) => ({ ...prev, isPlaying }));
-  }, []);
-
-  const setPlaybackSpeed = useCallback((playbackSpeed: 1 | 5 | 10) => {
-    setState((prev) => ({ ...prev, playbackSpeed }));
-  }, []);
-
   const setAdvancedMode = useCallback((advancedMode: boolean) => {
     setState((prev) => ({ ...prev, advancedMode }));
   }, []);
@@ -306,8 +298,6 @@ export function useSimulation() {
     setAssumptions,
     loadScenario,
     setCurrentYear,
-    setIsPlaying,
-    setPlaybackSpeed,
     setAdvancedMode,
     setMode,
     toggleWhatIfEvent,

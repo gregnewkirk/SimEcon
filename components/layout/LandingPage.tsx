@@ -42,8 +42,12 @@ export function LandingPage({ onSelectMode, onQuickStart }: LandingPageProps) {
       <div className="mx-auto w-full max-w-3xl space-y-10">
         {/* Title */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] sm:text-4xl">
-            SimEcon &mdash; What would <em className="not-italic font-black">YOU</em>{" "}do with $36&nbsp;trillion?
+          <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] sm:text-4xl lg:text-5xl">
+            <span className="text-3d-blue text-[#007AFF] font-black sm:text-5xl lg:text-6xl">SimEcon</span>
+            <br className="sm:hidden" />
+            <span className="text-2xl sm:text-3xl lg:text-4xl"> &mdash; What would </span>
+            <em className="not-italic font-black text-[#1d1d1f]">YOU</em>
+            <span className="text-2xl sm:text-3xl lg:text-4xl">{" "}do with $36&nbsp;trillion?</span>
           </h1>
           <p className="mt-3 text-base text-[#86868b]">
             The U.S. national debt is $36&nbsp;trillion. That&rsquo;s $108,000 per person.
