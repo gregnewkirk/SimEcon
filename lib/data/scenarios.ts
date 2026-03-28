@@ -111,6 +111,79 @@ export const SCENARIOS: Scenario[] = [
     programs: [],
     source: "Libertarian Party Platform; Cato Institute Policy Recommendations",
   },
+
+  // ─── 2024/2025 CANDIDATE PLATFORMS ───────────────────────────────────
+
+  {
+    id: "trump2025",
+    name: "Trump 2025 Plan",
+    description:
+      "Extend TCJA tax cuts permanently, reduce corporate rate to 15%, no new social programs, tariff revenue. Based on 2024 campaign platform and executive actions.",
+    policy: {
+      topMarginalRate: 37,
+      capitalGainsRate: 15,
+      corporateRate: 15,
+      estateRate: 0,
+      brackets: bracketsWithTopRate(37),
+    },
+    programs: [],
+    source: "Trump 2024 Campaign Platform; Tax Foundation Analysis",
+  },
+  {
+    id: "harris2024",
+    name: "Harris 2024 Plan",
+    description:
+      "Raise taxes on income over $400K, increase corporate rate to 28%, expand child tax credit, invest in housing and healthcare access. Based on 2024 campaign platform.",
+    policy: {
+      topMarginalRate: 39.6,
+      capitalGainsRate: 28,
+      corporateRate: 28,
+      estateRate: 45,
+      brackets: bracketsWithTopRate(39.6),
+    },
+    programs: ["housing", "prek"],
+    source: "Harris 2024 Campaign Platform; Tax Policy Center Analysis",
+  },
+  {
+    id: "progressive2025",
+    name: "Progressive Caucus",
+    description:
+      "Medicare for All, free college, Green New Deal infrastructure, funded by wealth tax and corporate rate increase. Based on Congressional Progressive Caucus Budget.",
+    policy: {
+      topMarginalRate: 50,
+      capitalGainsRate: 39.6,
+      corporateRate: 35,
+      estateRate: 55,
+      brackets: bracketsWithTopRate(50),
+    },
+    programs: [
+      "healthcare",
+      "college",
+      "prek",
+      "housing",
+      "infrastructure",
+      "ss_cap",
+      "carbon_tax",
+      "irs_enforcement",
+    ],
+    source: "Congressional Progressive Caucus FY2025 Budget; People's Budget",
+  },
+  {
+    id: "moderate2025",
+    name: "Bipartisan Moderate",
+    description:
+      "Modest tax increases on high earners, targeted spending on infrastructure and pre-K, IRS enforcement funding. Deficit reduction focus. Based on Problem Solvers Caucus proposals.",
+    policy: {
+      topMarginalRate: 39.6,
+      capitalGainsRate: 23.8,
+      corporateRate: 25,
+      estateRate: 40,
+      brackets: bracketsWithTopRate(39.6),
+    },
+    programs: ["infrastructure", "prek", "irs_enforcement", "medicare_negotiation"],
+    source:
+      "Problem Solvers Caucus; Committee for a Responsible Federal Budget",
+  },
 ];
 
 export const SCENARIOS_MAP = new Map(SCENARIOS.map((s) => [s.id, s]));

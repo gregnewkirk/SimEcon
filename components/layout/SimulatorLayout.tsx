@@ -12,11 +12,13 @@ import { BudgetGame } from "@/components/visualization/BudgetGame";
 import { AdvancedView } from "@/components/visualization/AdvancedView";
 import { KitchenTableView } from "@/components/visualization/KitchenTableView";
 import { HouseholdImpact } from "@/components/visualization/HouseholdImpact";
+import { PersonalCalculator } from "@/components/visualization/PersonalCalculator";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
 import { ShowYourWork } from "@/components/shared/ShowYourWork";
 import { ShareCard } from "@/components/shared/ShareCard";
 import { LandingPage } from "./LandingPage";
 import { TradeOffCards } from "@/components/visualization/TradeOffCards";
+import { CompareMode } from "@/components/visualization/CompareMode";
 import { useCallback, useState } from "react";
 import type { TaxPolicy, AdvancedAssumptions } from "@/lib/types";
 
@@ -26,11 +28,18 @@ export function SimulatorLayout() {
   const [showYourWorkOpen, setShowYourWorkOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [showCompare, setShowCompare] = useState(false);
 
   const handleModeSelect = useCallback((mode: "revision" | "fix") => {
     sim.setMode(mode);
     setShowLanding(false);
   }, [sim.setMode]);
+
+  const handleQuickStart = useCallback((scenarioId: string, mode: "revision" | "fix") => {
+    sim.setMode(mode);
+    sim.loadScenario(scenarioId);
+    setShowLanding(false);
+  }, [sim.setMode, sim.loadScenario]);
 
   const handleTaxChange = useCallback(
     (field: keyof TaxPolicy, value: number) => {
@@ -96,7 +105,7 @@ export function SimulatorLayout() {
 
           {showLanding ? (
             <main className="flex flex-1 overflow-y-auto bg-[#fafafa]">
-              <LandingPage onSelectMode={handleModeSelect} />
+              <LandingPage onSelectMode={handleModeSelect} onQuickStart={handleQuickStart} />
             </main>
           ) : (
             <main className="flex-1 space-y-4 overflow-y-auto bg-[#fafafa] p-4">
@@ -120,16 +129,26 @@ export function SimulatorLayout() {
                 </button>
               </div>
 
-              {/* View toggles */}
-              <ViewToggle
-                complexity={sim.state.viewComplexity}
-                perspective={sim.state.viewPerspective}
-                onComplexityChange={sim.setViewComplexity}
-                onPerspectiveChange={sim.setViewPerspective}
-              />
+              {/* View toggles + compare button */}
+              <div className="flex flex-wrap items-center gap-3">
+                <ViewToggle
+                  complexity={sim.state.viewComplexity}
+                  perspective={sim.state.viewPerspective}
+                  onComplexityChange={sim.setViewComplexity}
+                  onPerspectiveChange={sim.setViewPerspective}
+                />
+                <button
+                  onClick={() => setShowCompare(!showCompare)}
+                  className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#007AFF] hover:bg-[#f5f5f7] transition-all"
+                >
+                  {showCompare ? "\u2190 Back to Simulator" : "\u2696\uFE0F Compare Candidates"}
+                </button>
+              </div>
 
               {/* Conditional rendering based on view */}
-              {sim.state.viewPerspective === "kitchen" && sim.state.viewComplexity === "simple" ? (
+              {showCompare ? (
+                <CompareMode />
+              ) : sim.state.viewPerspective === "kitchen" && sim.state.viewComplexity === "simple" ? (
                 <HouseholdImpact
                   taxPolicy={sim.state.taxPolicy}
                   enabledPrograms={sim.state.enabledPrograms}
@@ -182,6 +201,15 @@ export function SimulatorLayout() {
                 <TradeOffCards
                   whatIfEventIds={sim.state.whatIfEventIds}
                   enabledPrograms={sim.state.enabledPrograms}
+                />
+              )}
+
+              {/* Personal calculator — simple view only */}
+              {sim.state.viewComplexity === "simple" && (
+                <PersonalCalculator
+                  taxPolicy={sim.state.taxPolicy}
+                  enabledPrograms={sim.state.enabledPrograms}
+                  whatIfEventIds={sim.state.whatIfEventIds}
                 />
               )}
 

@@ -2,12 +2,44 @@
 
 interface LandingPageProps {
   onSelectMode: (mode: "revision" | "fix") => void;
+  onQuickStart: (scenarioId: string, mode: "revision" | "fix") => void;
 }
 
-export function LandingPage({ onSelectMode }: LandingPageProps) {
+const QUICK_STARTS = [
+  {
+    id: "current",
+    mode: "fix" as const,
+    icon: "\u{1F3DB}\uFE0F",
+    label: "Current Policy",
+    description: "See where we're headed with no changes",
+  },
+  {
+    id: "progressive2025",
+    mode: "fix" as const,
+    icon: "\u{1F4CA}",
+    label: "Progressive Plan",
+    description: "Tax the wealthy, fund everything",
+  },
+  {
+    id: "moderate2025",
+    mode: "fix" as const,
+    icon: "\u2696\uFE0F",
+    label: "Moderate Compromise",
+    description: "Small changes, big impact",
+  },
+];
+
+const STEPS = [
+  { icon: "\u{1F3DB}\uFE0F", text: "Pick a mode \u2014 explore history or fix the future" },
+  { icon: "\u{1F4B0}", text: "Adjust taxes and toggle programs" },
+  { icon: "\u{1F4C8}", text: "Watch the numbers change in real-time" },
+  { icon: "\u{1F517}", text: "Share your policy with friends" },
+];
+
+export function LandingPage({ onSelectMode, onQuickStart }: LandingPageProps) {
   return (
     <div className="flex flex-1 items-center justify-center bg-[#fafafa] p-6">
-      <div className="mx-auto w-full max-w-3xl space-y-8">
+      <div className="mx-auto w-full max-w-3xl space-y-10">
         {/* Title */}
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] sm:text-4xl">
@@ -18,7 +50,7 @@ export function LandingPage({ onSelectMode }: LandingPageProps) {
           </p>
         </div>
 
-        {/* Cards */}
+        {/* Mode Cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {/* Card 1 — Rewrite History */}
           <button
@@ -64,6 +96,59 @@ export function LandingPage({ onSelectMode }: LandingPageProps) {
             <span className="mt-auto inline-flex items-center gap-1 rounded-lg bg-[#007AFF] px-4 py-2 text-sm font-medium text-white transition-colors group-hover:bg-[#006ae6]">
               Build the Future &rarr;
             </span>
+          </button>
+        </div>
+
+        {/* How It Works */}
+        <div className="space-y-4">
+          <h3 className="text-center text-xs font-semibold uppercase tracking-widest text-[#86868b]">
+            How It Works
+          </h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {STEPS.map((step, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 text-center shadow-sm border border-[#f0f0f0]"
+              >
+                <span className="text-2xl" aria-hidden="true">{step.icon}</span>
+                <span className="text-xs font-medium text-[#1d1d1f] leading-snug">
+                  <span className="text-[#86868b] font-semibold">{i + 1}.</span>{" "}
+                  {step.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Start Presets */}
+        <div className="space-y-4">
+          <h3 className="text-center text-xs font-semibold uppercase tracking-widest text-[#86868b]">
+            Quick Start &mdash; Try a Preset
+          </h3>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {QUICK_STARTS.map((qs) => (
+              <button
+                key={qs.id}
+                type="button"
+                onClick={() => onQuickStart(qs.id, qs.mode)}
+                className="group flex cursor-pointer flex-col items-center gap-2 rounded-2xl border border-[#e5e5ea] bg-white px-5 py-5 text-center shadow-sm transition-all hover:shadow-md hover:border-[#007AFF]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007AFF]"
+              >
+                <span className="text-3xl" aria-hidden="true">{qs.icon}</span>
+                <span className="text-sm font-semibold text-[#1d1d1f]">{qs.label}</span>
+                <span className="text-xs text-[#86868b] leading-snug">{qs.description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Skip Intro */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => onSelectMode("fix")}
+            className="text-xs text-[#86868b] hover:text-[#007AFF] transition-colors cursor-pointer"
+          >
+            Skip intro &rarr;
           </button>
         </div>
       </div>

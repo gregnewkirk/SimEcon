@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { PROGRAMS } from "@/lib/data/programs";
+import { EXPLAINERS } from "@/lib/data/explainers";
 import type { TaxPolicy, YearData } from "@/lib/types";
 
 interface BudgetGameProps {
@@ -296,8 +297,13 @@ function ProgramCard({ program, enabled, type, onToggle }: ProgramCardProps) {
         <div className="truncate text-xs font-semibold text-[#1d1d1f]">
           {program.name}
         </div>
+        {EXPLAINERS[program.id] && (
+          <div className="text-[11px] text-[#86868b] line-clamp-2 leading-tight mt-0.5">
+            {EXPLAINERS[program.id].simple}
+          </div>
+        )}
         <div
-          className="text-xs font-mono transition-colors duration-300"
+          className="text-xs font-mono transition-colors duration-300 mt-0.5"
           style={{ color: enabled ? accentColor : "#86868b" }}
         >
           {isRevenue ? "+" : ""}
