@@ -45,10 +45,15 @@ export function Header({
             </svg>
           </button>
         )}
-        <span className="text-lg" role="img" aria-label="lightning">
-          &#9889;
-        </span>
-        <span className="text-lg font-bold text-[#1d1d1f]">SimEcon</span>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <span className="text-lg" role="img" aria-label="lightning">
+            &#9889;
+          </span>
+          <span className="text-lg font-bold text-[#1d1d1f]">SimEcon</span>
+        </button>
         <span className="hidden text-sm text-[#86868b] sm:inline">
           Economic Policy Simulator
         </span>
