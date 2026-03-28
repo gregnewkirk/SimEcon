@@ -86,8 +86,8 @@ export function SimulatorLayout() {
                 className="absolute inset-0 bg-black/60"
                 onClick={() => setSidebarOpen(false)}
               />
-              {/* Sidebar panel */}
-              <div className="relative z-10 h-full">{sidebarContent}</div>
+              {/* Sidebar panel — h-full + overflow for scrolling */}
+              <div className="relative z-10 h-full overflow-y-auto">{sidebarContent}</div>
             </div>
           )}
 

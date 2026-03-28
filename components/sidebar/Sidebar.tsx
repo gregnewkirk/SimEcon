@@ -46,7 +46,7 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <aside
-      className="flex w-72 flex-col gap-6 overflow-y-auto border-r p-4"
+      className="flex h-full w-72 flex-col gap-6 overflow-y-auto border-r p-4 pb-20"
       style={{
         backgroundColor: "var(--simecon-bg-sidebar)",
         borderColor: "var(--simecon-border)",
