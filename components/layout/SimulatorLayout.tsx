@@ -104,7 +104,7 @@ export function SimulatorLayout() {
           )}
 
           {showLanding ? (
-            <main className="flex flex-1 overflow-y-auto bg-[#fafafa]">
+            <main className="flex-1 overflow-y-auto bg-[#fafafa]">
               <LandingPage onSelectMode={handleModeSelect} onQuickStart={handleQuickStart} />
             </main>
           ) : (

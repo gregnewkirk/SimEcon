@@ -38,7 +38,7 @@ const STEPS = [
 
 export function LandingPage({ onSelectMode, onQuickStart }: LandingPageProps) {
   return (
-    <div className="flex flex-1 items-center justify-center bg-[#fafafa] p-6">
+    <div className="flex-1 overflow-y-auto bg-[#fafafa] p-6">
       <div className="mx-auto w-full max-w-3xl space-y-10">
         {/* Title */}
         <div className="text-center">
