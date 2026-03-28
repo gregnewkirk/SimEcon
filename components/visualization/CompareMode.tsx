@@ -24,15 +24,17 @@ function fmtPct(ratio: number): string {
   return `${ratio.toFixed(1)}%`;
 }
 
-/** Budget grade based on deficit-to-GDP ratio (deficit in billions, GDP in trillions). */
+/** Budget grade based on deficit-to-GDP ratio.
+ *  deficitBillions is NEGATIVE for a deficit, POSITIVE for a surplus. */
 function computeGrade(deficitBillions: number, gdpTrillions: number): string {
-  const ratio = (deficitBillions / (gdpTrillions * 1000)) * 100; // as % of GDP
-  if (ratio <= 0) return "A+";
-  if (ratio <= 1) return "A";
-  if (ratio <= 2) return "B";
-  if (ratio <= 3) return "B-";
-  if (ratio <= 5) return "C";
-  if (ratio <= 8) return "D";
+  // Convert to positive deficit percentage (surplus = negative deficit %)
+  const deficitPct = (-deficitBillions / (gdpTrillions * 1000)) * 100;
+  if (deficitPct <= 0) return "A+"; // surplus
+  if (deficitPct <= 1) return "A";
+  if (deficitPct <= 2) return "B";
+  if (deficitPct <= 3) return "B-";
+  if (deficitPct <= 5) return "C";
+  if (deficitPct <= 8) return "D";
   return "F";
 }
 
