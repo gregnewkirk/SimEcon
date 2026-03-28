@@ -43,7 +43,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 1789,
     gdpTrillions: 10.3,
     debtToGdpRatio: 54.4,
-    wealthShares: { top01: 0.100, top1: 0.155, next9: 0.285, middle40: 0.310, bottom50: 0.035 },
+    wealthShares: { top1: 0.255, next9: 0.285, middle40: 0.310, bottom50: 0.035 },
     isProjected: false,
   },
   {
@@ -54,7 +54,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 1863,
     gdpTrillions: 10.6,
     debtToGdpRatio: 54.7,
-    wealthShares: { top01: 0.098, top1: 0.153, next9: 0.286, middle40: 0.312, bottom50: 0.035 },
+    wealthShares: { top1: 0.251, next9: 0.286, middle40: 0.312, bottom50: 0.035 },
     isProjected: false,
   },
   {
@@ -65,7 +65,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2011,
     gdpTrillions: 10.9,
     debtToGdpRatio: 56.9,
-    wealthShares: { top01: 0.095, top1: 0.150, next9: 0.287, middle40: 0.314, bottom50: 0.036 },
+    wealthShares: { top1: 0.245, next9: 0.287, middle40: 0.314, bottom50: 0.036 },
     isProjected: false,
   },
   {
@@ -76,7 +76,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2160,
     gdpTrillions: 11.5,
     debtToGdpRatio: 59.1,
-    wealthShares: { top01: 0.097, top1: 0.152, next9: 0.286, middle40: 0.312, bottom50: 0.035 },
+    wealthShares: { top1: 0.249, next9: 0.286, middle40: 0.312, bottom50: 0.035 },
     isProjected: false,
   },
   {
@@ -87,7 +87,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2293,
     gdpTrillions: 12.2,
     debtToGdpRatio: 60.7,
-    wealthShares: { top01: 0.100, top1: 0.155, next9: 0.285, middle40: 0.310, bottom50: 0.034 },
+    wealthShares: { top1: 0.255, next9: 0.285, middle40: 0.310, bottom50: 0.034 },
     isProjected: false,
   },
   {
@@ -98,7 +98,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2472,
     gdpTrillions: 13.0,
     debtToGdpRatio: 60.8,
-    wealthShares: { top01: 0.105, top1: 0.160, next9: 0.283, middle40: 0.305, bottom50: 0.033 },
+    wealthShares: { top1: 0.265, next9: 0.283, middle40: 0.305, bottom50: 0.033 },
     isProjected: false,
   },
   {
@@ -109,7 +109,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2655,
     gdpTrillions: 13.8,
     debtToGdpRatio: 61.6,
-    wealthShares: { top01: 0.108, top1: 0.163, next9: 0.282, middle40: 0.302, bottom50: 0.032 },
+    wealthShares: { top1: 0.271, next9: 0.282, middle40: 0.302, bottom50: 0.032 },
     isProjected: false,
   },
   {
@@ -120,7 +120,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2729,
     gdpTrillions: 14.5,
     debtToGdpRatio: 62.1,
-    wealthShares: { top01: 0.110, top1: 0.165, next9: 0.281, middle40: 0.300, bottom50: 0.032 },
+    wealthShares: { top1: 0.275, next9: 0.281, middle40: 0.300, bottom50: 0.032 },
     isProjected: false,
   },
   {
@@ -131,7 +131,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 2983,
     gdpTrillions: 14.8,
     debtToGdpRatio: 67.6,
-    wealthShares: { top01: 0.095, top1: 0.155, next9: 0.283, middle40: 0.310, bottom50: 0.033 },
+    wealthShares: { top1: 0.250, next9: 0.283, middle40: 0.310, bottom50: 0.033 },
     isProjected: false,
   },
   {
@@ -142,7 +142,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3518,
     gdpTrillions: 14.4,
     debtToGdpRatio: 82.6,
-    wealthShares: { top01: 0.098, top1: 0.157, next9: 0.284, middle40: 0.308, bottom50: 0.032 },
+    wealthShares: { top1: 0.255, next9: 0.284, middle40: 0.308, bottom50: 0.032 },
     isProjected: false,
   },
   {
@@ -153,7 +153,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3457,
     gdpTrillions: 15.0,
     debtToGdpRatio: 90.7,
-    wealthShares: { top01: 0.102, top1: 0.160, next9: 0.283, middle40: 0.305, bottom50: 0.031 },
+    wealthShares: { top1: 0.262, next9: 0.283, middle40: 0.305, bottom50: 0.031 },
     isProjected: false,
   },
   {
@@ -164,7 +164,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3602,
     gdpTrillions: 15.5,
     debtToGdpRatio: 95.5,
-    wealthShares: { top01: 0.105, top1: 0.162, next9: 0.282, middle40: 0.303, bottom50: 0.031 },
+    wealthShares: { top1: 0.267, next9: 0.282, middle40: 0.303, bottom50: 0.031 },
     isProjected: false,
   },
   {
@@ -175,7 +175,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3537,
     gdpTrillions: 16.2,
     debtToGdpRatio: 99.4,
-    wealthShares: { top01: 0.108, top1: 0.165, next9: 0.280, middle40: 0.300, bottom50: 0.030 },
+    wealthShares: { top1: 0.273, next9: 0.280, middle40: 0.300, bottom50: 0.030 },
     isProjected: false,
   },
   {
@@ -186,7 +186,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3455,
     gdpTrillions: 16.8,
     debtToGdpRatio: 99.4,
-    wealthShares: { top01: 0.112, top1: 0.168, next9: 0.278, middle40: 0.297, bottom50: 0.030 },
+    wealthShares: { top1: 0.280, next9: 0.278, middle40: 0.297, bottom50: 0.030 },
     isProjected: false,
   },
   {
@@ -197,7 +197,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3507,
     gdpTrillions: 17.5,
     debtToGdpRatio: 101.7,
-    wealthShares: { top01: 0.116, top1: 0.172, next9: 0.277, middle40: 0.293, bottom50: 0.029 },
+    wealthShares: { top1: 0.288, next9: 0.277, middle40: 0.293, bottom50: 0.029 },
     isProjected: false,
   },
   {
@@ -208,7 +208,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3688,
     gdpTrillions: 18.2,
     debtToGdpRatio: 99.5,
-    wealthShares: { top01: 0.120, top1: 0.175, next9: 0.275, middle40: 0.290, bottom50: 0.028 },
+    wealthShares: { top1: 0.295, next9: 0.275, middle40: 0.290, bottom50: 0.028 },
     isProjected: false,
   },
   {
@@ -219,7 +219,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3853,
     gdpTrillions: 18.7,
     debtToGdpRatio: 104.3,
-    wealthShares: { top01: 0.122, top1: 0.176, next9: 0.274, middle40: 0.289, bottom50: 0.028 },
+    wealthShares: { top1: 0.298, next9: 0.274, middle40: 0.289, bottom50: 0.028 },
     isProjected: false,
   },
   {
@@ -230,7 +230,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 3981,
     gdpTrillions: 19.5,
     debtToGdpRatio: 103.6,
-    wealthShares: { top01: 0.124, top1: 0.177, next9: 0.273, middle40: 0.288, bottom50: 0.027 },
+    wealthShares: { top1: 0.301, next9: 0.273, middle40: 0.288, bottom50: 0.027 },
     isProjected: false,
   },
   {
@@ -241,7 +241,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 4108,
     gdpTrillions: 20.5,
     debtToGdpRatio: 104.9,
-    wealthShares: { top01: 0.126, top1: 0.178, next9: 0.272, middle40: 0.287, bottom50: 0.027 },
+    wealthShares: { top1: 0.304, next9: 0.272, middle40: 0.287, bottom50: 0.027 },
     isProjected: false,
   },
   {
@@ -252,7 +252,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 4447,
     gdpTrillions: 21.4,
     debtToGdpRatio: 106.1,
-    wealthShares: { top01: 0.128, top1: 0.179, next9: 0.271, middle40: 0.286, bottom50: 0.027 },
+    wealthShares: { top1: 0.307, next9: 0.271, middle40: 0.286, bottom50: 0.027 },
     isProjected: false,
   },
   {
@@ -263,7 +263,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6553,
     gdpTrillions: 21.1,
     debtToGdpRatio: 131.3,
-    wealthShares: { top01: 0.132, top1: 0.181, next9: 0.270, middle40: 0.283, bottom50: 0.026 },
+    wealthShares: { top1: 0.313, next9: 0.270, middle40: 0.283, bottom50: 0.026 },
     isProjected: false,
   },
   {
@@ -274,7 +274,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6819,
     gdpTrillions: 23.3,
     debtToGdpRatio: 121.9,
-    wealthShares: { top01: 0.135, top1: 0.182, next9: 0.269, middle40: 0.281, bottom50: 0.026 },
+    wealthShares: { top1: 0.317, next9: 0.269, middle40: 0.281, bottom50: 0.026 },
     isProjected: false,
   },
   {
@@ -285,7 +285,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6271,
     gdpTrillions: 25.4,
     debtToGdpRatio: 121.7,
-    wealthShares: { top01: 0.133, top1: 0.181, next9: 0.270, middle40: 0.282, bottom50: 0.026 },
+    wealthShares: { top1: 0.314, next9: 0.270, middle40: 0.282, bottom50: 0.026 },
     isProjected: false,
   },
   {
@@ -296,7 +296,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6134,
     gdpTrillions: 27.4,
     debtToGdpRatio: 120.8,
-    wealthShares: { top01: 0.134, top1: 0.182, next9: 0.269, middle40: 0.281, bottom50: 0.026 },
+    wealthShares: { top1: 0.316, next9: 0.269, middle40: 0.281, bottom50: 0.026 },
     isProjected: false,
   },
   {
@@ -307,7 +307,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6753,
     gdpTrillions: 28.3,
     debtToGdpRatio: 123.7,
-    wealthShares: { top01: 0.135, top1: 0.183, next9: 0.268, middle40: 0.280, bottom50: 0.026 },
+    wealthShares: { top1: 0.318, next9: 0.268, middle40: 0.280, bottom50: 0.026 },
     isProjected: false,
   },
   {
@@ -318,7 +318,7 @@ export const HISTORICAL_DATA: YearData[] = [
     spendingBillions: 6900,
     gdpTrillions: 29.3,
     debtToGdpRatio: 124.9,
-    wealthShares: { top01: 0.136, top1: 0.183, next9: 0.268, middle40: 0.279, bottom50: 0.025 },
+    wealthShares: { top1: 0.319, next9: 0.268, middle40: 0.279, bottom50: 0.025 },
     isProjected: false,
   },
 ];

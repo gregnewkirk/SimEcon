@@ -16,8 +16,7 @@ export function redistributeWealth(
 
   // Base growth multipliers per bracket
   const baseGrowthMultipliers: Record<string, number> = {
-    top01: 2.0,
-    top1: 1.5,
+    top1: 1.7,
     next9: 1.1,
     middle40: 0.8,
     bottom50: 0.3,
@@ -36,7 +35,7 @@ export function redistributeWealth(
     let adjustedShare = share * (1 + gdpGrowth * baseMultiplier / 100);
 
     // Apply tax drag to top brackets (reduces their share)
-    if (bracketId === "top01" || bracketId === "top1") {
+    if (bracketId === "top1") {
       adjustedShare *= 1 - taxDrag;
     }
 

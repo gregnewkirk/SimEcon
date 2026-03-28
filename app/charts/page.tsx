@@ -229,8 +229,7 @@ function StackedBudgetBar() {
 // ─── 6. Sankey-style Flow (SVG) ─────────────────────────────────────
 function SankeyFlow() {
   const leftItems = [
-    { label: "Top 0.1%", color: "#e94560", pct: 0.22 },
-    { label: "Top 1%", color: "#f0a500", pct: 0.21 },
+    { label: "Top 1%", color: "#e94560", pct: 0.43 },
     { label: "Next 9%", color: "#3b82f6", pct: 0.32 },
     { label: "Middle 40%", color: "#a855f7", pct: 0.20 },
     { label: "Bottom 50%", color: "#6b7280", pct: 0.05 },
@@ -402,7 +401,7 @@ function SparklineGrid() {
     { label: "Deficit ($B)", key: "deficitBillions", fmt: (v) => `$${v.toFixed(0)}B` },
     { label: "Revenue ($B)", key: "revenueBillions", fmt: (v) => `$${v.toFixed(0)}B` },
     { label: "GDP ($T)", key: "gdpTrillions", fmt: (v) => `$${v.toFixed(1)}T` },
-    { label: "Top 0.1% Wealth", key: "top01wealth", fmt: (v) => `${(v * 100).toFixed(1)}%` },
+    { label: "Top 1% Wealth", key: "top1wealth", fmt: (v) => `${(v * 100).toFixed(1)}%` },
     { label: "Debt-to-GDP", key: "debtToGdpRatio", fmt: (v) => `${v.toFixed(0)}%` },
   ];
 
@@ -412,7 +411,7 @@ function SparklineGrid() {
     deficitBillions: d.deficitBillions,
     revenueBillions: d.revenueBillions,
     gdpTrillions: d.gdpTrillions,
-    top01wealth: d.wealthShares.top01,
+    top1wealth: d.wealthShares.top1,
     debtToGdpRatio: d.debtToGdpRatio,
   }));
 

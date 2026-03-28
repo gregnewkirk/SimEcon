@@ -17,13 +17,9 @@ export function calculateTaxRevenue(
   // with CURRENT_POLICY (37% top rate, 21% corporate, 20% cap gains, 40% estate)
   const topRate = taxPolicy.topMarginalRate / 100;
   const bracketParams: Record<string, { incomeToWealthRatio: number; effectiveRate: number }> = {
-    top01: {
-      incomeToWealthRatio: 0.10,
-      effectiveRate: topRate * 0.85,
-    },
     top1: {
-      incomeToWealthRatio: 0.08,
-      effectiveRate: topRate * 0.70,
+      incomeToWealthRatio: 0.09,
+      effectiveRate: topRate * 0.77,
     },
     next9: {
       incomeToWealthRatio: 0.07,
@@ -55,7 +51,7 @@ export function calculateTaxRevenue(
   // Capital gains tax revenue (applied to top brackets' wealth)
   const topWealth =
     totalWealthTrillions *
-    ((previousYear.wealthShares["top01"] ?? 0.13) + (previousYear.wealthShares["top1"] ?? 0.18));
+    (previousYear.wealthShares["top1"] ?? 0.31);
   const capitalGainsBillions = topWealth * 0.05 * (taxPolicy.capitalGainsRate / 100) * 1000;
 
   // Estate tax revenue
