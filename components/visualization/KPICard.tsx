@@ -42,27 +42,35 @@ export function KPICard({
         {label}
       </p>
 
-      {/* Today's actual */}
-      <div className="flex items-baseline justify-between mb-1">
-        <span className="text-xs text-[#86868b]">Today</span>
-        <span className="font-mono text-sm text-[#1d1d1f]">{actualValue}</span>
-      </div>
+      {isSame ? (
+        /* No changes — show single value cleanly */
+        <div className="text-center py-1">
+          <span className="font-mono text-lg font-bold text-[#1d1d1f]">{actualValue}</span>
+          <p className="text-[10px] text-[#c7c7cc] mt-1">Adjust policy to see changes</p>
+        </div>
+      ) : (
+        <>
+          {/* Today's actual */}
+          <div className="flex items-baseline justify-between mb-1">
+            <span className="text-xs text-[#86868b]">Today</span>
+            <span className="font-mono text-sm text-[#1d1d1f]">{actualValue}</span>
+          </div>
 
-      {/* Your policy */}
-      <div className="flex items-baseline justify-between">
-        <span className="text-xs font-medium" style={{ color }}>
-          Your policy
-        </span>
-        <span className="font-mono text-lg font-bold" style={{ color }}>
-          {yourValue}
-        </span>
-      </div>
+          {/* Your policy */}
+          <div className="flex items-baseline justify-between">
+            <span className="text-xs font-medium" style={{ color }}>
+              Your policy
+            </span>
+            <span className="font-mono text-lg font-bold" style={{ color }}>
+              {yourValue}
+            </span>
+          </div>
 
-      {/* Delta */}
-      {!isSame && (
-        <p className={`mt-1.5 text-[11px] font-medium text-right ${deltaColor}`}>
-          {delta}
-        </p>
+          {/* Delta */}
+          <p className={`mt-1.5 text-[11px] font-medium text-right ${deltaColor}`}>
+            {delta}
+          </p>
+        </>
       )}
     </div>
   );

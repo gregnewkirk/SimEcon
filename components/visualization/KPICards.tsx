@@ -21,7 +21,8 @@ function fmtDeficit(value: number): string {
 }
 
 function fmtPct(ratio: number): string {
-  return `${(ratio * 100).toFixed(1)}%`;
+  // debtToGdpRatio is already a percentage (e.g. 128 = 128%)
+  return `${ratio.toFixed(1)}%`;
 }
 
 function deltaStr(yours: number, actual: number, unit: "T" | "B" | "%"): { text: string; direction: "better" | "worse" | "same" } {
@@ -70,8 +71,8 @@ export function KPICards({ todayYours, todayActual, projectedYours, playbackYear
   const revDirection = revDelta.direction === "worse" ? "better" as const : revDelta.direction === "better" ? "worse" as const : "same" as const;
 
   const dgdpDelta = deltaStr(
-    todayYours.debtToGdpRatio * 100,
-    todayActual.debtToGdpRatio * 100,
+    todayYours.debtToGdpRatio,
+    todayActual.debtToGdpRatio,
     "%"
   );
 
