@@ -64,9 +64,10 @@ export function WhatIfToggles({
                   </TooltipTrigger>
                   <TooltipContent
                     side="right"
-                    className="max-w-xs text-xs"
+                    className="max-w-sm text-xs leading-relaxed"
                   >
-                    <p>{event.description}</p>
+                    <p className="font-semibold text-zinc-200 mb-1">{event.name}</p>
+                    <p className="text-zinc-400">{event.description}</p>
                   </TooltipContent>
                 </Tooltip>
 

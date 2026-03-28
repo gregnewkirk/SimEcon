@@ -18,7 +18,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     year: 2017,
     category: "tax",
     description:
-      "Reduced the top individual rate from 39.6% to 37%, corporate rate from 35% to 21%. What if these cuts never happened?",
+      "Signed into law in December 2017. Lowered the top individual income tax rate from 39.6% to 37% and reduced the corporate tax rate from 35% to 21%. Also doubled the standard deduction and modified itemized deductions. CBO estimated it would add approximately $1.9 trillion to deficits over 10 years before accounting for economic growth effects.",
     counterfactualPolicy: {
       topMarginalRate: 39.6,
       capitalGainsRate: 20,
@@ -33,7 +33,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     year: 2001,
     category: "tax",
     description:
-      "Reduced top rate from 39.6% to 35% over six years. What if Clinton-era rates had been preserved?",
+      "The Economic Growth and Tax Relief Reconciliation Act of 2001. Reduced the top individual rate from 39.6% to 35% over six years, created a new 10% bracket, increased the child tax credit, and reduced estate taxes. Passed during the transition from budget surpluses to deficits. CBO estimated a $1.35 trillion revenue reduction over 10 years.",
     counterfactualPolicy: {
       topMarginalRate: 39.6,
       capitalGainsRate: 20,
@@ -48,7 +48,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     year: 2003,
     category: "tax",
     description:
-      "Accelerated the 2001 rate cuts and reduced capital gains to 15%. What if rates stayed higher?",
+      "Accelerated the income tax rate reductions from the 2001 act and reduced the capital gains tax rate from 20% to 15% and the dividend tax rate from 38.6% to 15%. Enacted during the 2001 recession recovery. CBO estimated a $350 billion revenue reduction over 10 years.",
     counterfactualPolicy: {
       topMarginalRate: 38.6,
       capitalGainsRate: 20,
@@ -63,7 +63,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     year: 2013,
     category: "tax",
     description:
-      "Made most Bush-era tax cuts permanent but raised the top rate to 39.6% for incomes over $400K. What if rates had returned to Clinton-era levels across all brackets?",
+      "Made most of the 2001 and 2003 tax cuts permanent for individuals earning under $400K ($450K for couples). Restored the top individual rate to 39.6% for higher earners and set the capital gains rate at 20% for top earners. The estate tax exemption was set at $5 million (indexed for inflation) with a 40% top rate.",
     counterfactualPolicy: {
       topMarginalRate: 39.6,
       capitalGainsRate: 23.8,
@@ -78,7 +78,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     year: 2010,
     category: "tax",
     description:
-      "Extended Bush-era tax cuts for two more years. What if they had expired as scheduled?",
+      "Extended the 2001 and 2003 tax cuts for two additional years across all income levels. Also included a temporary 2% payroll tax cut and extended unemployment benefits. The 2001/2003 cuts had been set to expire at the end of 2010. CBO estimated the extension reduced revenues by approximately $858 billion over two years.",
     counterfactualPolicy: {
       topMarginalRate: 39.6,
       capitalGainsRate: 20,
@@ -88,7 +88,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     },
   },
 
-  // === SPENDING / WAR EVENTS ===
+  // === SPENDING EVENTS ===
   {
     id: "iraq2003",
     name: "Iraq War (2003\u20132011)",
@@ -96,7 +96,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     endYear: 2011,
     category: "spending",
     description:
-      "The Iraq War cost an estimated $1.9 trillion in direct spending, plus trillions more in veterans' care and interest. What if we never invaded?",
+      "U.S. military operations in Iraq from March 2003 through December 2011. Direct Department of Defense spending totaled approximately $815 billion. Including State Department operations, veterans' medical care, disability costs, and interest on war-related borrowing, the total cost is estimated at $1.9 trillion (Watson Institute, Brown University). Peak troop deployment reached 170,000 in 2007.",
     spendingReductionBillionsPerYear: 210,
     totalCostTrillions: 1.9,
   },
@@ -107,7 +107,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     endYear: 2021,
     category: "spending",
     description:
-      "The longest US war cost an estimated $2.3 trillion in direct spending over 20 years. What if we never deployed?",
+      "U.S. military operations in Afghanistan from October 2001 through August 2021 \u2014 the longest war in U.S. history. Direct DoD spending totaled approximately $933 billion. Including State Department operations, veterans' care, and interest on borrowing, the total cost is estimated at $2.3 trillion (Watson Institute, Brown University). Peak troop deployment reached 100,000 in 2011.",
     spendingReductionBillionsPerYear: 115,
     totalCostTrillions: 2.3,
   },
@@ -118,7 +118,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     endYear: 2012,
     category: "spending",
     description:
-      "The Troubled Asset Relief Program and related bailouts cost ~$700B initially (much was repaid). Net cost ~$450B. What if there was no bailout?",
+      "The Troubled Asset Relief Program, signed into law in October 2008 during the financial crisis. Originally authorized $700 billion to purchase toxic assets and inject capital into banks. The Treasury ultimately disbursed $443 billion. Most funds were repaid with interest \u2014 the CBO estimated a net cost to taxpayers of approximately $31 billion, though broader bailout-related programs (AIG, auto industry, Fannie Mae/Freddie Mac) brought the total net federal outlay to roughly $450 billion.",
     spendingReductionBillionsPerYear: 90,
     totalCostTrillions: 0.45,
   },
@@ -129,7 +129,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     endYear: 2021,
     category: "spending",
     description:
-      "CARES Act, PPP, stimulus checks, and other COVID relief totaled ~$5.2 trillion. What if there was no pandemic spending?",
+      "Federal pandemic response legislation across 6 major bills signed by Presidents Trump and Biden. Includes the CARES Act ($2.2T), Consolidated Appropriations Act ($900B), and American Rescue Plan ($1.9T), among others. Funded stimulus checks, expanded unemployment insurance, PPP loans for businesses, healthcare funding, and state/local government aid. Total estimated cost: approximately $5.2 trillion (Committee for a Responsible Federal Budget).",
     spendingReductionBillionsPerYear: 2600,
     totalCostTrillions: 5.2,
   },
