@@ -17,6 +17,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     name: "Tax Cuts and Jobs Act (2017)",
     year: 2017,
     category: "tax",
+    totalCostTrillions: 1.9,
     description:
       "Signed into law in December 2017. Lowered the top individual income tax rate from 39.6% to 37% and reduced the corporate tax rate from 35% to 21%. Also doubled the standard deduction and modified itemized deductions. CBO estimated it would add approximately $1.9 trillion to deficits over 10 years before accounting for economic growth effects.",
     counterfactualPolicy: {
@@ -32,6 +33,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     name: "Bush Tax Cuts (2001)",
     year: 2001,
     category: "tax",
+    totalCostTrillions: 1.35,
     description:
       "The Economic Growth and Tax Relief Reconciliation Act of 2001. Reduced the top individual rate from 39.6% to 35% over six years, created a new 10% bracket, increased the child tax credit, and reduced estate taxes. Passed during the transition from budget surpluses to deficits. CBO estimated a $1.35 trillion revenue reduction over 10 years.",
     counterfactualPolicy: {
@@ -47,6 +49,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     name: "Jobs and Growth Tax Relief (2003)",
     year: 2003,
     category: "tax",
+    totalCostTrillions: 0.35,
     description:
       "Accelerated the income tax rate reductions from the 2001 act and reduced the capital gains tax rate from 20% to 15% and the dividend tax rate from 38.6% to 15%. Enacted during the 2001 recession recovery. CBO estimated a $350 billion revenue reduction over 10 years.",
     counterfactualPolicy: {
@@ -77,6 +80,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     name: "Tax Relief Act of 2010",
     year: 2010,
     category: "tax",
+    totalCostTrillions: 0.858,
     description:
       "Extended the 2001 and 2003 tax cuts for two additional years across all income levels. Also included a temporary 2% payroll tax cut and extended unemployment benefits. The 2001/2003 cuts had been set to expire at the end of 2010. CBO estimated the extension reduced revenues by approximately $858 billion over two years.",
     counterfactualPolicy: {

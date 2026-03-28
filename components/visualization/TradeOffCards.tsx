@@ -58,11 +58,11 @@ export function TradeOffCards({
             {/* Event name & cost */}
             <div className="mb-3">
               <h3 className="text-base font-semibold text-[#1d1d1f]">
-                {event.category === "spending" ? "\u2694\uFE0F " : ""}
+                {event.category === "spending" ? "\u2694\uFE0F " : "\uD83D\uDCB8 "}
                 {event.name}
               </h3>
               <p className="text-lg font-bold text-[#d63031]">
-                ${event.totalCostTrillions}T spent
+                ${event.totalCostTrillions}T {event.category === "tax" ? "in revenue lost" : "spent"}
               </p>
             </div>
 
