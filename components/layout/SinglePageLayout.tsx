@@ -176,12 +176,19 @@ export function SinglePageLayout() {
     [sim.setTaxPolicy],
   );
 
-  /* Filtered scenarios by mode */
-  const filteredScenarios = useMemo(
-    () =>
-      SCENARIOS.filter(
-        (s) => s.mode === "both" || s.mode === sim.state.mode,
-      ),
+  /* Split scenarios into ideology vs candidate, filtered by mode */
+  const ideologyScenarios = useMemo(
+    () => SCENARIOS.filter((s) =>
+      (s.category === "ideology" || !s.category) &&
+      (s.mode === "both" || s.mode === sim.state.mode)
+    ),
+    [sim.state.mode],
+  );
+  const candidateScenarios = useMemo(
+    () => SCENARIOS.filter((s) =>
+      s.category === "candidate" &&
+      (s.mode === "both" || s.mode === sim.state.mode)
+    ),
     [sim.state.mode],
   );
 
@@ -312,24 +319,53 @@ export function SinglePageLayout() {
             <section className="py-8">
               <SectionHeader>Policy Scenario</SectionHeader>
 
-              {/* Scenario dropdown */}
-              <div className="mb-6">
-                <select
-                  value={sim.state.scenarioId}
-                  onChange={(e) => sim.loadScenario(e.target.value)}
-                  className="w-full rounded-xl border border-[#e5e5ea] bg-white px-4 py-3 text-sm font-medium text-[#1d1d1f] shadow-sm outline-none transition-all focus:border-[#007AFF] focus:ring-2 focus:ring-[#007AFF]/20 sm:w-auto"
-                >
-                  {filteredScenarios.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                  {/* Show custom if they've tweaked sliders */}
-                  {!filteredScenarios.some((s) => s.id === sim.state.scenarioId) && (
-                    <option value={sim.state.scenarioId}>Custom</option>
-                  )}
-                </select>
+              {/* Two dropdowns: ideology + candidate */}
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                {/* Ideology / Economic Model */}
+                <div className="flex-1">
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#86868b]">
+                    Economic Model
+                  </label>
+                  <select
+                    value={ideologyScenarios.some((s) => s.id === sim.state.scenarioId) ? sim.state.scenarioId : ""}
+                    onChange={(e) => { if (e.target.value) sim.loadScenario(e.target.value); }}
+                    className="w-full rounded-xl border border-[#e5e5ea] bg-white px-4 py-3 text-sm font-medium text-[#1d1d1f] shadow-sm outline-none transition-all focus:border-[#007AFF] focus:ring-2 focus:ring-[#007AFF]/20"
+                  >
+                    <option value="">— Pick an ideology —</option>
+                    {ideologyScenarios.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Candidate / Specific Proposal */}
+                <div className="flex-1">
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#86868b]">
+                    Candidate Plan
+                  </label>
+                  <select
+                    value={candidateScenarios.some((s) => s.id === sim.state.scenarioId) ? sim.state.scenarioId : ""}
+                    onChange={(e) => { if (e.target.value) sim.loadScenario(e.target.value); }}
+                    className="w-full rounded-xl border border-[#e5e5ea] bg-white px-4 py-3 text-sm font-medium text-[#1d1d1f] shadow-sm outline-none transition-all focus:border-[#007AFF] focus:ring-2 focus:ring-[#007AFF]/20"
+                  >
+                    <option value="">— Pick a candidate —</option>
+                    {candidateScenarios.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
+              {/* Show which scenario is active */}
+              {sim.state.scenarioId !== "current" && (
+                <p className="mb-4 text-xs text-[#86868b]">
+                  Active: <span className="font-semibold text-[#1d1d1f]">{SCENARIOS.find((s) => s.id === sim.state.scenarioId)?.name ?? "Custom"}</span>
+                  {" · "}
+                  <button type="button" onClick={() => sim.loadScenario("current")} className="text-[#007AFF] hover:underline">
+                    Reset to Current Policy
+                  </button>
+                </p>
+              )}
 
               {/* Tax sliders */}
               <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#86868b]">Tax Rates</h3>

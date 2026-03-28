@@ -59,6 +59,8 @@ export interface Scenario {
   source?: string;
   /** Which mode this scenario belongs to. "both" = shown in both modes. */
   mode?: "revision" | "fix" | "both";
+  /** Category for dropdown grouping */
+  category?: "ideology" | "candidate";
 }
 
 export interface WealthBracket {

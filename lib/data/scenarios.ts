@@ -24,6 +24,7 @@ function bracketsScaled(topRate: number) {
 export const SCENARIOS: Scenario[] = [
   {
     id: "current",
+    category: "ideology",
     name: "Current Policy",
     mode: "both",
     description: "Maintain existing tax rates and no new programs. The CBO baseline projection.",
@@ -39,6 +40,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "nordic",
+    category: "ideology",
     name: "Nordic Model",
     mode: "both",
     description:
@@ -55,6 +57,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "warren",
+    category: "candidate",
     name: "Warren Plan",
     mode: "revision",
     description:
@@ -71,6 +74,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "sanders",
+    category: "candidate",
     name: "Sanders Plan",
     mode: "revision",
     description:
@@ -87,6 +91,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "eisenhower",
+    category: "ideology",
     name: "Eisenhower Era",
     mode: "revision",
     description:
@@ -103,6 +108,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "libertarian",
+    category: "ideology",
     name: "Libertarian",
     mode: "both",
     description:
@@ -122,6 +128,7 @@ export const SCENARIOS: Scenario[] = [
 
   {
     id: "trump2025",
+    category: "candidate",
     name: "Trump 2025 Plan",
     mode: "fix",
     description:
@@ -138,6 +145,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "harris2024",
+    category: "candidate",
     name: "Harris 2024 Plan",
     mode: "fix",
     description:
@@ -154,6 +162,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "progressive2025",
+    category: "ideology",
     name: "Progressive Caucus",
     mode: "fix",
     description:
@@ -179,6 +188,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "moderate2025",
+    category: "ideology",
     name: "Bipartisan Moderate",
     mode: "fix",
     description:
