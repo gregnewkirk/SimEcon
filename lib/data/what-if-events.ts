@@ -112,17 +112,6 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     totalCostTrillions: 2.3,
   },
   {
-    id: "bothwars",
-    name: "No Iraq or Afghanistan Wars",
-    year: 2001,
-    endYear: 2021,
-    category: "spending",
-    description:
-      "Combined post-9/11 wars cost over $4 trillion in direct spending. What if neither war happened?",
-    spendingReductionBillionsPerYear: 200,
-    totalCostTrillions: 4.0,
-  },
-  {
     id: "tarp2008",
     name: "Bank Bailouts / TARP (2008)",
     year: 2008,
@@ -143,24 +132,6 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       "CARES Act, PPP, stimulus checks, and other COVID relief totaled ~$5.2 trillion. What if there was no pandemic spending?",
     spendingReductionBillionsPerYear: 2600,
     totalCostTrillions: 5.2,
-  },
-  {
-    id: "bushcuts_and_wars",
-    name: "No Bush Tax Cuts + No Wars (2001)",
-    year: 2001,
-    endYear: 2021,
-    category: "both",
-    description:
-      "What if the Clinton surplus had been preserved? No tax cuts, no wars. The CBO projected debt would be nearly eliminated by 2010.",
-    counterfactualPolicy: {
-      topMarginalRate: 39.6,
-      capitalGainsRate: 20,
-      corporateRate: 35,
-      estateRate: 55,
-      brackets: bracketsWithTopRate(39.6),
-    },
-    spendingReductionBillionsPerYear: 200,
-    totalCostTrillions: 8.0,
   },
 ];
 
