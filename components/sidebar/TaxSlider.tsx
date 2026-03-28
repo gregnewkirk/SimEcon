@@ -38,7 +38,7 @@ export function TaxSlider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+        <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
           {label}
         </span>
         <TooltipProvider>
@@ -85,7 +85,7 @@ export function TaxSlider({
         />
         {/* Ghost marker at default value */}
         <div
-          className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded-full bg-zinc-500/50"
+          className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded-full bg-[#c7c7cc]"
           style={{ left: `${pct}%` }}
           title={`Default: ${defaultValue}`}
         />

@@ -31,12 +31,12 @@ export function WhatIfControls({
   return (
     <div className="flex items-center gap-3">
       {/* Segmented toggle */}
-      <div className="flex rounded-md border border-zinc-700 text-xs">
+      <div className="flex rounded-md border border-[#e5e5ea] text-xs">
         <button
           className={`rounded-l-md px-3 py-1 transition-colors ${
             mode === "forward"
-              ? "bg-[#e94560] text-white"
-              : "text-zinc-400 hover:text-zinc-200"
+              ? "bg-[#007AFF] text-white"
+              : "text-[#86868b] hover:text-[#1d1d1f]"
           }`}
           onClick={() => onModeChange("forward")}
         >
@@ -45,8 +45,8 @@ export function WhatIfControls({
         <button
           className={`rounded-r-md px-3 py-1 transition-colors ${
             mode === "whatif"
-              ? "bg-[#e94560] text-white"
-              : "text-zinc-400 hover:text-zinc-200"
+              ? "bg-[#007AFF] text-white"
+              : "text-[#86868b] hover:text-[#1d1d1f]"
           }`}
           onClick={() => onModeChange("whatif")}
         >
@@ -58,7 +58,7 @@ export function WhatIfControls({
       {mode === "whatif" && (
         <Popover>
           <PopoverTrigger
-            className="flex items-center gap-1.5 rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+            className="flex items-center gap-1.5 rounded-md border border-[#e5e5ea] px-3 py-1.5 text-xs text-[#1d1d1f] transition-colors hover:border-[#007AFF] hover:text-[#1d1d1f]"
           >
             <span>
               {selectedCount === 0
@@ -80,10 +80,10 @@ export function WhatIfControls({
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-[340px] max-h-[400px] overflow-y-auto border-zinc-700 bg-[#1a1a2e] p-2"
+            className="w-[340px] max-h-[400px] overflow-y-auto border-[#e5e5ea] bg-white p-2"
           >
             {/* Spending Events */}
-            <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#86868b]">
               Spending Events
             </div>
             {WHAT_IF_EVENTS.filter(
@@ -93,21 +93,21 @@ export function WhatIfControls({
               return (
                 <label
                   key={event.id}
-                  className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-zinc-800 ${
-                    checked ? "text-zinc-100" : "text-zinc-400"
+                  className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-[#f5f5f7] ${
+                    checked ? "text-[#1d1d1f]" : "text-[#86868b]"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => onToggleEvent(event.id)}
-                    className="size-3.5 rounded border-zinc-600 bg-zinc-800 text-[#e94560] accent-[#e94560]"
+                    className="size-3.5 rounded border-[#e5e5ea] bg-white text-[#007AFF] accent-[#007AFF]"
                   />
                   <span className="flex items-center gap-1.5">
-                    <span className="text-zinc-500">{event.year}</span>
+                    <span className="text-[#86868b]">{event.year}</span>
                     <span>{event.name}</span>
                     {event.totalCostTrillions != null && (
-                      <span className="text-[10px] text-[#e94560]">
+                      <span className="text-[10px] text-[#ff3b30]">
                         ({formatCost(event.totalCostTrillions)})
                       </span>
                     )}
@@ -117,7 +117,7 @@ export function WhatIfControls({
             })}
 
             {/* Tax Policy Changes */}
-            <div className="mt-1 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="mt-1 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#86868b]">
               Tax Policy Changes
             </div>
             {WHAT_IF_EVENTS.filter((e) => e.category === "tax").map((event) => {
@@ -125,18 +125,18 @@ export function WhatIfControls({
               return (
                 <label
                   key={event.id}
-                  className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-zinc-800 ${
-                    checked ? "text-zinc-100" : "text-zinc-400"
+                  className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-[#f5f5f7] ${
+                    checked ? "text-[#1d1d1f]" : "text-[#86868b]"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => onToggleEvent(event.id)}
-                    className="size-3.5 rounded border-zinc-600 bg-zinc-800 text-[#e94560] accent-[#e94560]"
+                    className="size-3.5 rounded border-[#e5e5ea] bg-white text-[#007AFF] accent-[#007AFF]"
                   />
                   <span className="flex items-center gap-1.5">
-                    <span className="text-zinc-500">{event.year}</span>
+                    <span className="text-[#86868b]">{event.year}</span>
                     <span>{event.name}</span>
                   </span>
                 </label>

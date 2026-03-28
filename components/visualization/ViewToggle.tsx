@@ -26,7 +26,7 @@ function ToggleButton({
       className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
         active
           ? "text-white shadow-sm"
-          : "bg-transparent text-zinc-400 hover:text-zinc-200"
+          : "bg-transparent text-[#86868b] hover:text-[#1d1d1f]"
       }`}
       style={active ? { backgroundColor: activeColor } : undefined}
     >
@@ -44,33 +44,33 @@ export function ViewToggle({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Left toggle: complexity */}
-      <div className="flex items-center rounded-full border border-zinc-700/50 bg-zinc-900/60 p-0.5">
+      <div className="flex items-center rounded-full border border-[#e5e5ea] bg-white shadow-sm p-0.5">
         <ToggleButton
           label="Simple"
           active={complexity === "simple"}
-          activeColor="#e94560"
+          activeColor="#007AFF"
           onClick={() => onComplexityChange("simple")}
         />
         <ToggleButton
           label="Advanced"
           active={complexity === "advanced"}
-          activeColor="#e94560"
+          activeColor="#007AFF"
           onClick={() => onComplexityChange("advanced")}
         />
       </div>
 
       {/* Right toggle: perspective */}
-      <div className="flex items-center rounded-full border border-zinc-700/50 bg-zinc-900/60 p-0.5">
+      <div className="flex items-center rounded-full border border-[#e5e5ea] bg-white shadow-sm p-0.5">
         <ToggleButton
           label="Macro"
           active={perspective === "macro"}
-          activeColor="#4ecca3"
+          activeColor="#007AFF"
           onClick={() => onPerspectiveChange("macro")}
         />
         <ToggleButton
           label="Kitchen Table"
           active={perspective === "kitchen"}
-          activeColor="#4ecca3"
+          activeColor="#007AFF"
           onClick={() => onPerspectiveChange("kitchen")}
         />
       </div>

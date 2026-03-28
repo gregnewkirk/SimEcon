@@ -89,7 +89,7 @@ export function Sidebar({
         <Button
           variant="ghost"
           size="sm"
-          className="w-full text-zinc-400 hover:text-white"
+          className="w-full text-[#86868b] hover:text-[#1d1d1f]"
           onClick={onReset}
         >
           Reset to Defaults

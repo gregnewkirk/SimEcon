@@ -25,18 +25,18 @@ export function CitationPopover({ citation, children }: CitationPopoverProps) {
       <PopoverTrigger className="cursor-pointer underline decoration-dotted underline-offset-2">
         {children}
       </PopoverTrigger>
-      <PopoverContent className="w-72 bg-[#1a1a2e] text-xs">
+      <PopoverContent className="w-72 bg-white border-[#e5e5ea] text-xs">
         <div className="space-y-1.5">
-          <p className="font-semibold text-zinc-200">{citation.agency}</p>
-          <p className="text-zinc-400">{citation.dataset}</p>
-          <p className="text-zinc-500">
+          <p className="font-semibold text-[#1d1d1f]">{citation.agency}</p>
+          <p className="text-[#86868b]">{citation.dataset}</p>
+          <p className="text-[#c7c7cc]">
             Accessed {citation.accessedDate}
           </p>
           <a
             href={citation.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-[#4ecca3] hover:underline"
+            className="inline-block text-[#007AFF] hover:underline"
           >
             View source &rarr;
           </a>

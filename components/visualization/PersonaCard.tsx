@@ -75,31 +75,31 @@ export function PersonaCard({
   const isPositive = netImpact >= 0;
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-card p-4">
+    <div className="rounded-lg border border-[#e5e5ea] bg-white p-4">
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <span className="text-2xl">{persona.icon}</span>
         <div>
-          <p className="text-sm font-semibold text-zinc-100">{persona.name}</p>
-          <p className="text-xs text-zinc-500">{persona.title}</p>
+          <p className="text-sm font-semibold text-[#1d1d1f]">{persona.name}</p>
+          <p className="text-xs text-[#86868b]">{persona.title}</p>
         </div>
       </div>
 
       {/* 2x2 grid */}
       <div className="grid grid-cols-2 gap-2 text-xs">
         {/* Tax Rate */}
-        <div className="rounded-md bg-zinc-900 p-2">
-          <p className="text-zinc-500">Tax Rate</p>
-          <p className="font-mono text-zinc-300">
+        <div className="rounded-md bg-[#f5f5f7] p-2">
+          <p className="text-[#86868b]">Tax Rate</p>
+          <p className="font-mono text-[#1d1d1f]">
             {formatRate(persona.effectiveTaxRate)} &rarr; {formatRate(newRate)}
           </p>
         </div>
 
         {/* Tax Change */}
-        <div className="rounded-md bg-zinc-900 p-2">
-          <p className="text-zinc-500">Tax Change</p>
+        <div className="rounded-md bg-[#f5f5f7] p-2">
+          <p className="text-[#86868b]">Tax Change</p>
           <p
-            className={`font-mono ${taxChangePerYear > 0 ? "text-red-400" : taxChangePerYear < 0 ? "text-green-400" : "text-zinc-400"}`}
+            className={`font-mono ${taxChangePerYear > 0 ? "text-[#ff3b30]" : taxChangePerYear < 0 ? "text-[#34c759]" : "text-[#86868b]"}`}
           >
             {taxChangePerYear >= 0 ? "+" : "-"}
             {formatDollars(Math.abs(taxChangePerYear))}/yr
@@ -107,18 +107,18 @@ export function PersonaCard({
         </div>
 
         {/* Benefits */}
-        <div className="rounded-md bg-zinc-900 p-2">
-          <p className="text-zinc-500">Benefits</p>
-          <p className="font-mono text-green-400">
+        <div className="rounded-md bg-[#f5f5f7] p-2">
+          <p className="text-[#86868b]">Benefits</p>
+          <p className="font-mono text-[#34c759]">
             +{formatDollars(totalBenefits)}/yr
           </p>
         </div>
 
         {/* Net Impact */}
-        <div className="rounded-md bg-zinc-900 p-2">
-          <p className="text-zinc-500">Net Impact</p>
+        <div className="rounded-md bg-[#f5f5f7] p-2">
+          <p className="text-[#86868b]">Net Impact</p>
           <p
-            className={`font-mono font-semibold ${isPositive ? "text-green-400" : "text-red-400"}`}
+            className={`font-mono font-semibold ${isPositive ? "text-[#34c759]" : "text-[#ff3b30]"}`}
           >
             {netImpact >= 0 ? "+" : "-"}
             {formatDollars(Math.abs(netImpact))}/yr

@@ -24,10 +24,10 @@ interface TornadoChartProps {
 }
 
 const COLORS = {
-  red: "#e94560",
-  green: "#22c55e",
+  red: "#ff3b30",
+  green: "#34c759",
 };
-const AXIS_STYLE = { fontSize: 10, fill: "#71717a" };
+const AXIS_STYLE = { fontSize: 10, fill: "#86868b" };
 
 /**
  * Simplified sensitivity estimation.
@@ -103,11 +103,11 @@ export function TornadoChart({
   );
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-card p-4">
-      <h3 className="mb-1 text-sm font-semibold text-zinc-300">
+    <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4">
+      <h3 className="mb-1 text-sm font-semibold text-[#1d1d1f]">
         Sensitivity Analysis
       </h3>
-      <p className="mb-3 text-xs text-zinc-500">
+      <p className="mb-3 text-xs text-[#86868b]">
         Impact of &plusmn;20% change in each variable on the annual deficit
       </p>
       <ResponsiveContainer width="100%" height={280}>
@@ -116,7 +116,7 @@ export function TornadoChart({
           layout="vertical"
           margin={{ top: 5, right: 20, left: 80, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5ea" />
           <XAxis
             type="number"
             tick={AXIS_STYLE}
@@ -126,17 +126,17 @@ export function TornadoChart({
           />
           <YAxis type="category" dataKey="name" tick={AXIS_STYLE} width={75} />
           <Tooltip
-            contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid #333", borderRadius: 8 }}
-            labelStyle={{ color: "#a1a1aa" }}
+            contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e5ea", borderRadius: 8, color: "#1d1d1f" }}
+            labelStyle={{ color: "#86868b" }}
             formatter={((value: number) => [
               `${value > 0 ? "+" : ""}$${value.toLocaleString()}B`,
               "Deficit Impact",
             ]) as Fmt}
           />
-          <ReferenceLine x={0} stroke="#555" />
+          <ReferenceLine x={0} stroke="#c7c7cc" />
           <Bar dataKey="low" fill={COLORS.red} name="-20% Change" radius={[2, 2, 2, 2]} />
           <Bar dataKey="high" fill={COLORS.green} name="+20% Change" radius={[2, 2, 2, 2]} />
-          <Legend wrapperStyle={{ fontSize: 11, color: "#a1a1aa" }} />
+          <Legend wrapperStyle={{ fontSize: 11, color: "#86868b" }} />
         </BarChart>
       </ResponsiveContainer>
     </div>

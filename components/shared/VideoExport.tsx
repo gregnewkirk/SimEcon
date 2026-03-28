@@ -77,22 +77,22 @@ export function VideoExport({
 
       for (let f = 0; f < FRAMES_PER_YEAR; f++) {
         // Background
-        ctx.fillStyle = "#0a0a1a";
+        ctx.fillStyle = "#fafafa";
         ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
         // Title
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#1d1d1f";
         ctx.font = "bold 64px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("SimEcon", WIDTH / 2, 120);
 
         // Year
-        ctx.fillStyle = "#e94560";
+        ctx.fillStyle = "#007AFF";
         ctx.font = "bold 160px sans-serif";
         ctx.fillText(String(d.year), WIDTH / 2, 340);
 
         // Policy summary
-        ctx.fillStyle = "#a1a1aa";
+        ctx.fillStyle = "#86868b";
         ctx.font = "32px sans-serif";
         ctx.textAlign = "center";
         let y = 420;
@@ -104,21 +104,21 @@ export function VideoExport({
         y += 70;
 
         // Key numbers
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#1d1d1f";
         ctx.font = "bold 44px sans-serif";
         ctx.textAlign = "left";
         const leftMargin = 80;
 
         ctx.fillText("National Debt", leftMargin, y);
-        ctx.fillStyle = "#e94560";
+        ctx.fillStyle = "#ff3b30";
         ctx.font = "bold 56px sans-serif";
         ctx.fillText(`$${d.debtTrillions.toFixed(2)}T`, leftMargin, y + 60);
 
         y += 120;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#1d1d1f";
         ctx.font = "bold 44px sans-serif";
         ctx.fillText("Annual Deficit", leftMargin, y);
-        ctx.fillStyle = "#f0a500";
+        ctx.fillStyle = "#ff9500";
         ctx.font = "bold 56px sans-serif";
         {
           const absDef = Math.abs(d.deficitBillions);
@@ -129,10 +129,10 @@ export function VideoExport({
         }
 
         y += 120;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#1d1d1f";
         ctx.font = "bold 44px sans-serif";
         ctx.fillText("Debt / GDP", leftMargin, y);
-        ctx.fillStyle = d.debtToGdpRatio > 100 ? "#e94560" : "#22c55e";
+        ctx.fillStyle = d.debtToGdpRatio > 100 ? "#ff3b30" : "#34c759";
         ctx.font = "bold 56px sans-serif";
         ctx.fillText(
           `${d.debtToGdpRatio.toFixed(1)}%`,
@@ -142,7 +142,7 @@ export function VideoExport({
 
         // Bar chart — debt over time
         y += 130;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#1d1d1f";
         ctx.font = "bold 36px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("Debt Over Time", WIDTH / 2, y);
@@ -157,12 +157,12 @@ export function VideoExport({
         for (let j = 0; j <= i; j++) {
           const barH = (allData[j].debtTrillions / maxDebt) * chartHeight;
           const x = chartLeft + j * barWidth;
-          ctx.fillStyle = j === i ? "#e94560" : "#0f3460";
+          ctx.fillStyle = j === i ? "#007AFF" : "#007AFF40";
           ctx.fillRect(x, chartBottom - barH, barWidth - 1, barH);
         }
 
         // Watermark
-        ctx.fillStyle = "#a1a1aa";
+        ctx.fillStyle = "#86868b";
         ctx.font = "28px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(
@@ -201,7 +201,7 @@ export function VideoExport({
     <button
       onClick={handleExport}
       disabled={recording}
-      className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+      className="rounded-md border border-[#e5e5ea] px-3 py-1 text-xs text-[#86868b] transition-colors hover:border-[#007AFF] hover:text-[#1d1d1f] disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Export video"
     >
       {recording ? `Exporting ${progress}%` : "Export Video"}

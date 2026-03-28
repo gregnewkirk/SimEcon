@@ -47,7 +47,7 @@ export function SimpleView({
   // Hero number: debt difference at present day (2025)
   const debtDiff = todayYours.debtTrillions - todayActual.debtTrillions;
   const isSaving = debtDiff < 0;
-  const heroColor = isSaving ? "#4ecca3" : "#e94560";
+  const heroColor = isSaving ? "#34c759" : "#ff3b30";
   const heroText = isSaving
     ? `Your policy saves ${fmtT(debtDiff)}`
     : `Your policy costs ${fmtT(debtDiff)} more`;
@@ -76,63 +76,64 @@ export function SimpleView({
   return (
     <div className="space-y-4">
       {/* Hero number */}
-      <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50 py-8 px-4">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-[#e5e5ea] bg-white shadow-sm py-8 px-4">
         <p
           className="text-center text-3xl font-extrabold tracking-tight sm:text-4xl"
           style={{ color: heroColor }}
         >
           {heroText}
         </p>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-[#86868b]">
           Compared to current policy at {LAST_HISTORICAL_YEAR}
         </p>
       </div>
 
       {/* Big chart */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
+      <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm p-4">
         <ResponsiveContainer width="100%" height={400}>
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="fillGap" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="0%"
-                  stopColor={isSaving ? "#4ecca3" : "#e94560"}
-                  stopOpacity={0.3}
+                  stopColor={isSaving ? "#34c759" : "#ff3b30"}
+                  stopOpacity={0.15}
                 />
                 <stop
                   offset="100%"
-                  stopColor={isSaving ? "#4ecca3" : "#e94560"}
-                  stopOpacity={0.05}
+                  stopColor={isSaving ? "#34c759" : "#ff3b30"}
+                  stopOpacity={0.02}
                 />
               </linearGradient>
             </defs>
             <XAxis
               dataKey="year"
-              tick={{ fill: "#71717a", fontSize: 11 }}
+              tick={{ fill: "#86868b", fontSize: 11 }}
               tickLine={false}
-              axisLine={{ stroke: "#333" }}
+              axisLine={{ stroke: "#e5e5ea" }}
             />
             <YAxis
               tickFormatter={(v: number) => `$${v.toFixed(0)}T`}
-              tick={{ fill: "#71717a", fontSize: 11 }}
+              tick={{ fill: "#86868b", fontSize: 11 }}
               tickLine={false}
               axisLine={false}
               width={50}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#1a1a2e",
-                border: "1px solid #333",
+                backgroundColor: "#fff",
+                border: "1px solid #e5e5ea",
                 borderRadius: 8,
                 fontSize: 12,
+                color: "#1d1d1f",
               }}
-              labelStyle={{ color: "#a1a1aa" }}
+              labelStyle={{ color: "#86868b" }}
               formatter={(value) => [`$${Number(value).toFixed(2)}T`, ""]}
             />
             {!isRevisionMode && (
               <ReferenceLine
                 x={LAST_HISTORICAL_YEAR}
-                stroke="#555"
+                stroke="#c7c7cc"
                 strokeDasharray="3 3"
               />
             )}
@@ -141,7 +142,7 @@ export function SimpleView({
               type="monotone"
               dataKey="actual"
               name="What actually happened"
-              stroke="#666"
+              stroke="#c7c7cc"
               strokeDasharray="6 4"
               strokeWidth={2}
               fill="none"
@@ -165,27 +166,27 @@ export function SimpleView({
       {/* Three stat cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {/* Revenue change */}
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Revenue change</p>
+        <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
+          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Revenue change</p>
           <p
             className="mt-1 text-xl font-bold tabular-nums"
-            style={{ color: revChange >= 0 ? "#4ecca3" : "#e94560" }}
+            style={{ color: revChange >= 0 ? "#34c759" : "#ff3b30" }}
           >
             {revChange >= 0 ? "+" : "-"}{fmtB(revChange)}/yr
           </p>
         </div>
 
         {/* Annual deficit */}
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Annual deficit</p>
-          <p className="mt-1 text-xl font-bold tabular-nums text-zinc-200">
+        <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
+          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Annual deficit</p>
+          <p className="mt-1 text-xl font-bold tabular-nums text-[#1d1d1f]">
             {fmtB(Math.abs(deficitActual))}{" "}
             <span
               style={{
                 color:
                   Math.abs(deficitYours) < Math.abs(deficitActual)
-                    ? "#4ecca3"
-                    : "#e94560",
+                    ? "#34c759"
+                    : "#ff3b30",
               }}
             >
               {"\u2192"} {fmtB(Math.abs(deficitYours))}
@@ -194,13 +195,13 @@ export function SimpleView({
         </div>
 
         {/* Debt-to-GDP */}
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4 text-center">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Debt / GDP</p>
-          <p className="mt-1 text-xl font-bold tabular-nums text-zinc-200">
+        <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4 text-center">
+          <p className="text-[10px] uppercase tracking-wider text-[#86868b]">Debt / GDP</p>
+          <p className="mt-1 text-xl font-bold tabular-nums text-[#1d1d1f]">
             {fmtPct(dgdpActual)}{" "}
             <span
               style={{
-                color: dgdpYours < dgdpActual ? "#4ecca3" : "#e94560",
+                color: dgdpYours < dgdpActual ? "#34c759" : "#ff3b30",
               }}
             >
               {"\u2192"} {fmtPct(dgdpYours)}

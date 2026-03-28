@@ -101,17 +101,17 @@ export function SimulatorLayout() {
             </div>
           )}
 
-          <main className="flex-1 space-y-4 overflow-y-auto p-4">
+          <main className="flex-1 space-y-4 overflow-y-auto bg-[#fafafa] p-4">
             {/* Play Simulation button at top of viz area */}
             <button
               onClick={handleScrollToPlayback}
-              className="flex items-center gap-2 rounded-lg border border-zinc-700/50 bg-zinc-900/50 px-4 py-2 text-sm text-zinc-400 transition-all hover:border-[#e94560]/50 hover:text-zinc-200 hover:bg-zinc-800/50"
+              className="flex items-center gap-2 rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-4 py-2 text-sm text-[#86868b] transition-all hover:border-[#007AFF]/50 hover:text-[#1d1d1f] hover:bg-[#f5f5f7]"
             >
-              <span className={`inline-flex size-6 items-center justify-center rounded-full bg-[#e94560] text-white text-xs ${!sim.state.isPlaying ? 'animate-pulse' : ''}`}>
+              <span className={`inline-flex size-6 items-center justify-center rounded-full bg-[#007AFF] text-white text-xs ${!sim.state.isPlaying ? 'animate-pulse' : ''}`}>
                 {sim.state.isPlaying ? "\u23F8" : "\u25B6"}
               </span>
               <span>{sim.state.isPlaying ? "Playing..." : "Play Simulation"}</span>
-              <span className="font-mono text-zinc-500">{sim.state.currentYear}</span>
+              <span className="font-mono text-[#c7c7cc]">{sim.state.currentYear}</span>
             </button>
 
             {/* View toggles */}

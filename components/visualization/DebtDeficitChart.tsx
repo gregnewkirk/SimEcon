@@ -58,13 +58,13 @@ export function DebtDeficitChart({
       : null;
 
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-300">
+        <h3 className="text-sm font-semibold text-[#1d1d1f]">
           {isRevisionMode ? "Alternate Timeline: Debt & Deficit" : "Debt & Deficit Over Time"}
         </h3>
         {deltaLabel && (
-          <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-[#4ecca3]">
+          <span className="rounded-md bg-[#f5f5f7] px-2 py-0.5 text-xs font-medium text-[#34c759]">
             {deltaLabel}
           </span>
         )}
@@ -73,37 +73,38 @@ export function DebtDeficitChart({
         <ComposedChart data={chartData}>
           <XAxis
             dataKey="year"
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#86868b", fontSize: 11 }}
             tickLine={false}
-            axisLine={{ stroke: "#333" }}
+            axisLine={{ stroke: "#e5e5ea" }}
           />
           <YAxis
             tickFormatter={formatTrillion}
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#86868b", fontSize: 11 }}
             tickLine={false}
             axisLine={false}
             width={50}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#1a1a2e",
-              border: "1px solid #333",
+              backgroundColor: "#fff",
+              border: "1px solid #e5e5ea",
               borderRadius: 8,
               fontSize: 12,
+              color: "#1d1d1f",
             }}
-            labelStyle={{ color: "#a1a1aa" }}
+            labelStyle={{ color: "#86868b" }}
             itemStyle={{ padding: 0 }}
             formatter={(value) => `$${Number(value).toFixed(2)}T`}
           />
           {!isRevisionMode && (
             <ReferenceLine
               x={LAST_HISTORICAL_YEAR}
-              stroke="#555"
+              stroke="#c7c7cc"
               strokeDasharray="3 3"
               label={{
                 value: "Projected \u25B8",
                 position: "top",
-                fill: "#71717a",
+                fill: "#86868b",
                 fontSize: 10,
               }}
             />
@@ -111,7 +112,7 @@ export function DebtDeficitChart({
           <Bar
             dataKey="deficit"
             name="Deficit"
-            fill="#f0a500"
+            fill="#ff9500"
             opacity={0.4}
             radius={[2, 2, 0, 0]}
           />
@@ -119,7 +120,7 @@ export function DebtDeficitChart({
             type="monotone"
             dataKey="baselineDebt"
             name={isRevisionMode ? "What Actually Happened" : "Current Policy (no changes)"}
-            stroke={isRevisionMode ? "#666" : "#444"}
+            stroke={isRevisionMode ? "#c7c7cc" : "#c7c7cc"}
             strokeDasharray="5 5"
             strokeWidth={isRevisionMode ? 2 : 1}
             dot={false}
@@ -129,7 +130,7 @@ export function DebtDeficitChart({
             type="monotone"
             dataKey="debt"
             name={isRevisionMode ? "Your Alternate Timeline" : "Your Policy"}
-            stroke="#e94560"
+            stroke="#ff3b30"
             strokeWidth={2}
             dot={false}
           />
@@ -138,7 +139,7 @@ export function DebtDeficitChart({
               type="monotone"
               dataKey="counterfactualDebt"
               name="What Would Have Been"
-              stroke="#4ecca3"
+              stroke="#34c759"
               strokeWidth={2}
               strokeDasharray="6 3"
               dot={false}

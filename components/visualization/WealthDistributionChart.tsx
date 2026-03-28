@@ -39,44 +39,45 @@ export function WealthDistributionChart({
   );
 
   return (
-    <div className="rounded-lg border bg-card p-4">
-      <h3 className="mb-3 text-sm font-semibold text-zinc-300">
+    <div className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4">
+      <h3 className="mb-3 text-sm font-semibold text-[#1d1d1f]">
         Wealth Distribution
       </h3>
       <ResponsiveContainer width="100%" height={260}>
         <AreaChart data={chartData}>
           <XAxis
             dataKey="year"
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#86868b", fontSize: 11 }}
             tickLine={false}
-            axisLine={{ stroke: "#333" }}
+            axisLine={{ stroke: "#e5e5ea" }}
           />
           <YAxis
             domain={[0, 100]}
             tickFormatter={(v: number) => `${v.toFixed(1)}%`}
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#86868b", fontSize: 11 }}
             tickLine={false}
             axisLine={false}
             width={40}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#1a1a2e",
-              border: "1px solid #333",
+              backgroundColor: "#fff",
+              border: "1px solid #e5e5ea",
               borderRadius: 8,
               fontSize: 12,
+              color: "#1d1d1f",
             }}
-            labelStyle={{ color: "#a1a1aa" }}
+            labelStyle={{ color: "#86868b" }}
             formatter={(value) => `${Number(value).toFixed(1)}%`}
           />
           <ReferenceLine
             x={LAST_HISTORICAL_YEAR}
-            stroke="#555"
+            stroke="#c7c7cc"
             strokeDasharray="3 3"
             label={{
               value: "Projected \u25B8",
               position: "top",
-              fill: "#71717a",
+              fill: "#86868b",
               fontSize: 10,
             }}
           />
@@ -101,7 +102,7 @@ export function WealthDistributionChart({
               className="inline-block size-2.5 rounded-sm"
               style={{ backgroundColor: bracket.color }}
             />
-            <span className="text-[11px] text-zinc-400">{bracket.label}</span>
+            <span className="text-[11px] text-[#86868b]">{bracket.label}</span>
           </div>
         ))}
       </div>

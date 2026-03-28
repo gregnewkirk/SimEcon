@@ -34,7 +34,7 @@ export function ProgramToggles({
 }: ProgramTogglesProps) {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
         Programs
       </span>
 
@@ -51,7 +51,7 @@ export function ProgramToggles({
                   <Tooltip>
                     <TooltipTrigger
                       className={`flex items-center gap-1.5 text-sm transition-colors cursor-default ${
-                        enabled ? "text-white" : "text-zinc-400"
+                        enabled ? "text-[#1d1d1f]" : "text-[#c7c7cc]"
                       }`}
                       onClick={() => onToggle(program.id)}
                     >
@@ -66,12 +66,12 @@ export function ProgramToggles({
                       <p className="font-mono">
                         Net cost: {formatCost(adjustedCost)}/yr
                         {costMultiplier !== 1.0 && (
-                          <span className="text-zinc-500">
+                          <span className="text-[#86868b]">
                             {" "}(base: {formatCost(program.netCostBillions)})
                           </span>
                         )}
                       </p>
-                      <p className="text-zinc-500">
+                      <p className="text-[#86868b]">
                         Source: {program.source.agency} ({program.source.year})
                       </p>
                       {program.warning && (
@@ -83,7 +83,7 @@ export function ProgramToggles({
                   <Switch
                     checked={enabled}
                     onCheckedChange={() => onToggle(program.id)}
-                    className="data-checked:bg-[#e94560]"
+                    className="data-checked:bg-[#007AFF]"
                     size="sm"
                   />
                 </div>

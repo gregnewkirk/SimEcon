@@ -201,13 +201,13 @@ export function KitchenTableView({
               onClick={() => setSelectedId(h.id)}
               className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                 isActive
-                  ? "border-[#4ecca3]/50 bg-[#4ecca3]/10 text-[#4ecca3]"
-                  : "border-zinc-700/50 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                  ? "border-[#007AFF]/50 bg-[#007AFF]/10 text-[#007AFF]"
+                  : "border-[#e5e5ea] bg-white text-[#86868b] hover:border-[#c7c7cc] hover:text-[#1d1d1f]"
               }`}
             >
               <span>{h.icon}</span>
               <span>{h.label}</span>
-              <span className="text-zinc-500">({fmtIncome(h.income)})</span>
+              <span className="text-[#86868b]">({fmtIncome(h.income)})</span>
             </button>
           );
         })}
@@ -215,15 +215,15 @@ export function KitchenTableView({
 
       {/* Selected household detail card */}
       {selected && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
+        <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm p-5">
           {/* Header */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="flex size-12 items-center justify-center rounded-full bg-zinc-800 text-2xl">
+            <span className="flex size-12 items-center justify-center rounded-full bg-[#f5f5f7] text-2xl">
               {selected.household.icon}
             </span>
             <div>
-              <h3 className="text-lg font-bold text-zinc-100">{selected.household.label}</h3>
-              <p className="text-xs text-zinc-500">
+              <h3 className="text-lg font-bold text-[#1d1d1f]">{selected.household.label}</h3>
+              <p className="text-xs text-[#86868b]">
                 Household income: {fmtIncome(selected.household.income)}/yr
                 {" \u00B7 "}
                 {selected.household.adults} adult{selected.household.adults > 1 ? "s" : ""}
@@ -234,11 +234,11 @@ export function KitchenTableView({
           </div>
 
           {/* Tax impact */}
-          <div className="mb-3 rounded-lg border border-zinc-700/50 bg-zinc-900/40 p-3">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Tax Impact</p>
+          <div className="mb-3 rounded-lg border border-[#e5e5ea] bg-[#f5f5f7] p-3">
+            <p className="text-xs text-[#86868b] uppercase tracking-wider mb-1">Tax Impact</p>
             <p
               className="text-lg font-bold tabular-nums"
-              style={{ color: selected.taxChange <= 0 ? "#4ecca3" : "#e94560" }}
+              style={{ color: selected.taxChange <= 0 ? "#34c759" : "#ff3b30" }}
             >
               Your taxes change by{" "}
               {selected.taxChange >= 0 ? "+" : "-"}{fmtDollars(selected.taxChange)}/yr
@@ -247,19 +247,19 @@ export function KitchenTableView({
 
           {/* Benefits gained */}
           {selected.benefits.length > 0 && (
-            <div className="mb-3 rounded-lg border border-zinc-700/50 bg-zinc-900/40 p-3">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Benefits Gained</p>
+            <div className="mb-3 rounded-lg border border-[#e5e5ea] bg-[#f5f5f7] p-3">
+              <p className="text-xs text-[#86868b] uppercase tracking-wider mb-2">Benefits Gained</p>
               <div className="space-y-1.5">
                 {selected.benefits.map((b) => (
                   <div key={b.programId} className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">{b.programName}</span>
+                    <span className="text-sm text-[#1d1d1f]">{b.programName}</span>
                     <div className="text-right">
                       {b.annualValue > 0 ? (
-                        <span className="text-sm font-medium text-emerald-400">
+                        <span className="text-sm font-medium text-[#34c759]">
                           Save ~{fmtDollars(b.annualValue)}/yr
                         </span>
                       ) : (
-                        <span className="text-xs text-zinc-500">{b.description}</span>
+                        <span className="text-xs text-[#86868b]">{b.description}</span>
                       )}
                     </div>
                   </div>
@@ -270,17 +270,17 @@ export function KitchenTableView({
 
           {/* Net impact */}
           <div className="rounded-lg border-2 p-4 text-center" style={{
-            borderColor: selected.netImpact >= 0 ? "#4ecca3" : "#e94560",
-            backgroundColor: selected.netImpact >= 0 ? "rgba(78,204,163,0.05)" : "rgba(233,69,96,0.05)",
+            borderColor: selected.netImpact >= 0 ? "#34c759" : "#ff3b30",
+            backgroundColor: selected.netImpact >= 0 ? "rgba(52,199,89,0.05)" : "rgba(255,59,48,0.05)",
           }}>
-            <p className="text-xs text-zinc-400 mb-1">Net Impact</p>
+            <p className="text-xs text-[#86868b] mb-1">Net Impact</p>
             <p
               className="text-2xl font-extrabold tabular-nums"
-              style={{ color: selected.netImpact >= 0 ? "#4ecca3" : "#e94560" }}
+              style={{ color: selected.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
             >
               {selected.netImpact >= 0 ? "+" : "-"}{fmtDollars(selected.netImpact)}/yr
             </p>
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-[#86868b]">
               {selected.netImpact >= 0
                 ? "You\u2019re better off under this policy"
                 : "You pay more under this policy"}
@@ -290,10 +290,10 @@ export function KitchenTableView({
           {/* Visual bar: tax increase vs benefits */}
           {(selected.taxChange !== 0 || selected.totalBenefits > 0) && (
             <div className="mt-3">
-              <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-zinc-800">
+              <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-[#f5f5f7]">
                 {selected.taxChange > 0 && (
                   <div
-                    className="h-full bg-red-500/80 rounded-l-full"
+                    className="h-full bg-[#ff3b30]/80 rounded-l-full"
                     style={{
                       width: `${Math.min(
                         (selected.taxChange / (selected.taxChange + selected.totalBenefits || 1)) * 100,
@@ -304,7 +304,7 @@ export function KitchenTableView({
                 )}
                 {selected.totalBenefits > 0 && (
                   <div
-                    className="h-full bg-emerald-500/80 rounded-r-full"
+                    className="h-full bg-[#34c759]/80 rounded-r-full"
                     style={{
                       width: `${Math.min(
                         (selected.totalBenefits / (Math.max(selected.taxChange, 0) + selected.totalBenefits || 1)) * 100,
@@ -314,7 +314,7 @@ export function KitchenTableView({
                   />
                 )}
               </div>
-              <div className="flex justify-between mt-1 text-[10px] text-zinc-500">
+              <div className="flex justify-between mt-1 text-[10px] text-[#86868b]">
                 <span>Tax increase</span>
                 <span>Benefits gained</span>
               </div>
@@ -325,7 +325,7 @@ export function KitchenTableView({
           <button
             onClick={addToComparison}
             disabled={comparedIds.includes(selectedId) || comparedIds.length >= 4}
-            className="mt-4 w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 py-2 text-sm text-zinc-300 transition-all hover:border-[#4ecca3]/50 hover:text-[#4ecca3] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="mt-4 w-full rounded-lg border border-[#e5e5ea] bg-[#f5f5f7] py-2 text-sm text-[#1d1d1f] transition-all hover:border-[#007AFF]/50 hover:text-[#007AFF] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {comparedIds.includes(selectedId)
               ? "Already in comparison"
@@ -338,11 +338,11 @@ export function KitchenTableView({
 
       {/* Comparison table */}
       {comparedIds.length > 0 && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-x-auto">
+        <div className="rounded-xl border border-[#e5e5ea] bg-white shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-zinc-800">
-                <th className="p-3 text-left text-xs text-zinc-500 font-medium" />
+              <tr className="border-b border-[#e5e5ea]">
+                <th className="p-3 text-left text-xs text-[#86868b] font-medium" />
                 {comparedIds.map((id) => {
                   const imp = impacts.get(id);
                   if (!imp) return null;
@@ -350,10 +350,10 @@ export function KitchenTableView({
                     <th key={id} className="p-3 text-center">
                       <div className="flex flex-col items-center gap-1">
                         <span className="text-lg">{imp.household.icon}</span>
-                        <span className="text-xs font-medium text-zinc-200">{imp.household.label}</span>
+                        <span className="text-xs font-medium text-[#1d1d1f]">{imp.household.label}</span>
                         <button
                           onClick={() => removeFromComparison(id)}
-                          className="text-[10px] text-zinc-500 hover:text-red-400 transition-colors"
+                          className="text-[10px] text-[#86868b] hover:text-[#ff3b30] transition-colors"
                         >
                           Remove
                         </button>
@@ -368,36 +368,36 @@ export function KitchenTableView({
                 fmtIncome(imp.household.income) + "/yr"
               } />
               <ComparisonRow label="Tax Change" ids={comparedIds} impacts={impacts} render={(imp) => (
-                <span style={{ color: imp.taxChange <= 0 ? "#4ecca3" : "#e94560" }}>
+                <span style={{ color: imp.taxChange <= 0 ? "#34c759" : "#ff3b30" }}>
                   {imp.taxChange >= 0 ? "+" : "-"}{fmtDollars(imp.taxChange)}
                 </span>
               )} />
               <ComparisonRow label="Healthcare Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const hb = imp.benefits.find((b) => b.programId === "healthcare");
                 return hb && hb.annualValue > 0
-                  ? <span className="text-emerald-400">+{fmtDollars(hb.annualValue)}</span>
-                  : <span className="text-zinc-500">\u2014</span>;
+                  ? <span className="text-[#34c759]">+{fmtDollars(hb.annualValue)}</span>
+                  : <span className="text-[#86868b]">\u2014</span>;
               }} />
               <ComparisonRow label="College Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const cb = imp.benefits.find((b) => b.programId === "college");
                 return cb && cb.annualValue > 0
-                  ? <span className="text-emerald-400">+{fmtDollars(cb.annualValue)}</span>
-                  : <span className="text-zinc-500">\u2014</span>;
+                  ? <span className="text-[#34c759]">+{fmtDollars(cb.annualValue)}</span>
+                  : <span className="text-[#86868b]">\u2014</span>;
               }} />
               <ComparisonRow label="Pre-K Savings" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const pb = imp.benefits.find((b) => b.programId === "prek");
                 return pb && pb.annualValue > 0
-                  ? <span className="text-emerald-400">+{fmtDollars(pb.annualValue)}</span>
-                  : <span className="text-zinc-500">\u2014</span>;
+                  ? <span className="text-[#34c759]">+{fmtDollars(pb.annualValue)}</span>
+                  : <span className="text-[#86868b]">\u2014</span>;
               }} />
               <ComparisonRow label="UBI" ids={comparedIds} impacts={impacts} render={(imp) => {
                 const ub = imp.benefits.find((b) => b.programId === "ubi");
                 return ub && ub.annualValue > 0
-                  ? <span className="text-emerald-400">+{fmtDollars(ub.annualValue)}</span>
-                  : <span className="text-zinc-500">\u2014</span>;
+                  ? <span className="text-[#34c759]">+{fmtDollars(ub.annualValue)}</span>
+                  : <span className="text-[#86868b]">\u2014</span>;
               }} />
-              <tr className="border-t border-zinc-700 font-bold">
-                <td className="p-3 text-zinc-300">Net Impact</td>
+              <tr className="border-t border-[#e5e5ea] font-bold">
+                <td className="p-3 text-[#1d1d1f]">Net Impact</td>
                 {comparedIds.map((id) => {
                   const imp = impacts.get(id);
                   if (!imp) return <td key={id} />;
@@ -405,7 +405,7 @@ export function KitchenTableView({
                     <td key={id} className="p-3 text-center">
                       <span
                         className="text-base tabular-nums"
-                        style={{ color: imp.netImpact >= 0 ? "#4ecca3" : "#e94560" }}
+                        style={{ color: imp.netImpact >= 0 ? "#34c759" : "#ff3b30" }}
                       >
                         {imp.netImpact >= 0 ? "+" : "-"}{fmtDollars(imp.netImpact)}/yr
                       </span>
@@ -435,13 +435,13 @@ function ComparisonRow({
   render: (imp: HouseholdImpactData) => React.ReactNode;
 }) {
   return (
-    <tr className="border-b border-zinc-800/50">
-      <td className="p-3 text-zinc-400">{label}</td>
+    <tr className="border-b border-[#e5e5ea]/50">
+      <td className="p-3 text-[#86868b]">{label}</td>
       {ids.map((id) => {
         const imp = impacts.get(id);
         if (!imp) return <td key={id} />;
         return (
-          <td key={id} className="p-3 text-center text-zinc-200">
+          <td key={id} className="p-3 text-center text-[#1d1d1f]">
             {render(imp)}
           </td>
         );

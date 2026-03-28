@@ -21,13 +21,13 @@ export function Header({
   }, []);
 
   return (
-    <header className="flex items-center justify-between border-b border-zinc-800 bg-card px-4 py-2">
+    <header className="flex items-center justify-between border-b border-[#e5e5ea] bg-white px-4 py-2">
       <div className="flex items-center gap-2">
         {/* Hamburger menu -- visible below lg */}
         {onMenuToggle && (
           <button
             onClick={onMenuToggle}
-            className="mr-1 flex size-8 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 lg:hidden"
+            className="mr-1 flex size-8 items-center justify-center rounded-md text-[#86868b] hover:bg-[#f5f5f7] hover:text-[#1d1d1f] lg:hidden"
             aria-label="Toggle sidebar"
           >
             <svg
@@ -48,8 +48,8 @@ export function Header({
         <span className="text-lg" role="img" aria-label="lightning">
           &#9889;
         </span>
-        <span className="text-lg font-bold text-zinc-100">SimEcon</span>
-        <span className="hidden text-sm text-zinc-500 sm:inline">
+        <span className="text-lg font-bold text-[#1d1d1f]">SimEcon</span>
+        <span className="hidden text-sm text-[#86868b] sm:inline">
           Economic Policy Simulator
         </span>
       </div>
@@ -58,7 +58,7 @@ export function Header({
         {onShowYourWork && (
           <button
             onClick={onShowYourWork}
-            className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+            className="rounded-md border border-[#e5e5ea] px-3 py-1 text-xs text-[#007AFF] transition-colors hover:bg-[#f5f5f7]"
             aria-label="Show assumptions"
           >
             <span className="flex items-center gap-1">
@@ -81,7 +81,7 @@ export function Header({
         )}
         <button
           onClick={handleShare}
-          className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
+          className="rounded-md border border-[#e5e5ea] px-3 py-1 text-xs text-[#007AFF] transition-colors hover:bg-[#f5f5f7]"
         >
           {copied ? "Copied!" : "Share"}
         </button>

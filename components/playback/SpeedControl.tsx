@@ -16,8 +16,8 @@ export function SpeedControl({ speed, onChange }: SpeedControlProps) {
           onClick={() => onChange(s)}
           className={`rounded px-2 py-1 font-mono text-xs transition-colors ${
             speed === s
-              ? "bg-[#e94560] text-white"
-              : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+              ? "bg-[#007AFF] text-white"
+              : "bg-[#f5f5f7] text-[#86868b] hover:text-[#1d1d1f]"
           }`}
         >
           {s}x

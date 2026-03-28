@@ -128,21 +128,21 @@ export function HouseholdImpact({
         return (
           <div
             key={p.id}
-            className="rounded-lg border border-zinc-800 bg-card p-4"
+            className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4"
           >
             <div className="flex items-center gap-3">
               {/* Icon */}
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xl">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-xl">
                 {p.icon}
               </span>
 
               {/* Name + income */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold text-zinc-100">
+                  <span className="text-sm font-semibold text-[#1d1d1f]">
                     {p.title}
                   </span>
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-[#86868b]">
                     {p.name} &middot; {formatIncome(p.income)}/yr
                   </span>
                 </div>
@@ -153,18 +153,18 @@ export function HouseholdImpact({
                   <div className="flex h-5 w-1/2 justify-end">
                     {!isPositive && (
                       <div
-                        className="h-full rounded-l bg-red-500/80 transition-all duration-500"
+                        className="h-full rounded-l bg-[#ff3b30]/80 transition-all duration-500"
                         style={{ width: `${barWidth}%` }}
                       />
                     )}
                   </div>
                   {/* Center line */}
-                  <div className="h-6 w-px bg-zinc-600" />
+                  <div className="h-6 w-px bg-[#c7c7cc]" />
                   {/* Right side (positive / saves money) */}
                   <div className="flex h-5 w-1/2">
                     {isPositive && (
                       <div
-                        className="h-full rounded-r bg-emerald-500/80 transition-all duration-500"
+                        className="h-full rounded-r bg-[#34c759]/80 transition-all duration-500"
                         style={{ width: `${barWidth}%` }}
                       />
                     )}
@@ -172,7 +172,7 @@ export function HouseholdImpact({
                 </div>
 
                 {/* Labels under bar */}
-                <div className="mt-1 flex justify-between text-[10px] text-zinc-500">
+                <div className="mt-1 flex justify-between text-[10px] text-[#86868b]">
                   <span>Pays more</span>
                   <span>Saves money</span>
                 </div>
@@ -182,24 +182,24 @@ export function HouseholdImpact({
               <div className="shrink-0 text-right">
                 <p
                   className={`text-lg font-bold tabular-nums ${
-                    isPositive ? "text-emerald-400" : "text-red-400"
+                    isPositive ? "text-[#34c759]" : "text-[#ff3b30]"
                   }`}
                 >
                   {p.netImpact >= 0 ? "+" : "-"}
-                  {formatDollars(p.netImpact)}<span className="text-xs font-normal text-zinc-500">/yr</span>
+                  {formatDollars(p.netImpact)}<span className="text-xs font-normal text-[#86868b]">/yr</span>
                 </p>
-                <div className="mt-0.5 flex items-center gap-2 text-[10px] text-zinc-500">
+                <div className="mt-0.5 flex items-center gap-2 text-[10px] text-[#86868b]">
                   {p.taxChange !== 0 && (
                     <span
                       className={
-                        p.taxChange > 0 ? "text-red-400/70" : "text-emerald-400/70"
+                        p.taxChange > 0 ? "text-[#ff3b30]/70" : "text-[#34c759]/70"
                       }
                     >
                       Tax: {p.taxChange > 0 ? "+" : "-"}{formatDollars(p.taxChange)}
                     </span>
                   )}
                   {p.benefits > 0 && (
-                    <span className="text-emerald-400/70">
+                    <span className="text-[#34c759]/70">
                       Benefits: +{formatDollars(p.benefits)}
                     </span>
                   )}
@@ -211,12 +211,12 @@ export function HouseholdImpact({
       })}
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-6 pt-1 text-[10px] text-zinc-500">
+      <div className="flex items-center justify-center gap-6 pt-1 text-[10px] text-[#86868b]">
         <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-sm bg-red-500/80" /> Pays more in taxes
+          <span className="inline-block size-2 rounded-sm bg-[#ff3b30]/80" /> Pays more in taxes
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-sm bg-emerald-500/80" /> Net benefit (tax savings + programs)
+          <span className="inline-block size-2 rounded-sm bg-[#34c759]/80" /> Net benefit (tax savings + programs)
         </span>
       </div>
     </div>

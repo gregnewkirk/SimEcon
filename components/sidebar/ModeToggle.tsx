@@ -13,7 +13,7 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
 
   return (
     <div className="space-y-1.5">
-      <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
         Simulation Mode
       </span>
       <div className="flex rounded-lg border overflow-hidden" style={{ borderColor: "var(--simecon-border)" }}>
@@ -21,19 +21,19 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
           onClick={() => onModeChange("revision")}
           className={`flex-1 px-2 py-2 text-left transition-colors ${
             isRevision
-              ? "bg-[#e94560]/15 border-r"
-              : "bg-transparent border-r hover:bg-zinc-800/50"
+              ? "bg-[#007AFF]/10 border-r"
+              : "bg-transparent border-r hover:bg-[#f5f5f7]"
           }`}
           style={{ borderColor: "var(--simecon-border)" }}
         >
           <div
             className={`text-xs font-semibold leading-tight ${
-              isRevision ? "text-[#e94560]" : "text-zinc-400"
+              isRevision ? "text-[#007AFF]" : "text-[#86868b]"
             }`}
           >
             What If We Had...
           </div>
-          <div className="text-[9px] text-zinc-500 leading-tight mt-0.5">
+          <div className="text-[9px] text-[#86868b] leading-tight mt-0.5">
             Rewrite history with your policy
           </div>
         </button>
@@ -41,18 +41,18 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
           onClick={() => onModeChange("fix")}
           className={`flex-1 px-2 py-2 text-left transition-colors ${
             isFix
-              ? "bg-[#4ecca3]/15"
-              : "bg-transparent hover:bg-zinc-800/50"
+              ? "bg-[#34c759]/10"
+              : "bg-transparent hover:bg-[#f5f5f7]"
           }`}
         >
           <div
             className={`text-xs font-semibold leading-tight ${
-              isFix ? "text-[#4ecca3]" : "text-zinc-400"
+              isFix ? "text-[#34c759]" : "text-[#86868b]"
             }`}
           >
             Fix This Mess
           </div>
-          <div className="text-[9px] text-zinc-500 leading-tight mt-0.5">
+          <div className="text-[9px] text-[#86868b] leading-tight mt-0.5">
             Change policy going forward
           </div>
         </button>

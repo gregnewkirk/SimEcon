@@ -20,16 +20,16 @@ export function ScenarioSelector({
 }: ScenarioSelectorProps) {
   return (
     <div className="space-y-1.5">
-      <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+      <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
         Scenario
       </span>
       <Select value={scenarioId} onValueChange={(value) => { if (value !== null) onSelect(value); }}>
         <SelectTrigger
-          className="w-full border-[var(--simecon-border)] bg-zinc-800/50"
+          className="w-full border-[var(--simecon-border)] bg-white"
         >
           <SelectValue placeholder="Select scenario" />
         </SelectTrigger>
-        <SelectContent className="border-[var(--simecon-border)] bg-zinc-800">
+        <SelectContent className="border-[#e5e5ea] bg-white">
           {SCENARIOS.map((s) => (
             <SelectItem key={s.id} value={s.id}>
               {s.name}

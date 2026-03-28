@@ -83,7 +83,7 @@ export function KPICards({ todayYours, todayActual, projectedYours, playbackYear
         yourValue={fmtT(todayYours.debtTrillions)}
         delta={debtDelta.text}
         deltaDirection={debtDelta.direction}
-        color="#e94560"
+        color="#ff3b30"
         projectedLabel={showProjected ? `${playbackYear} projection` : undefined}
         projectedValue={showProjected && projectedYours ? fmtT(projectedYours.debtTrillions) : undefined}
       />
@@ -93,7 +93,7 @@ export function KPICards({ todayYours, todayActual, projectedYours, playbackYear
         yourValue={fmtDeficit(todayYours.deficitBillions)}
         delta={deficitDelta.text}
         deltaDirection={deficitDelta.direction}
-        color="#f0a500"
+        color="#ff9500"
         projectedLabel={showProjected ? `${playbackYear} projection` : undefined}
         projectedValue={showProjected && projectedYours ? fmtDeficit(projectedYours.deficitBillions) : undefined}
       />
@@ -103,7 +103,7 @@ export function KPICards({ todayYours, todayActual, projectedYours, playbackYear
         yourValue={fmtB(todayYours.revenueBillions)}
         delta={revDelta.text}
         deltaDirection={revDirection}
-        color="#4ecca3"
+        color="#34c759"
         projectedLabel={showProjected ? `${playbackYear} projection` : undefined}
         projectedValue={showProjected && projectedYours ? fmtB(projectedYours.revenueBillions) : undefined}
       />
@@ -113,7 +113,7 @@ export function KPICards({ todayYours, todayActual, projectedYours, playbackYear
         yourValue={fmtPct(todayYours.debtToGdpRatio)}
         delta={dgdpDelta.text}
         deltaDirection={dgdpDelta.direction}
-        color="#0f3460"
+        color="#007AFF"
         projectedLabel={showProjected ? `${playbackYear} projection` : undefined}
         projectedValue={showProjected && projectedYours ? fmtPct(projectedYours.debtToGdpRatio) : undefined}
       />

@@ -31,21 +31,21 @@ export function KPICard({
   const isSame = deltaDirection === "same";
   const deltaColor =
     deltaDirection === "better"
-      ? "text-teal-400"
+      ? "text-[#34c759]"
       : deltaDirection === "worse"
-        ? "text-red-400"
-        : "text-zinc-500";
+        ? "text-[#ff3b30]"
+        : "text-[#86868b]";
 
   const card = (
-    <div className="bg-card rounded-lg border p-3">
-      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">
+    <div className="bg-white shadow-sm rounded-lg border border-[#e5e5ea] p-3">
+      <p className="text-[10px] uppercase tracking-wider text-[#86868b] mb-2">
         {label}
       </p>
 
       {/* Today's actual */}
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[10px] text-zinc-500">Today</span>
-        <span className="font-mono text-sm text-zinc-300">{actualValue}</span>
+        <span className="text-[10px] text-[#86868b]">Today</span>
+        <span className="font-mono text-sm text-[#1d1d1f]">{actualValue}</span>
       </div>
 
       {/* Your policy */}
@@ -73,7 +73,7 @@ export function KPICard({
         <Tooltip>
           <TooltipTrigger className="w-full text-left">{card}</TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs">
-            <p className="text-zinc-400">{projectedLabel}</p>
+            <p className="text-[#86868b]">{projectedLabel}</p>
             <p className="font-mono font-bold" style={{ color }}>
               {projectedValue}
             </p>

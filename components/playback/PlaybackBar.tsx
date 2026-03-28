@@ -34,13 +34,13 @@ export function PlaybackBar({
   return (
     <div
       data-playback-bar
-      className="sticky bottom-0 z-50 flex items-center gap-4 border-t border-zinc-800 bg-[#0a0a1a] px-4 py-3"
+      className="sticky bottom-0 z-50 flex items-center gap-4 border-t border-[#e5e5ea] bg-white px-4 py-3"
     >
       {/* Play/pause button — larger, with glow when paused */}
       <button
         onClick={onPlayToggle}
-        className={`flex size-12 shrink-0 items-center justify-center rounded-full bg-[#e94560] text-white text-lg transition-all hover:bg-[#e94560]/80 ${
-          !isPlaying ? "animate-playback-pulse shadow-[0_0_16px_rgba(233,69,96,0.5)]" : ""
+        className={`flex size-12 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-white text-lg transition-all hover:bg-[#007AFF]/80 ${
+          !isPlaying ? "animate-playback-pulse shadow-[0_0_16px_rgba(0,122,255,0.5)]" : ""
         }`}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
@@ -48,7 +48,7 @@ export function PlaybackBar({
       </button>
 
       {/* Label next to button */}
-      <span className="hidden shrink-0 text-xs font-medium text-zinc-300 sm:block min-w-[60px]">
+      <span className="hidden shrink-0 text-xs font-medium text-[#86868b] sm:block min-w-[60px]">
         {isPlaying ? "Playing..." : "Play"}
       </span>
 
@@ -64,7 +64,7 @@ export function PlaybackBar({
       </div>
 
       {/* Prominent year display */}
-      <span className="min-w-[4rem] text-center font-mono text-lg font-bold text-zinc-200">
+      <span className="min-w-[4rem] text-center font-mono text-lg font-bold text-[#1d1d1f]">
         {currentYear}
       </span>
 

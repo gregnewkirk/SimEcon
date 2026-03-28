@@ -26,10 +26,10 @@ export function WhatIfToggles({
   return (
     <div className="space-y-2">
       <div>
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+        <span className="text-[10px] uppercase tracking-wider text-[#86868b]">
           What If...?
         </span>
-        <p className="text-[9px] text-zinc-600 mt-0.5">
+        <p className="text-[9px] text-[#86868b] mt-0.5">
           Remove historical events
         </p>
       </div>
@@ -46,17 +46,17 @@ export function WhatIfToggles({
                 <Tooltip>
                   <TooltipTrigger
                     className={`flex items-center gap-1.5 text-xs transition-colors cursor-default text-left ${
-                      enabled ? "text-white" : "text-zinc-400"
+                      enabled ? "text-[#1d1d1f]" : "text-[#86868b]"
                     }`}
                     onClick={() => onToggleEvent(event.id)}
                   >
-                    <span className="text-zinc-500 text-[10px] font-mono shrink-0">
+                    <span className="text-[#86868b] text-[10px] font-mono shrink-0">
                       {event.year}
                     </span>
                     <span className="leading-tight">
                       {event.name}
                       {event.totalCostTrillions != null && (
-                        <span className="text-[10px] text-[#e94560] ml-1">
+                        <span className="text-[10px] text-[#ff3b30] ml-1">
                           ({formatCost(event.totalCostTrillions)})
                         </span>
                       )}
@@ -66,15 +66,15 @@ export function WhatIfToggles({
                     side="right"
                     className="max-w-sm text-xs leading-relaxed"
                   >
-                    <p className="font-semibold text-zinc-200 mb-1">{event.name}</p>
-                    <p className="text-zinc-400">{event.description}</p>
+                    <p className="font-semibold text-[#1d1d1f] mb-1">{event.name}</p>
+                    <p className="text-[#86868b]">{event.description}</p>
                   </TooltipContent>
                 </Tooltip>
 
                 <Switch
                   checked={enabled}
                   onCheckedChange={() => onToggleEvent(event.id)}
-                  className="data-checked:bg-[#e94560] shrink-0 ml-2"
+                  className="data-checked:bg-[#007AFF] shrink-0 ml-2"
                   size="sm"
                 />
               </div>

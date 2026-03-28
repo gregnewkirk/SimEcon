@@ -49,23 +49,23 @@
 }
 
 :root {
-  --simecon-red: #e94560;
-  --simecon-amber: #f0a500;
-  --simecon-blue: #0f3460;
-  --simecon-purple: #533483;
-  --simecon-teal: #4ecca3;
-  --simecon-bg-deep: #0a0a1a;
-  --simecon-bg-card: #1a1a2e;
-  --simecon-bg-sidebar: #16213e;
-  --simecon-border: #333;
-  --background: oklch(1 0 0);
+  --simecon-red: #ff3b30;
+  --simecon-amber: #ff9500;
+  --simecon-blue: #007AFF;
+  --simecon-purple: #af52de;
+  --simecon-teal: #34c759;
+  --simecon-bg-deep: #fafafa;
+  --simecon-bg-card: #ffffff;
+  --simecon-bg-sidebar: #ffffff;
+  --simecon-border: #e5e5ea;
+  --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.588 0.213 264);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -75,7 +75,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: oklch(0.588 0.213 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -141,10 +141,10 @@
 /* Playback button pulse animation */
 @keyframes playback-pulse {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(233, 69, 96, 0.4);
+    box-shadow: 0 0 8px rgba(0, 122, 255, 0.4);
   }
   50% {
-    box-shadow: 0 0 20px rgba(233, 69, 96, 0.7);
+    box-shadow: 0 0 20px rgba(0, 122, 255, 0.7);
   }
 }
 
