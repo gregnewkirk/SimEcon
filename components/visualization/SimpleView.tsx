@@ -110,13 +110,16 @@ export function SimpleView({
   currentYear,
   isRevisionMode,
 }: SimpleViewProps) {
-  // Hero number: debt difference at present day (2025)
+  // Hero number: debt difference at end of projection
   const debtDiff = todayYours.debtTrillions - todayActual.debtTrillions;
   const isSaving = debtDiff < 0;
   const heroColor = isSaving ? "#34c759" : "#ff3b30";
+  const debtPctChange = todayActual.debtTrillions > 0
+    ? ((Math.abs(debtDiff) / todayActual.debtTrillions) * 100).toFixed(0)
+    : "0";
   const heroText = isSaving
-    ? `Your policy saves ${fmtT(debtDiff)}`
-    : `Your policy costs ${fmtT(debtDiff)} more`;
+    ? `Your policy saves ${fmtT(debtDiff)} (${debtPctChange}% less debt)`
+    : `Your policy costs ${fmtT(debtDiff)} more (${debtPctChange}% more debt)`;
 
   // Chart data: merge user line and baseline line
   const chartData = useMemo(() => {
