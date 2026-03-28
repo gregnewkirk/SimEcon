@@ -53,7 +53,7 @@ export function WealthDistributionChart({
           />
           <YAxis
             domain={[0, 100]}
-            tickFormatter={(v: number) => `${v}%`}
+            tickFormatter={(v: number) => `${v.toFixed(1)}%`}
             tick={{ fill: "#71717a", fontSize: 11 }}
             tickLine={false}
             axisLine={false}

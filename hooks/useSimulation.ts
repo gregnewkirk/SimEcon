@@ -13,7 +13,7 @@ import { HISTORICAL_DATA } from "@/lib/data/historical";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { WHAT_IF_EVENTS_MAP } from "@/lib/data/what-if-events";
 import { simulate } from "@/lib/engine/simulate";
-import { simulateWhatIf, calculateWhatIfDelta } from "@/lib/engine/what-if";
+import { simulateWhatIfMulti, calculateWhatIfDelta } from "@/lib/engine/what-if";
 import { useURLStateSync } from "./useURLState";
 
 function createInitialState(): SimulationState {
@@ -29,6 +29,7 @@ function createInitialState(): SimulationState {
     projectedData: [],
     advancedMode: false,
     mode: "forward",
+    whatIfEventIds: [],
   };
 }
 
@@ -74,11 +75,13 @@ export function useSimulation() {
 
   // What-if mode data
   const whatIfData = useMemo(() => {
-    if (state.mode !== "whatif" || !state.whatIfEventId) return null;
-    const event = WHAT_IF_EVENTS_MAP.get(state.whatIfEventId);
-    if (!event) return null;
-    return simulateWhatIf(event, state.assumptions, DEFAULT_END_YEAR);
-  }, [state.mode, state.whatIfEventId, state.assumptions]);
+    if (state.mode !== "whatif" || state.whatIfEventIds.length === 0) return null;
+    const events = state.whatIfEventIds
+      .map((id) => WHAT_IF_EVENTS_MAP.get(id))
+      .filter((e): e is NonNullable<typeof e> => e != null);
+    if (events.length === 0) return null;
+    return simulateWhatIfMulti(events, state.assumptions, DEFAULT_END_YEAR);
+  }, [state.mode, state.whatIfEventIds, state.assumptions]);
 
   const whatIfDelta = useMemo(() => {
     if (!whatIfData) return null;
@@ -152,8 +155,13 @@ export function useSimulation() {
     setState((prev) => ({ ...prev, mode }));
   }, []);
 
-  const setWhatIfEvent = useCallback((eventId: string) => {
-    setState((prev) => ({ ...prev, whatIfEventId: eventId, mode: "whatif" as SimMode }));
+  const toggleWhatIfEvent = useCallback((eventId: string) => {
+    setState((prev) => {
+      const ids = prev.whatIfEventIds.includes(eventId)
+        ? prev.whatIfEventIds.filter((id) => id !== eventId)
+        : [...prev.whatIfEventIds, eventId];
+      return { ...prev, whatIfEventIds: ids, mode: "whatif" as SimMode };
+    });
   }, []);
 
   const reset = useCallback(() => {
@@ -190,7 +198,7 @@ export function useSimulation() {
     setPlaybackSpeed,
     setAdvancedMode,
     setMode,
-    setWhatIfEvent,
+    toggleWhatIfEvent,
     reset,
   };
 }

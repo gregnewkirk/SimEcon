@@ -49,7 +49,7 @@ export function ProgramToggles({
                   >
                     <p>{program.description}</p>
                     <p className="font-mono">
-                      Net cost: ${program.netCostBillions}B/yr
+                      Net cost: ${Math.abs(program.netCostBillions) >= 1000 ? `${(program.netCostBillions / 1000).toFixed(2)}T` : `${program.netCostBillions.toFixed(2)}B`}/yr
                     </p>
                     {program.warning && (
                       <p className="text-amber-400">{program.warning}</p>

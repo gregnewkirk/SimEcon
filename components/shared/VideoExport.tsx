@@ -112,7 +112,7 @@ export function VideoExport({
         ctx.fillText("National Debt", leftMargin, y);
         ctx.fillStyle = "#e94560";
         ctx.font = "bold 56px sans-serif";
-        ctx.fillText(`$${d.debtTrillions.toFixed(1)}T`, leftMargin, y + 60);
+        ctx.fillText(`$${d.debtTrillions.toFixed(2)}T`, leftMargin, y + 60);
 
         y += 120;
         ctx.fillStyle = "#ffffff";
@@ -120,11 +120,13 @@ export function VideoExport({
         ctx.fillText("Annual Deficit", leftMargin, y);
         ctx.fillStyle = "#f0a500";
         ctx.font = "bold 56px sans-serif";
-        ctx.fillText(
-          `$${(d.deficitBillions / 1000).toFixed(2)}T`,
-          leftMargin,
-          y + 60
-        );
+        {
+          const absDef = Math.abs(d.deficitBillions);
+          const defText = absDef >= 1000
+            ? `$${(absDef / 1000).toFixed(2)}T`
+            : `$${absDef.toFixed(2)}B`;
+          ctx.fillText(defText, leftMargin, y + 60);
+        }
 
         y += 120;
         ctx.fillStyle = "#ffffff";

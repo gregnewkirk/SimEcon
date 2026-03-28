@@ -68,9 +68,9 @@ export function SimulatorLayout() {
         <Header
           onMenuToggle={() => setSidebarOpen((o) => !o)}
           mode={sim.state.mode}
-          whatIfEventId={sim.state.whatIfEventId}
+          whatIfEventIds={sim.state.whatIfEventIds}
           onModeChange={sim.setMode}
-          onEventChange={sim.setWhatIfEvent}
+          onToggleEvent={sim.toggleWhatIfEvent}
           onShowYourWork={() => setShowYourWorkOpen(true)}
         />
         <div className="flex flex-1 overflow-hidden">

@@ -7,18 +7,18 @@ import { WhatIfControls } from "@/components/shared/WhatIfControls";
 interface HeaderProps {
   onMenuToggle?: () => void;
   mode?: SimMode;
-  whatIfEventId?: string;
+  whatIfEventIds?: string[];
   onModeChange?: (mode: SimMode) => void;
-  onEventChange?: (eventId: string) => void;
+  onToggleEvent?: (eventId: string) => void;
   onShowYourWork?: () => void;
 }
 
 export function Header({
   onMenuToggle,
   mode = "forward",
-  whatIfEventId,
+  whatIfEventIds = [],
   onModeChange,
-  onEventChange,
+  onToggleEvent,
   onShowYourWork,
 }: HeaderProps) {
   const [copied, setCopied] = useState(false);
@@ -65,13 +65,13 @@ export function Header({
       </div>
 
       {/* What-if controls — hidden on mobile */}
-      {onModeChange && onEventChange && (
+      {onModeChange && onToggleEvent && (
         <div className="hidden md:flex">
           <WhatIfControls
             mode={mode}
-            whatIfEventId={whatIfEventId}
+            whatIfEventIds={whatIfEventIds}
             onModeChange={onModeChange}
-            onEventChange={onEventChange}
+            onToggleEvent={onToggleEvent}
           />
         </div>
       )}

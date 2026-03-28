@@ -46,11 +46,11 @@ export function DebtDeficitChart({
     }));
   }, [data, baselineData, whatIfCounterfactual, currentYear]);
 
-  const formatTrillion = (v: number) => `$${v.toFixed(0)}T`;
+  const formatTrillion = (v: number) => `$${v.toFixed(2)}T`;
 
   const deltaLabel =
     whatIfDelta != null
-      ? `Debt difference: ${whatIfDelta.debtDeltaTrillions >= 0 ? "+" : ""}$${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(1)}T`
+      ? `Debt difference: ${whatIfDelta.debtDeltaTrillions >= 0 ? "+" : ""}$${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(2)}T`
       : null;
 
   return (
@@ -89,6 +89,7 @@ export function DebtDeficitChart({
             }}
             labelStyle={{ color: "#a1a1aa" }}
             itemStyle={{ padding: 0 }}
+            formatter={(value) => `$${Number(value).toFixed(2)}T`}
           />
           <ReferenceLine
             x={LAST_HISTORICAL_YEAR}

@@ -80,7 +80,7 @@ export interface SimulationState {
   projectedData: YearData[];
   advancedMode: boolean;
   mode: SimMode;
-  whatIfEventId?: string;
+  whatIfEventIds: string[];
 }
 
 export type SimMode = "forward" | "whatif";
@@ -121,5 +121,5 @@ export interface URLState {
   ai?: number;
   ae?: number;
   m?: string;   // mode: forward | whatif
-  we?: string;  // what-if event ID
+  we?: string;  // what-if event IDs (comma-separated)
 }

@@ -41,7 +41,7 @@ export function stateToURL(state: SimulationState): URLState {
     url.ae = state.assumptions.behavioralElasticity;
 
   if (state.mode === "whatif") url.m = "whatif";
-  if (state.whatIfEventId) url.we = state.whatIfEventId;
+  if (state.whatIfEventIds.length > 0) url.we = state.whatIfEventIds.join(",");
 
   return url;
 }
@@ -95,7 +95,7 @@ export function urlToState(urlState: URLState): Partial<SimulationState> {
     partial.mode = "whatif" as SimMode;
   }
   if (urlState.we) {
-    partial.whatIfEventId = urlState.we;
+    partial.whatIfEventIds = urlState.we.split(",").filter(Boolean);
     partial.mode = "whatif" as SimMode;
   }
 

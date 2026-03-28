@@ -2,7 +2,7 @@ import type { YearData } from "@/lib/types";
 import { KPICard } from "./KPICard";
 
 function formatTrillions(value: number): string {
-  return `$${value.toFixed(1)}T`;
+  return `$${value.toFixed(2)}T`;
 }
 
 function formatBillions(value: number): string {
@@ -10,7 +10,7 @@ function formatBillions(value: number): string {
   if (abs >= 1000) {
     return `$${(value / 1000).toFixed(2)}T`;
   }
-  return `$${abs.toFixed(0)}B`;
+  return `$${abs.toFixed(2)}B`;
 }
 
 function pctDelta(current: number, baseline: number): number {
