@@ -167,6 +167,7 @@ export function SinglePageLayout() {
   );
 
   /* Budget numbers */
+  const enabledPrograms = sim.state.enabledPrograms;
   const revenue = sim.todayYoursData.revenueBillions;
   const spending = sim.todayYoursData.spendingBillions;
   const gdp = sim.todayYoursData.gdpTrillions;
@@ -438,45 +439,76 @@ export function SinglePageLayout() {
           </div>
         )}
 
-        {/* ─── SECTION 5: Sticky Budget Bar ──────────────────────────── */}
+        {/* ─── SECTION 5: Sticky Budget Bar (the scoreboard) ─────────── */}
         {modeSelected && (
           <div className="sticky bottom-0 z-50 border-t border-[#e5e5ea] bg-white/95 shadow-lg backdrop-blur-sm">
-            <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
-              {/* Budget bar */}
-              <div className="relative h-8 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f5f5f7]">
+            <div className="mx-auto max-w-4xl px-4 py-2">
+              {/* Achievement banner */}
+              {isSurplus && (
+                <div className="mb-1 text-center text-xs font-bold text-[#34c759] animate-pulse">
+                  🎉 BALANCED BUDGET! You did what Congress couldn&apos;t.
+                </div>
+              )}
+              {!isSurplus && deficit > 0 && deficit < 500 && (
+                <div className="mb-1 text-center text-xs font-semibold text-[#ff9500]">
+                  🔥 Almost there! Just {formatB(deficit)} more to balance.
+                </div>
+              )}
+              {enabledPrograms.length >= 8 && !isSurplus && (
+                <div className="mb-1 text-center text-xs font-semibold text-[#af52de]">
+                  🤯 Big spender! {enabledPrograms.length} programs enabled — can you fund them all?
+                </div>
+              )}
+
+              <div className="flex items-center gap-3">
+                {/* Budget bar */}
+                <div className="relative h-10 min-w-0 flex-1 overflow-hidden rounded-full bg-[#f5f5f7]">
+                  <div
+                    className="absolute left-0 top-0 h-full rounded-l-full transition-all duration-500 ease-out"
+                    style={{ width: `${revenuePct}%`, backgroundColor: "#34c759" }}
+                  />
+                  <div
+                    className="absolute right-0 top-0 h-full rounded-r-full transition-all duration-500 ease-out"
+                    style={{ width: `${spendingPct}%`, backgroundColor: "#ff3b30" }}
+                  />
+                  <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-[#1d1d1f]/30" />
+                  <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-bold text-white">
+                    <span className="drop-shadow">💰 {formatB(revenue)}</span>
+                    <span className="drop-shadow">💸 {formatB(spending)}</span>
+                  </div>
+                </div>
+
+                {/* Deficit / surplus pill */}
                 <div
-                  className="absolute left-0 top-0 h-full rounded-l-full transition-all duration-500"
-                  style={{ width: `${revenuePct}%`, backgroundColor: "#34c759" }}
-                />
-                <div
-                  className="absolute right-0 top-0 h-full rounded-r-full transition-all duration-500"
-                  style={{ width: `${spendingPct}%`, backgroundColor: "#ff3b30" }}
-                />
-                <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#1d1d1f]/20" />
-                <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-white sm:text-xs">
-                  <span className="drop-shadow-sm">Revenue {formatB(revenue)}</span>
-                  <span className="drop-shadow-sm">Spending {formatB(spending)}</span>
+                  className="shrink-0 rounded-full px-3 py-1.5 text-sm font-bold whitespace-nowrap transition-all duration-500"
+                  style={{
+                    backgroundColor: isSurplus ? "#34c75920" : "#ff3b3020",
+                    color: isSurplus ? "#34c759" : "#ff3b30",
+                  }}
+                >
+                  {isSurplus ? "✅ +" : "⚠️ −"}{formatB(Math.abs(deficit))}
+                </div>
+
+                {/* Grade — big and bold */}
+                <div className="shrink-0 flex flex-col items-center">
+                  <span
+                    className="text-3xl font-black leading-none transition-all duration-500 sm:text-4xl"
+                    style={{ color: grade.color }}
+                  >
+                    {grade.letter}
+                  </span>
+                  <span className="text-[8px] font-semibold text-[#86868b] uppercase tracking-wider">Grade</span>
                 </div>
               </div>
 
-              {/* Deficit / surplus pill */}
-              <div
-                className="shrink-0 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap"
-                style={{
-                  backgroundColor: isSurplus ? "#34c75920" : "#ff3b3020",
-                  color: isSurplus ? "#34c759" : "#ff3b30",
-                }}
-              >
-                {isSurplus ? "+" : "-"}{formatB(Math.abs(deficit))}
+              {/* Programs counter */}
+              <div className="mt-1 flex items-center justify-between text-[10px] text-[#86868b]">
+                <span>{enabledPrograms.length} program{enabledPrograms.length !== 1 ? "s" : ""} active</span>
+                <span>
+                  Deficit: {((deficit / (gdp * 1000)) * 100).toFixed(1)}% of GDP
+                  {deficit / (gdp * 1000) * 100 > 3 && " ⚠️"}
+                </span>
               </div>
-
-              {/* Grade */}
-              <span
-                className="shrink-0 text-2xl font-black transition-all duration-500 sm:text-3xl"
-                style={{ color: grade.color }}
-              >
-                {grade.letter}
-              </span>
             </div>
           </div>
         )}
