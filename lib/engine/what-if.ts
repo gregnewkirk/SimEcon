@@ -101,14 +101,20 @@ export function simulateWhatIfMulti(
     }
   }
 
-  // Build per-year spending reduction schedule
+  // Build per-year spending reduction schedule.
+  // Event costs are expressed in 2025 dollars (modern CBO/Watson Institute estimates).
+  // Deflate to each historical year's nominal dollars using the inflation assumption.
+  const BASE_DOLLAR_YEAR = 2025;
   const spendingSchedule = new Map<number, number>();
   for (const event of events) {
     if (event.spendingReductionBillionsPerYear && event.spendingReductionBillionsPerYear > 0) {
       const startYr = event.year;
       const endYr = event.endYear ?? endYear;
       for (let y = startYr; y <= endYr; y++) {
-        spendingSchedule.set(y, (spendingSchedule.get(y) ?? 0) + event.spendingReductionBillionsPerYear);
+        // (1+r)^(y-2025): negative exponent for past years → deflates the figure
+        const cpiAdjustment = Math.pow(1 + assumptions.inflationRate / 100, y - BASE_DOLLAR_YEAR);
+        const adjustedReduction = event.spendingReductionBillionsPerYear * cpiAdjustment;
+        spendingSchedule.set(y, (spendingSchedule.get(y) ?? 0) + adjustedReduction);
       }
     }
   }

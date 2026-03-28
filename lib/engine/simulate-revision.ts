@@ -20,18 +20,26 @@ export function simulateRevision(
 ): YearData[] {
   const projected: YearData[] = [];
 
-  // Calculate total program costs
-  const totalProgramCostBillions = enabledPrograms.reduce((sum, programId) => {
+  // Base program costs in 2025 dollars — inflate/deflate to each simulation year
+  const BASE_DOLLAR_YEAR = 2025;
+  const baseProgramCostBillions = enabledPrograms.reduce((sum, programId) => {
     const program = PROGRAMS_MAP.get(programId);
     return sum + (program?.netCostBillions ?? 0);
-  }, 0);
+  }, 0) * (assumptions.programCostMultiplier ?? 1.0);
 
   let prev = startingConditions;
 
   for (let year = startingConditions.year + 1; year <= endYear; year++) {
+    // Adjust program costs to this year's nominal dollars.
+    // Positive exponent = future (inflate). Negative = past (deflate).
+    const yearsFromBase = year - BASE_DOLLAR_YEAR;
+    const programCostBillions =
+      baseProgramCostBillions *
+      Math.pow(1 + assumptions.inflationRate / 100, yearsFromBase);
+
     // 1. GDP growth with fiscal stimulus effect
     const fiscalEffect =
-      (totalProgramCostBillions / 1000) * assumptions.fiscalMultiplier * 0.01;
+      (programCostBillions / 1000) * assumptions.fiscalMultiplier * 0.01;
     const gdpTrillions =
       prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100 + fiscalEffect);
 
@@ -52,7 +60,7 @@ export function simulateRevision(
     const nonInterestSpending =
       prevNonInterestSpending * (1 + assumptions.gdpGrowthRate / 100);
     const spendingBillions =
-      nonInterestSpending + totalProgramCostBillions + interestBillions;
+      nonInterestSpending + programCostBillions + interestBillions;
 
     // 5. Deficit: negative means deficit, positive means surplus
     const deficitBillions = -(spendingBillions - revenueBillions);
@@ -69,7 +77,7 @@ export function simulateRevision(
       taxPolicy,
       assumptions,
       assumptions.gdpGrowthRate,
-      totalProgramCostBillions,
+      programCostBillions,
       gdpTrillions
     );
 

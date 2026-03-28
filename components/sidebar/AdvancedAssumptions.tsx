@@ -29,6 +29,8 @@ export function AdvancedAssumptions({
         Model Assumptions
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-3 space-y-3">
+        {/* ── Macroeconomic ── */}
+        <div className="text-[9px] uppercase tracking-widest text-zinc-600 pt-1">Macro</div>
         <TaxSlider
           label="GDP Growth"
           value={assumptions.gdpGrowthRate}
@@ -38,6 +40,17 @@ export function AdvancedAssumptions({
           max={5.0}
           step={0.1}
           color="#4ade80"
+          suffix="%"
+        />
+        <TaxSlider
+          label="Inflation Rate"
+          value={assumptions.inflationRate}
+          defaultValue={DEFAULT_ASSUMPTIONS.inflationRate}
+          onChange={(v) => onChange("inflationRate", v)}
+          min={0}
+          max={8.0}
+          step={0.1}
+          color="#fb923c"
           suffix="%"
         />
         <TaxSlider
@@ -51,8 +64,11 @@ export function AdvancedAssumptions({
           color="#60a5fa"
           suffix="%"
         />
+
+        {/* ── Behavioral ── */}
+        <div className="text-[9px] uppercase tracking-widest text-zinc-600 pt-1">Behavioral</div>
         <TaxSlider
-          label="Behavioral Elasticity"
+          label="Tax Elasticity"
           value={assumptions.behavioralElasticity}
           defaultValue={DEFAULT_ASSUMPTIONS.behavioralElasticity}
           onChange={(v) => onChange("behavioralElasticity", v)}
@@ -62,6 +78,34 @@ export function AdvancedAssumptions({
           color="#c084fc"
           suffix=""
         />
+        <TaxSlider
+          label="Fiscal Multiplier"
+          value={assumptions.fiscalMultiplier}
+          defaultValue={DEFAULT_ASSUMPTIONS.fiscalMultiplier}
+          onChange={(v) => onChange("fiscalMultiplier", v)}
+          min={0.5}
+          max={2.5}
+          step={0.1}
+          color="#f472b6"
+          suffix="×"
+        />
+
+        {/* ── Program Costs ── */}
+        <div className="text-[9px] uppercase tracking-widest text-zinc-600 pt-1">Program Costs</div>
+        <TaxSlider
+          label="Cost Scenario"
+          value={assumptions.programCostMultiplier}
+          defaultValue={DEFAULT_ASSUMPTIONS.programCostMultiplier}
+          onChange={(v) => onChange("programCostMultiplier", v)}
+          min={0.5}
+          max={1.75}
+          step={0.05}
+          color="#e94560"
+          suffix="×"
+        />
+        <p className="text-[9px] text-zinc-600 leading-tight">
+          Scales all program net costs relative to CBO baseline. 1.0 = CBO estimate. Costs also grow at inflation rate each year.
+        </p>
       </CollapsibleContent>
     </Collapsible>
   );

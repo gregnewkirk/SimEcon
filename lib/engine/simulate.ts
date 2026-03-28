@@ -19,17 +19,25 @@ export function simulate(
   const lastHistorical = historicalData[historicalData.length - 1];
   const projected: YearData[] = [];
 
-  // Calculate total program costs
-  const totalProgramCostBillions = enabledPrograms.reduce((sum, programId) => {
+  // Base program costs in 2025 dollars (anchored to last historical year)
+  const baseProgramCostBillions = enabledPrograms.reduce((sum, programId) => {
     const program = PROGRAMS_MAP.get(programId);
     return sum + (program?.netCostBillions ?? 0);
-  }, 0);
+  }, 0) * (assumptions.programCostMultiplier ?? 1.0);
+
+  const baseYear = lastHistorical.year; // 2025 — programs expressed in this year's dollars
 
   let prev = lastHistorical;
 
   for (let year = lastHistorical.year + 1; year <= endYear; year++) {
+    // Inflate program costs from base year — costs grow in nominal terms each year
+    const yearsFromBase = year - baseYear;
+    const programCostBillions =
+      baseProgramCostBillions *
+      Math.pow(1 + assumptions.inflationRate / 100, yearsFromBase);
+
     // 1. GDP growth with fiscal stimulus effect
-    const fiscalEffect = (totalProgramCostBillions / 1000) * assumptions.fiscalMultiplier * 0.01;
+    const fiscalEffect = (programCostBillions / 1000) * assumptions.fiscalMultiplier * 0.01;
     const gdpTrillions = prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100 + fiscalEffect);
 
     // 2. Calculate tax revenue based on policy
@@ -44,7 +52,7 @@ export function simulate(
     const prevInterestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
     const prevNonInterestSpending = Math.max(prev.spendingBillions - prevInterestBillions, 0);
     const nonInterestSpending = prevNonInterestSpending * (1 + assumptions.gdpGrowthRate / 100);
-    const spendingBillions = nonInterestSpending + totalProgramCostBillions + interestBillions;
+    const spendingBillions = nonInterestSpending + programCostBillions + interestBillions;
 
     // 5. Deficit: negative means deficit, positive means surplus
     const deficitBillions = -(spendingBillions - revenueBillions);
@@ -59,7 +67,7 @@ export function simulate(
       taxPolicy,
       assumptions,
       assumptions.gdpGrowthRate,
-      totalProgramCostBillions,
+      programCostBillions,
       gdpTrillions
     );
 

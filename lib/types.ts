@@ -34,6 +34,8 @@ export interface AdvancedAssumptions {
   behavioralElasticity: number;
   fiscalMultiplier: number;
   inflationRate: number;
+  /** Multiplier on base program net costs (1.0 = CBO baseline, 0.7 = optimistic, 1.5 = pessimistic) */
+  programCostMultiplier: number;
 }
 
 export interface Program {

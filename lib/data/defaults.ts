@@ -24,6 +24,7 @@ export const DEFAULT_ASSUMPTIONS: AdvancedAssumptions = {
   behavioralElasticity: 0.3,
   fiscalMultiplier: 1.2,
   inflationRate: 2.5,
+  programCostMultiplier: 1.0,
 };
 
 export const WEALTH_BRACKETS: WealthBracket[] = [

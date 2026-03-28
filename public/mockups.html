@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimEcon — 10 Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@300;400;600;700;900&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" crossorigin>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; font-family: sans-serif; }
+
+.gallery-header {
+  padding: 60px 40px 40px;
+  text-align: center;
+  color: #fff;
+}
+.gallery-header h1 {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 12px;
+}
+.gallery-header p {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px 40px 80px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.card-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 16px 8px;
+  background: #111;
+}
+.card-num { font-family: 'DM Mono', monospace; font-size: 10px; color: #444; letter-spacing: 2px; }
+.card-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; }
+
+/* ─── MOCKUP CHROME ─────────────────────────────────────── */
+.mock { height: 480px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.mock-header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; }
+.mock-logo { display: flex; align-items: center; gap: 8px; }
+.mock-nav { display: flex; gap: 8px; }
+.mock-btn { border-radius: 4px; cursor: pointer; }
+.mock-body { display: flex; flex: 1; overflow: hidden; }
+.mock-sidebar { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.mock-main { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.mock-kpis { display: flex; gap: 6px; flex-shrink: 0; }
+.mock-kpi { flex: 1; border-radius: 4px; }
+.mock-chart-area { flex: 1; border-radius: 4px; position: relative; overflow: hidden; }
+.mock-footer { flex-shrink: 0; }
+
+/* Inline SVG sparkline helper */
+.spark { width: 100%; height: 100%; }
+
+/* ══════════════════════════════════════════════
+   01 — TERMINAL NOIR
+   ══════════════════════════════════════════════ */
+.d1 { background: #0a0a0a; }
+.d1 .mock-header {
+  height: 36px;
+  background: #0a0a0a;
+  border-bottom: 1px solid #1e1e1e;
+}
+.d1 .mock-logo span:first-child {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #f5a623;
+  letter-spacing: 2px;
+}
+.d1 .mock-logo span:last-child {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 1px;
+}
+.d1 .mock-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #444;
+  background: transparent;
+  border: 1px solid #222;
+  padding: 2px 8px;
+  letter-spacing: 1px;
+}
+.d1 .mock-body { padding: 12px; gap: 12px; }
+.d1 .mock-sidebar {
+  width: 140px;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  padding: 10px;
+  border-radius: 2px;
+}
+.d1 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #151515;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  color: #555;
+}
+.d1 .sidebar-row span:last-child { color: #f5a623; }
+.d1 .sidebar-section {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  color: #333;
+  letter-spacing: 2px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.d1 .sidebar-bar-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+.d1 .sidebar-bar-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #444; width: 40px; }
+.d1 .sidebar-bar { height: 2px; background: #222; flex: 1; border-radius: 1px; position: relative; }
+.d1 .sidebar-bar-fill { height: 2px; background: #f5a623; border-radius: 1px; }
+.d1 .mock-main { gap: 10px; }
+.d1 .mock-kpis { gap: 8px; }
+.d1 .mock-kpi {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  padding: 8px 10px;
+  border-radius: 2px;
+}
+.d1 .kpi-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #333; letter-spacing: 1px; margin-bottom: 4px; }
+.d1 .kpi-val { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; }
+.d1 .kpi-val.pos { color: #4afe8a; }
+.d1 .kpi-val.neg { color: #ff4444; }
+.d1 .kpi-val.neu { color: #f5a623; }
+.d1 .kpi-delta { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #333; margin-top: 2px; }
+.d1 .mock-chart-area {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+}
+.d1 .chart-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  color: #333;
+  letter-spacing: 2px;
+  padding: 8px 10px 0;
+}
+.d1 .mock-footer {
+  height: 32px;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+}
+.d1 .footer-tick {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  color: #333;
+}
+.d1 .footer-progress {
+  flex: 1;
+  height: 2px;
+  background: #1a1a1a;
+  border-radius: 1px;
+  position: relative;
+}
+.d1 .footer-fill {
+  width: 40%;
+  height: 2px;
+  background: #f5a623;
+  border-radius: 1px;
+}
+.d1 .scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.1) 2px, rgba(0,0,0,.1) 4px);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ══════════════════════════════════════════════
+   02 — VELLUM
+   ══════════════════════════════════════════════ */
+.d2 { background: #fafaf8; }
+.d2 .mock-header {
+  height: 44px;
+  background: #fafaf8;
+  border-bottom: 1px solid #e8e8e4;
+}
+.d2 .mock-logo span:first-child {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: italic;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+.d2 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #b8b8b0;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.d2 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #999;
+  background: transparent;
+  border: 1px solid #e0e0d8;
+  padding: 3px 10px;
+  letter-spacing: 1px;
+  border-radius: 2px;
+}
+.d2 .mock-body { padding: 16px; gap: 16px; }
+.d2 .mock-sidebar {
+  width: 160px;
+  gap: 0;
+}
+.d2 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #bbb;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 12px 0 6px;
+  border-bottom: 1px solid #e8e8e4;
+}
+.d2 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid #f0f0ec;
+}
+.d2 .sidebar-row-label {
+  font-family: 'Newsreader', serif;
+  font-size: 10px;
+  color: #555;
+}
+.d2 .sidebar-row-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #1a1a1a;
+}
+.d2 .sidebar-track { height: 1px; background: #e8e8e4; flex: 1; margin: 0 8px; position: relative; }
+.d2 .sidebar-thumb { width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; position: absolute; top: -2.5px; left: 55%; }
+.d2 .mock-kpis { gap: 12px; }
+.d2 .mock-kpi {
+  padding: 12px 14px;
+  border-bottom: 2px solid #e8e8e4;
+}
+.d2 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #bbb; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.d2 .kpi-val { font-family: 'Playfair Display', serif; font-size: 20px; color: #1a1a1a; }
+.d2 .kpi-val.neg { color: #c0392b; }
+.d2 .kpi-val.pos { color: #27ae60; }
+.d2 .mock-chart-area { background: #fafaf8; border: 1px solid #e8e8e4; }
+.d2 .chart-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #bbb; letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px 0; }
+.d2 .mock-footer {
+  height: 36px;
+  border-top: 1px solid #e8e8e4;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 12px;
+}
+.d2 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #bbb; }
+.d2 .footer-progress { flex: 1; height: 1px; background: #e8e8e4; position: relative; }
+.d2 .footer-fill { width: 40%; height: 1px; background: #1a1a1a; }
+.d2 .footer-play {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; color: #999;
+}
+
+/* ══════════════════════════════════════════════
+   03 — GILDED
+   ══════════════════════════════════════════════ */
+.d3 { background: #0c1628; }
+.d3 .mock-header {
+  height: 44px;
+  background: #0c1628;
+  border-bottom: 1px solid #162038;
+}
+.d3 .mock-logo span:first-child {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: #c9a84c;
+  letter-spacing: 2px;
+}
+.d3 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #3a4f6e;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.d3 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #3a4f6e;
+  background: transparent;
+  border: 1px solid #162038;
+  padding: 3px 10px;
+  letter-spacing: 1px;
+}
+.d3 .mock-body { padding: 14px; gap: 14px; }
+.d3 .mock-sidebar {
+  width: 150px;
+  background: #0e1a2e;
+  border: 1px solid #162038;
+  padding: 12px;
+  border-radius: 2px;
+  gap: 0;
+}
+.d3 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #c9a84c;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+.d3 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #162038;
+}
+.d3 .sidebar-row-label { font-family: 'Crimson Pro', serif; font-size: 10px; color: #5a7090; }
+.d3 .sidebar-row-val { font-family: 'DM Mono', monospace; font-size: 9px; color: #c9a84c; }
+.d3 .mock-kpis { gap: 8px; }
+.d3 .mock-kpi {
+  background: #0e1a2e;
+  border: 1px solid #162038;
+  border-top: 2px solid #c9a84c;
+  padding: 10px 12px;
+  border-radius: 1px;
+}
+.d3 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #3a4f6e; letter-spacing: 1px; margin-bottom: 4px; }
+.d3 .kpi-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: #c9a84c; }
+.d3 .kpi-val.neg { color: #e05c5c; }
+.d3 .kpi-val.pos { color: #4afe8a; }
+.d3 .mock-chart-area {
+  background: #0e1a2e;
+  border: 1px solid #162038;
+  border-radius: 1px;
+}
+.d3 .chart-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #3a4f6e;
+  letter-spacing: 2px;
+  padding: 8px 12px 0;
+}
+.d3 .mock-footer {
+  height: 34px;
+  background: #0e1a2e;
+  border: 1px solid #162038;
+  border-radius: 1px;
+  display: flex; align-items: center; padding: 0 12px; gap: 10px;
+}
+.d3 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #3a4f6e; }
+.d3 .footer-progress { flex: 1; height: 1px; background: #162038; }
+.d3 .footer-fill { width: 40%; height: 1px; background: #c9a84c; }
+
+/* ══════════════════════════════════════════════
+   04 — VOID
+   ══════════════════════════════════════════════ */
+.d4 { background: #000; }
+.d4 .mock-header {
+  height: 40px;
+  background: #000;
+  border-bottom: 1px solid #0f0f0f;
+}
+.d4 .mock-logo span:first-child {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: #00ff88;
+  text-shadow: 0 0 20px #00ff8866;
+}
+.d4 .mock-logo span:last-child {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+}
+.d4 .mock-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  color: #00ff88;
+  background: transparent;
+  border: 1px solid #00ff8833;
+  padding: 3px 10px;
+  letter-spacing: 1px;
+}
+.d4 .mock-body { padding: 12px; gap: 12px; }
+.d4 .mock-sidebar {
+  width: 140px;
+  gap: 2px;
+}
+.d4 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 8px;
+  background: #050505;
+  border: 1px solid #0f0f0f;
+}
+.d4 .sidebar-row-label { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #1e1e1e; }
+.d4 .sidebar-row-val { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #00ff88; }
+.d4 .sidebar-row-val.red { color: #ff2244; }
+.d4 .mock-kpis { gap: 8px; }
+.d4 .mock-kpi {
+  background: #050505;
+  border: 1px solid #0f0f0f;
+  padding: 10px 12px;
+  border-radius: 0;
+}
+.d4 .kpi-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #222; letter-spacing: 2px; margin-bottom: 4px; }
+.d4 .kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; }
+.d4 .kpi-val.pos { color: #00ff88; text-shadow: 0 0 12px #00ff8844; }
+.d4 .kpi-val.neg { color: #ff2244; text-shadow: 0 0 12px #ff224444; }
+.d4 .kpi-val.neu { color: #00bbff; text-shadow: 0 0 12px #00bbff44; }
+.d4 .mock-chart-area {
+  background: #020202;
+  border: 1px solid #0f0f0f;
+}
+.d4 .chart-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+  padding: 8px 12px 0;
+}
+.d4 .mock-footer {
+  height: 32px;
+  background: #050505;
+  border: 1px solid #0f0f0f;
+  display: flex; align-items: center; padding: 0 12px; gap: 10px;
+}
+.d4 .footer-tick { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #222; }
+.d4 .footer-progress { flex: 1; height: 1px; background: #111; }
+.d4 .footer-fill { width: 40%; height: 1px; background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+
+/* ══════════════════════════════════════════════
+   05 — REFORM
+   ══════════════════════════════════════════════ */
+.d5 { background: #fff; }
+.d5 .mock-header {
+  height: 48px;
+  background: #111;
+}
+.d5 .mock-logo span:first-child {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #fff;
+  text-transform: uppercase;
+}
+.d5 .mock-logo span:last-child {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  color: #555;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.d5 .mock-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: transparent;
+  border: 1px solid #333;
+  padding: 4px 12px;
+}
+.d5 .accent-btn {
+  background: #e63429;
+  border-color: #e63429;
+  color: #fff;
+}
+.d5 .mock-body { padding: 0; }
+.d5 .mock-sidebar {
+  width: 200px;
+  background: #f7f7f7;
+  border-right: 2px solid #111;
+  padding: 16px;
+  gap: 0;
+}
+.d5 .sidebar-section {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #111;
+  padding: 14px 0 6px;
+  border-bottom: 2px solid #111;
+  margin-bottom: 8px;
+}
+.d5 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+.d5 .sidebar-row-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: #333; font-weight: 400; letter-spacing: 1px; }
+.d5 .sidebar-row-val { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: #111; }
+.d5 .mock-main { padding: 16px; }
+.d5 .mock-kpis { gap: 0; border: 2px solid #111; }
+.d5 .mock-kpi {
+  padding: 12px 16px;
+  border-right: 2px solid #111;
+  border-radius: 0;
+}
+.d5 .mock-kpi:last-child { border-right: none; }
+.d5 .kpi-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.d5 .kpi-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #111;
+  letter-spacing: 1px;
+}
+.d5 .kpi-val.neg { color: #e63429; }
+.d5 .mock-chart-area {
+  background: #fff;
+  border: 2px solid #111;
+  margin-top: 12px;
+}
+.d5 .chart-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #aaa;
+  padding: 10px 14px 0;
+}
+.d5 .mock-footer {
+  height: 36px;
+  background: #111;
+  display: flex; align-items: center; padding: 0 14px; gap: 12px;
+}
+.d5 .footer-tick { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; color: #555; letter-spacing: 1px; }
+.d5 .footer-progress { flex: 1; height: 2px; background: #333; }
+.d5 .footer-fill { width: 40%; height: 2px; background: #e63429; }
+
+/* ══════════════════════════════════════════════
+   06 — CARBON
+   ══════════════════════════════════════════════ */
+.d6 { background: #131313; background-image: repeating-linear-gradient(45deg, #161616 0, #161616 1px, transparent 0, transparent 50%); background-size: 8px 8px; }
+.d6 .mock-header {
+  height: 42px;
+  background: linear-gradient(180deg, #1c1c1c 0%, #151515 100%);
+  border-bottom: 1px solid #ff3a1f44;
+}
+.d6 .mock-logo span:first-child {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.d6 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #333;
+  letter-spacing: 2px;
+}
+.d6 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #555;
+  background: #1a1a1a;
+  border: 1px solid #252525;
+  padding: 3px 10px;
+}
+.d6 .red-btn { color: #ff3a1f; border-color: #ff3a1f44; }
+.d6 .mock-body { padding: 12px; gap: 12px; }
+.d6 .mock-sidebar {
+  width: 150px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+  border: 1px solid #252525;
+  padding: 12px;
+  border-radius: 4px;
+}
+.d6 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #ff3a1f;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.d6 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #1e1e1e;
+}
+.d6 .sidebar-row-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #444; }
+.d6 .sidebar-row-val { font-family: 'DM Mono', monospace; font-size: 8px; color: #ccc; }
+.d6 .mock-kpis { gap: 8px; }
+.d6 .mock-kpi {
+  background: linear-gradient(180deg, #1c1c1c 0%, #161616 100%);
+  border: 1px solid #252525;
+  border-left: 2px solid #ff3a1f;
+  padding: 10px 12px;
+  border-radius: 4px;
+}
+.d6 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #333; letter-spacing: 1px; margin-bottom: 4px; }
+.d6 .kpi-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+.d6 .kpi-val.neg { color: #ff3a1f; }
+.d6 .kpi-val.pos { color: #42d67e; }
+.d6 .mock-chart-area {
+  background: linear-gradient(180deg, #181818 0%, #131313 100%);
+  border: 1px solid #252525;
+  border-radius: 4px;
+}
+.d6 .chart-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #333; letter-spacing: 2px; padding: 8px 12px 0; }
+.d6 .mock-footer {
+  height: 32px;
+  background: linear-gradient(180deg, #1c1c1c 0%, #151515 100%);
+  border: 1px solid #252525;
+  border-radius: 4px;
+  display: flex; align-items: center; padding: 0 12px; gap: 10px;
+}
+.d6 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #333; }
+.d6 .footer-progress { flex: 1; height: 2px; background: #222; border-radius: 1px; }
+.d6 .footer-fill { width: 40%; height: 2px; background: #ff3a1f; border-radius: 1px; box-shadow: 0 0 8px #ff3a1f66; }
+
+/* ══════════════════════════════════════════════
+   07 — BLUEPRINT
+   ══════════════════════════════════════════════ */
+.d7 { background: #0d1b2a; background-image: linear-gradient(rgba(30,100,200,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(30,100,200,.07) 1px, transparent 1px); background-size: 24px 24px; }
+.d7 .mock-header {
+  height: 40px;
+  background: #0a1520;
+  border-bottom: 1px solid #1e5080;
+}
+.d7 .mock-logo span:first-child {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: #7eb8e8;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.d7 .mock-logo span:last-child {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  color: #1e4060;
+  letter-spacing: 2px;
+}
+.d7 .mock-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  color: #3a7aaa;
+  background: transparent;
+  border: 1px solid #1e5080;
+  padding: 3px 10px;
+}
+.d7 .mock-body { padding: 12px; gap: 12px; }
+.d7 .mock-sidebar {
+  width: 150px;
+  background: rgba(10,20,35,.8);
+  border: 1px solid #1e5080;
+  padding: 12px;
+  border-radius: 2px;
+}
+.d7 .sidebar-section {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  color: #7eb8e8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.5;
+  border-top: 1px dashed #1e5080;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+.d7 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed #142030;
+}
+.d7 .sidebar-row-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #2a5070; }
+.d7 .sidebar-row-val { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #7eb8e8; }
+.d7 .mock-kpis { gap: 8px; }
+.d7 .mock-kpi {
+  background: rgba(10,25,45,.9);
+  border: 1px solid #1e5080;
+  padding: 10px 12px;
+  position: relative;
+}
+.d7 .kpi-corner { position: absolute; top: 0; left: 0; width: 8px; height: 8px; border-top: 1px solid #7eb8e8; border-left: 1px solid #7eb8e8; }
+.d7 .kpi-corner.br { top: auto; left: auto; bottom: 0; right: 0; border-top: none; border-left: none; border-bottom: 1px solid #7eb8e8; border-right: 1px solid #7eb8e8; }
+.d7 .kpi-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #2a5070; letter-spacing: 1px; margin-bottom: 4px; }
+.d7 .kpi-val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 500; }
+.d7 .kpi-val.pos { color: #7eb8e8; }
+.d7 .kpi-val.neg { color: #e8a07e; }
+.d7 .kpi-val.neu { color: #7ee8b0; }
+.d7 .mock-chart-area {
+  background: rgba(10,20,35,.8);
+  border: 1px solid #1e5080;
+}
+.d7 .chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #2a5070; letter-spacing: 2px; padding: 8px 12px 0; }
+.d7 .mock-footer {
+  height: 32px;
+  background: rgba(10,20,35,.8);
+  border: 1px solid #1e5080;
+  display: flex; align-items: center; padding: 0 12px; gap: 10px;
+}
+.d7 .footer-tick { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #2a5070; }
+.d7 .footer-progress { flex: 1; height: 1px; background: #1e5080; border: none; border-top: 1px dashed #1e5080; }
+.d7 .footer-fill { width: 40%; height: 1px; background: #7eb8e8; }
+
+/* ══════════════════════════════════════════════
+   08 — PAPER
+   ══════════════════════════════════════════════ */
+.d8 { background: #f4f0e6; background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23c8bc9a' fill-opacity='0.2'/%3E%3C/svg%3E"); }
+.d8 .mock-header {
+  height: 44px;
+  background: #2a2218;
+  border-bottom: 3px solid #1a1408;
+}
+.d8 .mock-logo span:first-child {
+  font-family: 'Newsreader', serif;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  color: #f4f0e6;
+  letter-spacing: 1px;
+}
+.d8 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #6a5a3a;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.d8 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #8a7a5a;
+  background: transparent;
+  border: 1px solid #4a3a1a;
+  padding: 3px 10px;
+}
+.d8 .mock-body { padding: 14px; gap: 14px; }
+.d8 .mock-sidebar {
+  width: 155px;
+  gap: 0;
+  border-right: 1px solid #c8bc9a;
+  padding-right: 14px;
+}
+.d8 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #9a8a6a;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 0 4px;
+  border-bottom: 1px solid #c8bc9a;
+  margin-bottom: 6px;
+}
+.d8 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px dotted #c8bc9a;
+}
+.d8 .sidebar-row-label { font-family: 'Newsreader', serif; font-size: 10px; color: #5a4a2a; font-style: italic; }
+.d8 .sidebar-row-val { font-family: 'DM Mono', monospace; font-size: 9px; color: #2a1a08; }
+.d8 .mock-kpis { gap: 10px; }
+.d8 .mock-kpi {
+  background: #ece8da;
+  border: 1px solid #c8bc9a;
+  border-top: 3px solid #2a2218;
+  padding: 10px 12px;
+}
+.d8 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #9a8a6a; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.d8 .kpi-val { font-family: 'Newsreader', serif; font-size: 20px; color: #2a1a08; }
+.d8 .kpi-val.neg { color: #8b2020; }
+.d8 .kpi-val.pos { color: #1a5a1a; }
+.d8 .mock-chart-area {
+  background: #ece8da;
+  border: 1px solid #c8bc9a;
+}
+.d8 .chart-label { font-family: 'Newsreader', serif; font-size: 9px; font-style: italic; color: #9a8a6a; padding: 8px 12px 0; }
+.d8 .mock-footer {
+  height: 34px;
+  background: #e4dece;
+  border: 1px solid #c8bc9a;
+  display: flex; align-items: center; padding: 0 12px; gap: 10px;
+}
+.d8 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #9a8a6a; }
+.d8 .footer-progress { flex: 1; height: 1px; background: #c8bc9a; border: none; border-top: 1px dashed #9a8a6a; }
+.d8 .footer-fill { width: 40%; height: 1px; background: #2a2218; }
+
+/* ══════════════════════════════════════════════
+   09 — FROST
+   ══════════════════════════════════════════════ */
+.d9 { background: linear-gradient(135deg, #e8f0f8 0%, #f0f4f8 50%, #eaf0f6 100%); }
+.d9 .mock-header {
+  height: 44px;
+  background: rgba(255,255,255,.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(120,160,200,.2);
+}
+.d9 .mock-logo span:first-child {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a3050;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.d9 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #90a8c0;
+  letter-spacing: 2px;
+}
+.d9 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #6090b8;
+  background: rgba(255,255,255,.5);
+  border: 1px solid rgba(120,160,200,.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.d9 .mock-body { padding: 14px; gap: 14px; }
+.d9 .mock-sidebar {
+  width: 155px;
+  background: rgba(255,255,255,.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(120,160,200,.2);
+  padding: 12px;
+  border-radius: 12px;
+}
+.d9 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #90a8c0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  margin-top: 10px;
+}
+.d9 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(120,160,200,.15);
+}
+.d9 .sidebar-row-label { font-family: 'Syne', sans-serif; font-size: 9px; color: #507090; }
+.d9 .sidebar-row-val { font-family: 'DM Mono', monospace; font-size: 9px; color: #1a3050; }
+.d9 .mock-kpis { gap: 8px; }
+.d9 .mock-kpi {
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(120,160,200,.2);
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+.d9 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #90a8c0; letter-spacing: 1px; margin-bottom: 4px; }
+.d9 .kpi-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #1a3050; }
+.d9 .kpi-val.neg { color: #c04040; }
+.d9 .kpi-val.pos { color: #208860; }
+.d9 .mock-chart-area {
+  background: rgba(255,255,255,.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(120,160,200,.2);
+  border-radius: 10px;
+}
+.d9 .chart-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #90a8c0; letter-spacing: 2px; padding: 10px 14px 0; }
+.d9 .mock-footer {
+  height: 36px;
+  background: rgba(255,255,255,.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(120,160,200,.2);
+  border-radius: 10px;
+  display: flex; align-items: center; padding: 0 14px; gap: 12px;
+}
+.d9 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #90a8c0; }
+.d9 .footer-progress { flex: 1; height: 2px; background: rgba(120,160,200,.2); border-radius: 1px; }
+.d9 .footer-fill { width: 40%; height: 2px; background: linear-gradient(90deg, #4a90d8, #7ab8f0); border-radius: 1px; }
+
+/* ══════════════════════════════════════════════
+   10 — CINNABAR
+   ══════════════════════════════════════════════ */
+.d10 { background: #1a1a1c; }
+.d10 .mock-header {
+  height: 44px;
+  background: #1a1a1c;
+  border-bottom: 1px solid #272729;
+}
+.d10 .mock-logo span:first-child {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.d10 .mock-logo-dot {
+  width: 6px; height: 6px;
+  background: #e8432d;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #e8432d88;
+}
+.d10 .mock-logo span:last-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #404044;
+  letter-spacing: 2px;
+}
+.d10 .mock-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #505054;
+  background: #222224;
+  border: 1px solid #2e2e32;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+.d10 .mock-body { padding: 14px; gap: 14px; }
+.d10 .mock-sidebar {
+  width: 155px;
+  background: #1e1e20;
+  border: 1px solid #272729;
+  padding: 12px;
+  border-radius: 6px;
+  gap: 0;
+}
+.d10 .sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #e8432d;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 0 5px;
+  border-bottom: 1px solid #272729;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.d10 .sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #222224;
+}
+.d10 .sidebar-row-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #404044; }
+.d10 .sidebar-row-val { font-family: 'DM Mono', monospace; font-size: 8px; color: #a0a0a8; }
+.d10 .mock-kpis { gap: 8px; }
+.d10 .mock-kpi {
+  background: #1e1e20;
+  border: 1px solid #272729;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+.d10 .kpi-dot { width: 4px; height: 4px; border-radius: 50%; background: #e8432d; margin-bottom: 6px; }
+.d10 .kpi-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #404044; letter-spacing: 1px; margin-bottom: 4px; }
+.d10 .kpi-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
+.d10 .kpi-val.neg { color: #e8432d; }
+.d10 .kpi-val.pos { color: #42d67e; }
+.d10 .mock-chart-area {
+  background: #1e1e20;
+  border: 1px solid #272729;
+  border-radius: 6px;
+}
+.d10 .chart-label { font-family: 'DM Mono', monospace; font-size: 7px; color: #404044; letter-spacing: 2px; padding: 10px 14px 0; }
+.d10 .mock-footer {
+  height: 36px;
+  background: #1e1e20;
+  border: 1px solid #272729;
+  border-radius: 6px;
+  display: flex; align-items: center; padding: 0 14px; gap: 12px;
+}
+.d10 .footer-tick { font-family: 'DM Mono', monospace; font-size: 7px; color: #404044; }
+.d10 .footer-progress { flex: 1; height: 2px; background: #272729; border-radius: 1px; }
+.d10 .footer-fill { width: 40%; height: 2px; background: #e8432d; border-radius: 1px; }
+
+</style>
+</head>
+<body>
+<div class="gallery-header">
+  <h1>SimEcon — Design Directions</h1>
+  <p>10 Mockups</p>
+</div>
+
+<div class="grid">
+
+<!-- ─── 01 TERMINAL NOIR ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">01</span>
+    <span class="card-name">Terminal Noir</span>
+  </div>
+  <div class="mock d1">
+    <div class="scanlines"></div>
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SIMECON</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">ASSUMPTIONS</div>
+        <div class="mock-btn">SHARE</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">// SCENARIO</div>
+        <div class="sidebar-row"><span>MODE</span><span>FIX 2025</span></div>
+        <div class="sidebar-row"><span>YEAR</span><span>2025</span></div>
+        <div class="sidebar-section">// TAX RATES</div>
+        <div class="sidebar-bar-row"><div class="sidebar-bar-label">TOP BRKT</div><div class="sidebar-bar"><div class="sidebar-bar-fill" style="width:80%"></div></div></div>
+        <div class="sidebar-bar-row"><div class="sidebar-bar-label">CORP TAX</div><div class="sidebar-bar"><div class="sidebar-bar-fill" style="width:55%"></div></div></div>
+        <div class="sidebar-bar-row"><div class="sidebar-bar-label">CAP GAINS</div><div class="sidebar-bar"><div class="sidebar-bar-fill" style="width:45%"></div></div></div>
+        <div class="sidebar-section">// PROGRAMS</div>
+        <div class="sidebar-row"><span>MEDICARE</span><span style="color:#4afe8a">ON</span></div>
+        <div class="sidebar-row"><span>SS</span><span style="color:#4afe8a">ON</span></div>
+        <div class="sidebar-row"><span>DEFENSE</span><span style="color:#ff4444">OFF</span></div>
+        <div class="sidebar-row"><span>UBI</span><span style="color:#555">—</span></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">DEBT/GDP</div>
+            <div class="kpi-val neg">128%</div>
+            <div class="kpi-delta">▼ -4.2 pts</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">DEFICIT</div>
+            <div class="kpi-val neg">-$1.8T</div>
+            <div class="kpi-delta">▲ $0.3T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">REVENUE</div>
+            <div class="kpi-val neu">$4.9T</div>
+            <div class="kpi-delta">▲ $0.6T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">// DEBT TRAJECTORY 2000→2050</div>
+          <svg viewBox="0 0 320 160" class="spark" style="padding:8px">
+            <defs>
+              <linearGradient id="g1a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5a623" stop-opacity=".15"/>
+                <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid lines -->
+            <line x1="0" y1="130" x2="320" y2="130" stroke="#1a1a1a" stroke-width="1"/>
+            <line x1="0" y1="90" x2="320" y2="90" stroke="#1a1a1a" stroke-width="1"/>
+            <line x1="0" y1="50" x2="320" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+            <!-- Actual line -->
+            <polyline points="0,125 40,120 80,110 120,95 160,80 200,78 240,75" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- Your policy -->
+            <polyline points="0,125 40,120 80,110 120,95 160,80 200,70 240,55 280,40" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+            <!-- Fill -->
+            <polygon points="0,125 40,120 80,110 120,95 160,80 200,70 240,55 280,40 280,130 0,130" fill="url(#g1a)"/>
+            <!-- Current year marker -->
+            <line x1="200" y1="0" x2="200" y2="140" stroke="#f5a623" stroke-width="0.5" stroke-dasharray="2,4" opacity=".5"/>
+            <!-- Labels -->
+            <text x="4" y="143" fill="#333" font-family="monospace" font-size="7">2000</text>
+            <text x="196" y="143" fill="#f5a623" font-family="monospace" font-size="7">NOW</text>
+            <text x="280" y="143" fill="#333" font-family="monospace" font-size="7">2050</text>
+            <text x="244" y="52" fill="#f5a623" font-family="monospace" font-size="7">YOURS</text>
+            <text x="244" y="73" fill="#555" font-family="monospace" font-size="7">ACTUAL</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#f5a623">► 1×</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 02 VELLUM ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">02</span>
+    <span class="card-name">Vellum</span>
+  </div>
+  <div class="mock d2">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SimEcon</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn">Share</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Top bracket</span>
+          <div class="sidebar-track"><div class="sidebar-thumb"></div></div>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Corp. tax</span>
+          <div class="sidebar-track"><div class="sidebar-thumb" style="left:40%"></div></div>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Cap gains</span>
+          <div class="sidebar-track"><div class="sidebar-thumb" style="left:30%"></div></div>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Medicare</span>
+          <span class="sidebar-row-val" style="color:#1a1a1a">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Social Security</span>
+          <span class="sidebar-row-val" style="color:#1a1a1a">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label" style="font-size:9px">Defense</span>
+          <span class="sidebar-row-val" style="color:#bbb">Off</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Annual Deficit</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory</div>
+          <svg viewBox="0 0 300 140" class="spark" style="padding:10px 14px 8px">
+            <defs>
+              <linearGradient id="g2a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c0392b" stop-opacity=".08"/>
+                <stop offset="100%" stop-color="#c0392b" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="120" x2="300" y2="120" stroke="#e8e8e4" stroke-width="1"/>
+            <line x1="0" y1="80" x2="300" y2="80" stroke="#e8e8e4" stroke-width="1"/>
+            <line x1="0" y1="40" x2="300" y2="40" stroke="#e8e8e4" stroke-width="1"/>
+            <polyline points="0,115 50,110 100,100 150,85 200,75 220,74" fill="none" stroke="#ddd" stroke-width="1" stroke-dasharray="4,3"/>
+            <polyline points="0,115 50,110 100,100 150,85 200,75 220,70 260,55 300,38" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+            <polygon points="0,115 50,110 100,100 150,85 200,75 220,70 260,55 300,38 300,120 0,120" fill="url(#g2a)"/>
+            <line x1="200" y1="0" x2="200" y2="125" stroke="#ddd" stroke-width="1" stroke-dasharray="2,4"/>
+            <text x="6" y="133" fill="#bbb" font-family="sans-serif" font-size="7">2000</text>
+            <text x="197" y="133" fill="#aaa" font-family="sans-serif" font-size="7">2025</text>
+            <text x="272" y="133" fill="#bbb" font-family="sans-serif" font-size="7">2050</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-play">▶</div>
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 03 GILDED ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">03</span>
+    <span class="card-name">Gilded</span>
+  </div>
+  <div class="mock d3">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SimEcon</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn">Share</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">SCENARIO</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">TAX POLICY</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Top Bracket</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Corp. Tax</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Cap Gains</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">PROGRAMS</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Medicare</span>
+          <span class="sidebar-row-val" style="color:#4afe8a">Active</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Defense</span>
+          <span class="sidebar-row-val" style="color:#3a4f6e">Inactive</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">DEBT/GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">DEFICIT</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">REVENUE</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT / GDP TRAJECTORY</div>
+          <svg viewBox="0 0 300 130" class="spark" style="padding:8px 12px">
+            <defs>
+              <linearGradient id="g3a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c9a84c" stop-opacity=".2"/>
+                <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="110" x2="300" y2="110" stroke="#162038" stroke-width="1"/>
+            <line x1="0" y1="70" x2="300" y2="70" stroke="#162038" stroke-width="1"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#162038" stroke-width="1"/>
+            <polyline points="0,105 50,100 100,90 150,75 200,65 220,64" fill="none" stroke="#2a3f5f" stroke-width="1" stroke-dasharray="3,3"/>
+            <polyline points="0,105 50,100 100,90 150,75 200,65 220,60 260,42 300,24" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+            <polygon points="0,105 50,100 100,90 150,75 200,65 220,60 260,42 300,24 300,110 0,110" fill="url(#g3a)"/>
+            <line x1="200" y1="0" x2="200" y2="115" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="2,4" opacity=".4"/>
+            <text x="6" y="122" fill="#3a4f6e" font-family="sans-serif" font-size="7">2000</text>
+            <text x="266" y="122" fill="#c9a84c" font-family="sans-serif" font-size="7">YOURS</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#c9a84c">▶ 1×</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 04 VOID ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">04</span>
+    <span class="card-name">Void</span>
+  </div>
+  <div class="mock d4">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SIMECON</span>
+        <span>// POLICY SIM</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">[ ASSUMPTIONS ]</div>
+        <div class="mock-btn">[ SHARE ]</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MODE</span>
+          <span class="sidebar-row-val">FIX_2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">YEAR</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">TOP_BRKT</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CORP</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CAP_GAINS</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MEDICARE</span>
+          <span class="sidebar-row-val">TRUE</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SS</span>
+          <span class="sidebar-row-val">TRUE</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">DEFENSE</span>
+          <span class="sidebar-row-val red">FALSE</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">UBI</span>
+          <span class="sidebar-row-val red">FALSE</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">DEBT/GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">DEFICIT</div>
+            <div class="kpi-val neg">−1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">REVENUE</div>
+            <div class="kpi-val neu">4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">// DEBT_TRAJECTORY [2000→2050]</div>
+          <svg viewBox="0 0 300 130" class="spark" style="padding:8px 12px">
+            <defs>
+              <linearGradient id="g4a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00ff88" stop-opacity=".15"/>
+                <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="110" x2="300" y2="110" stroke="#111" stroke-width="1"/>
+            <line x1="0" y1="70" x2="300" y2="70" stroke="#111" stroke-width="1"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#111" stroke-width="1"/>
+            <polyline points="0,105 50,100 100,88 150,72 200,62 220,61" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,105 50,100 100,88 150,72 200,62 220,56 260,36 300,18" fill="none" stroke="#00ff88" stroke-width="1.5"/>
+            <polygon points="0,105 50,100 100,88 150,72 200,62 220,56 260,36 300,18 300,110 0,110" fill="url(#g4a)"/>
+            <line x1="200" y1="0" x2="200" y2="115" stroke="#00ff88" stroke-width="0.5" stroke-dasharray="2,4" opacity=".3"/>
+            <circle cx="200" cy="62" r="3" fill="#00ff88" opacity=".5"/>
+            <text x="6" y="122" fill="#1e1e1e" font-family="monospace" font-size="7">2000</text>
+            <text x="266" y="22" fill="#00ff88" font-family="monospace" font-size="7">YOURS</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#00ff88">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 05 REFORM ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">05</span>
+    <span class="card-name">Reform</span>
+  </div>
+  <div class="mock d5">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SIMECON</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">ASSUMPTIONS</div>
+        <div class="mock-btn accent-btn">▶ PLAY</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val" style="color:#e63429">2025</span>
+        </div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Top Bracket</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Corp Tax</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Cap Gains</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Medicare</span>
+          <span class="sidebar-row-val">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SS</span>
+          <span class="sidebar-row-val">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Defense</span>
+          <span class="sidebar-row-val" style="color:#aaa">Off</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Deficit</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT TRAJECTORY</div>
+          <svg viewBox="0 0 290 120" class="spark" style="padding:8px 14px">
+            <defs>
+              <linearGradient id="g5a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e63429" stop-opacity=".1"/>
+                <stop offset="100%" stop-color="#e63429" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="100" x2="290" y2="100" stroke="#e0e0e0" stroke-width="2"/>
+            <line x1="0" y1="60" x2="290" y2="60" stroke="#e0e0e0" stroke-width="1"/>
+            <line x1="0" y1="20" x2="290" y2="20" stroke="#e0e0e0" stroke-width="1"/>
+            <polyline points="0,95 50,90 100,80 150,66 190,57" fill="none" stroke="#ddd" stroke-width="2" stroke-dasharray="5,3"/>
+            <polyline points="0,95 50,90 100,80 150,66 190,57 230,40 270,20" fill="none" stroke="#111" stroke-width="2"/>
+            <polygon points="0,95 50,90 100,80 150,66 190,57 230,40 270,20 270,100 0,100" fill="url(#g5a)"/>
+            <!-- Red accent at right -->
+            <rect x="265" y="16" width="3" height="86" fill="#e63429" opacity=".3"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#111" stroke-width="1" stroke-dasharray="4,3" opacity=".2"/>
+            <text x="6" y="113" fill="#aaa" font-family="sans-serif" font-size="8" font-weight="600">2000</text>
+            <text x="185" y="113" fill="#111" font-family="sans-serif" font-size="8" font-weight="600">2025</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#e63429; font-weight:700">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 06 CARBON ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">06</span>
+    <span class="card-name">Carbon</span>
+  </div>
+  <div class="mock d6">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SIMECON</span>
+        <span style="font-size:8px; font-family:'DM Mono',monospace; color:#2a2a2a; letter-spacing:2px">POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">ASSUME</div>
+        <div class="mock-btn red-btn">▶ SIMULATE</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">SCENARIO</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MODE</span>
+          <span class="sidebar-row-val">FIX 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">YEAR</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">TAXES</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">TOP BKT</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CORP</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CAP GAINS</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">PROGRAMS</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MEDICARE</span>
+          <span class="sidebar-row-val" style="color:#42d67e">ON</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SS</span>
+          <span class="sidebar-row-val" style="color:#42d67e">ON</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">DEFENSE</span>
+          <span class="sidebar-row-val" style="color:#333">OFF</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">DEBT/GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">DEFICIT</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">REVENUE</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT TRAJECTORY</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 12px">
+            <defs>
+              <linearGradient id="g6a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ff3a1f" stop-opacity=".2"/>
+                <stop offset="100%" stop-color="#ff3a1f" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#1e1e1e" stroke-width="1"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#1e1e1e" stroke-width="1"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#1e1e1e" stroke-width="1"/>
+            <polyline points="0,98 50,93 100,82 150,68 195,59" fill="none" stroke="#2a2a2a" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,98 50,93 100,82 150,68 195,59 235,42 275,20" fill="none" stroke="#ff3a1f" stroke-width="2"/>
+            <polygon points="0,98 50,93 100,82 150,68 195,59 235,42 275,20 275,100 0,100" fill="url(#g6a)"/>
+            <line x1="195" y1="0" x2="195" y2="105" stroke="#ff3a1f" stroke-width="0.5" stroke-dasharray="2,4" opacity=".4"/>
+            <text x="6" y="113" fill="#2a2a2a" font-family="monospace" font-size="7">2000</text>
+            <text x="268" y="18" fill="#ff3a1f" font-family="monospace" font-size="7">YOURS</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#ff3a1f">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 07 BLUEPRINT ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">07</span>
+    <span class="card-name">Blueprint</span>
+  </div>
+  <div class="mock d7">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SIMECON</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">ASSUMPTIONS</div>
+        <div class="mock-btn">SHARE</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">SCENARIO</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MODE</span>
+          <span class="sidebar-row-val">FIX_2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">YEAR</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">TAX POLICY</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">TOP_BRACKET</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CORP_TAX</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">CAP_GAINS</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">PROGRAMS</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">MEDICARE</span>
+          <span class="sidebar-row-val" style="color:#7ee8b0">ACTIVE</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SOC_SEC</span>
+          <span class="sidebar-row-val" style="color:#7ee8b0">ACTIVE</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">DEFENSE</span>
+          <span class="sidebar-row-val" style="color:#2a5070">INACTIVE</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-corner"></div>
+            <div class="kpi-corner br"></div>
+            <div class="kpi-label">DEBT/GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-corner"></div>
+            <div class="kpi-corner br"></div>
+            <div class="kpi-label">DEFICIT</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-corner"></div>
+            <div class="kpi-corner br"></div>
+            <div class="kpi-label">REVENUE</div>
+            <div class="kpi-val neu">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT/GDP TRAJECTORY [2000–2050]</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 12px">
+            <defs>
+              <linearGradient id="g7a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7eb8e8" stop-opacity=".15"/>
+                <stop offset="100%" stop-color="#7eb8e8" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid (blueprint style) -->
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#1e5080" stroke-width="1" stroke-dasharray="3,3"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#1e5080" stroke-width="1" stroke-dasharray="3,3"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#1e5080" stroke-width="1" stroke-dasharray="3,3"/>
+            <line x1="75" y1="0" x2="75" y2="100" stroke="#1e5080" stroke-width="0.5" stroke-dasharray="2,4" opacity=".5"/>
+            <line x1="150" y1="0" x2="150" y2="100" stroke="#1e5080" stroke-width="0.5" stroke-dasharray="2,4" opacity=".5"/>
+            <line x1="225" y1="0" x2="225" y2="100" stroke="#1e5080" stroke-width="0.5" stroke-dasharray="2,4" opacity=".5"/>
+            <polyline points="0,95 50,90 100,80 150,66 190,58" fill="none" stroke="#2a5070" stroke-width="1" stroke-dasharray="4,3"/>
+            <polyline points="0,95 50,90 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#7eb8e8" stroke-width="1.5"/>
+            <polygon points="0,95 50,90 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#g7a)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#7eb8e8" stroke-width="0.5" stroke-dasharray="2,4" opacity=".4"/>
+            <!-- Crosshair at now -->
+            <circle cx="190" cy="58" r="3" fill="none" stroke="#7eb8e8" stroke-width="1"/>
+            <text x="6" y="113" fill="#2a5070" font-family="monospace" font-size="7">2000</text>
+            <text x="268" y="16" fill="#7eb8e8" font-family="monospace" font-size="7">YOURS</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#7eb8e8">▶ 1×</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 08 PAPER ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">08</span>
+    <span class="card-name">Paper</span>
+  </div>
+  <div class="mock d8">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SimEcon</span>
+        <span>ECONOMIC POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn">Share</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Top bracket</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Corporate</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Cap. gains</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Medicare</span>
+          <span class="sidebar-row-val">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Soc. Security</span>
+          <span class="sidebar-row-val">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Defense</span>
+          <span class="sidebar-row-val" style="color:#bbb">Off</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Deficit</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">Debt Trajectory, 2000–2050</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 14px">
+            <defs>
+              <linearGradient id="g8a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8b2020" stop-opacity=".1"/>
+                <stop offset="100%" stop-color="#8b2020" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#c8bc9a" stroke-width="1"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#c8bc9a" stroke-width="0.5" stroke-dasharray="4,3"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#c8bc9a" stroke-width="0.5" stroke-dasharray="4,3"/>
+            <polyline points="0,97 50,92 100,81 150,67 190,58" fill="none" stroke="#c8bc9a" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <polyline points="0,97 50,92 100,81 150,67 190,58 230,40 275,18" fill="none" stroke="#2a1a08" stroke-width="2"/>
+            <polygon points="0,97 50,92 100,81 150,67 190,58 230,40 275,18 275,100 0,100" fill="url(#g8a)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#9a8a6a" stroke-width="0.5" stroke-dasharray="3,4" opacity=".6"/>
+            <text x="6" y="113" fill="#9a8a6a" font-family="Georgia, serif" font-style="italic" font-size="7">2000</text>
+            <text x="268" y="16" fill="#2a1a08" font-family="Georgia, serif" font-style="italic" font-size="7">Yours</text>
+            <text x="186" y="113" fill="#9a8a6a" font-family="Georgia, serif" font-style="italic" font-size="7">Now</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick" style="font-family:'Newsreader',serif; font-style:italic; font-size:9px; color:#9a8a6a">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick" style="font-family:'Newsreader',serif; font-style:italic; font-size:9px; color:#9a8a6a">2025</div>
+          <div class="footer-tick" style="color:#2a1a08; font-size:9px">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 09 FROST ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">09</span>
+    <span class="card-name">Frost</span>
+  </div>
+  <div class="mock d9">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <span>SimEcon</span>
+        <span>POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn" style="background:#4a90d8; color:#fff; border-color:#4a90d8">▶ Play</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val">2025</span>
+        </div>
+        <div class="sidebar-section">Tax Rates</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Top Bracket</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Corporate</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Cap Gains</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Medicare</span>
+          <span class="sidebar-row-val" style="color:#208860">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SS</span>
+          <span class="sidebar-row-val" style="color:#208860">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Defense</span>
+          <span class="sidebar-row-val" style="color:#c0d0e0">Off</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Deficit</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT TRAJECTORY</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 14px">
+            <defs>
+              <linearGradient id="g9a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#4a90d8" stop-opacity=".15"/>
+                <stop offset="100%" stop-color="#4a90d8" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="rgba(120,160,200,.2)" stroke-width="1"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="rgba(120,160,200,.15)" stroke-width="1"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="rgba(120,160,200,.15)" stroke-width="1"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58" fill="none" stroke="rgba(120,160,200,.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,96 50,91 100,80 150,66 190,58 230,40 275,18" fill="none" stroke="#4a90d8" stroke-width="2"/>
+            <polygon points="0,96 50,91 100,80 150,66 190,58 230,40 275,18 275,100 0,100" fill="url(#g9a)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#4a90d8" stroke-width="0.5" stroke-dasharray="2,4" opacity=".4"/>
+            <circle cx="190" cy="58" r="4" fill="#4a90d8" opacity=".3"/>
+            <circle cx="190" cy="58" r="2" fill="#4a90d8"/>
+            <text x="6" y="113" fill="rgba(120,160,200,.5)" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#4a90d8" font-family="sans-serif" font-size="7">Yours</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#4a90d8">▶</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 10 CINNABAR ─── -->
+<div class="card">
+  <div class="card-label">
+    <span class="card-num">10</span>
+    <span class="card-name">Cinnabar</span>
+  </div>
+  <div class="mock d10">
+    <div class="mock-header">
+      <div class="mock-logo">
+        <div class="mock-logo-dot"></div>
+        <span>SIMECON</span>
+        <span>POLICY SIMULATOR</span>
+      </div>
+      <div class="mock-nav">
+        <div class="mock-btn">Assumptions</div>
+        <div class="mock-btn" style="color:#e8432d; border-color:#e8432d44">▶ Play</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="sidebar-section">Scenario</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Mode</span>
+          <span class="sidebar-row-val">Fix 2025</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Year</span>
+          <span class="sidebar-row-val" style="color:#e8432d">2025</span>
+        </div>
+        <div class="sidebar-section">Tax Policy</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Top Bracket</span>
+          <span class="sidebar-row-val">37%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Corp. Tax</span>
+          <span class="sidebar-row-val">21%</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Cap Gains</span>
+          <span class="sidebar-row-val">20%</span>
+        </div>
+        <div class="sidebar-section">Programs</div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Medicare</span>
+          <span class="sidebar-row-val" style="color:#42d67e">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">SS</span>
+          <span class="sidebar-row-val" style="color:#42d67e">On</span>
+        </div>
+        <div class="sidebar-row">
+          <span class="sidebar-row-label">Defense</span>
+          <span class="sidebar-row-val" style="color:#2e2e32">Off</span>
+        </div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-kpis">
+          <div class="mock-kpi">
+            <div class="kpi-dot"></div>
+            <div class="kpi-label">Debt / GDP</div>
+            <div class="kpi-val neg">128%</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-dot" style="background:#404044; box-shadow:none"></div>
+            <div class="kpi-label">Deficit</div>
+            <div class="kpi-val neg">−$1.8T</div>
+          </div>
+          <div class="mock-kpi">
+            <div class="kpi-dot" style="background:#42d67e; box-shadow:0 0 8px #42d67e88"></div>
+            <div class="kpi-label">Revenue</div>
+            <div class="kpi-val pos">$4.9T</div>
+          </div>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-label">DEBT TRAJECTORY</div>
+          <svg viewBox="0 0 300 120" class="spark" style="padding:8px 14px">
+            <defs>
+              <linearGradient id="g10a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e8432d" stop-opacity=".2"/>
+                <stop offset="100%" stop-color="#e8432d" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="100" x2="300" y2="100" stroke="#272729" stroke-width="1"/>
+            <line x1="0" y1="65" x2="300" y2="65" stroke="#272729" stroke-width="1"/>
+            <line x1="0" y1="30" x2="300" y2="30" stroke="#272729" stroke-width="1"/>
+            <polyline points="0,97 50,92 100,81 150,67 190,58" fill="none" stroke="#2e2e32" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polyline points="0,97 50,92 100,81 150,67 190,58 230,40 275,18" fill="none" stroke="#e8432d" stroke-width="2"/>
+            <polygon points="0,97 50,92 100,81 150,67 190,58 230,40 275,18 275,100 0,100" fill="url(#g10a)"/>
+            <line x1="190" y1="0" x2="190" y2="105" stroke="#e8432d" stroke-width="0.5" stroke-dasharray="2,4" opacity=".3"/>
+            <circle cx="190" cy="58" r="3" fill="#e8432d" opacity=".6"/>
+            <text x="6" y="113" fill="#2e2e32" font-family="sans-serif" font-size="7">2000</text>
+            <text x="268" y="16" fill="#e8432d" font-family="sans-serif" font-size="7">Yours</text>
+            <text x="175" y="113" fill="#e8432d" font-family="sans-serif" font-size="7" opacity=".6">Now</text>
+          </svg>
+        </div>
+        <div class="mock-footer">
+          <div class="footer-tick">2000</div>
+          <div class="footer-progress"><div class="footer-fill"></div></div>
+          <div class="footer-tick">2025</div>
+          <div class="footer-tick" style="color:#e8432d">▶ 1×</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /grid -->
+</body>
+</html>
