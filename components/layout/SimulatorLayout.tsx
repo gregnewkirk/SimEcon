@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 import { KPICards } from "@/components/visualization/KPICards";
 import { DebtDeficitChart } from "@/components/visualization/DebtDeficitChart";
 import { WealthDistributionChart } from "@/components/visualization/WealthDistributionChart";
+import { VisualizationTabs } from "@/components/visualization/VisualizationTabs";
 import { PlaybackBar } from "@/components/playback/PlaybackBar";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
 import { ShowYourWork } from "@/components/shared/ShowYourWork";
@@ -94,16 +95,24 @@ export function SimulatorLayout() {
               current={sim.currentYearData}
               baseline={sim.baselineYearData}
             />
-            <DebtDeficitChart
-              data={sim.allData}
-              baselineData={sim.baselineAllData}
-              currentYear={sim.state.currentYear}
-              whatIfCounterfactual={sim.whatIfData?.counterfactual}
-              whatIfDelta={sim.whatIfDelta}
-            />
-            <WealthDistributionChart
-              data={sim.allData}
-              currentYear={sim.state.currentYear}
+            <VisualizationTabs
+              chartsContent={
+                <>
+                  <DebtDeficitChart
+                    data={sim.allData}
+                    baselineData={sim.baselineAllData}
+                    currentYear={sim.state.currentYear}
+                    whatIfCounterfactual={sim.whatIfData?.counterfactual}
+                    whatIfDelta={sim.whatIfDelta}
+                  />
+                  <WealthDistributionChart
+                    data={sim.allData}
+                    currentYear={sim.state.currentYear}
+                  />
+                </>
+              }
+              taxPolicy={sim.state.taxPolicy}
+              enabledPrograms={sim.state.enabledPrograms}
             />
             <TransparencyBanner />
           </main>
