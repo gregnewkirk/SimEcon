@@ -92,7 +92,7 @@ export interface SimulationState {
   whatIfEventIds: string[];
 }
 
-export type SimMode = "forward" | "whatif";
+export type SimMode = "revision" | "fix" | "forward" | "whatif";
 
 export interface WhatIfEvent {
   id: string;
@@ -129,7 +129,7 @@ export interface URLState {
   ag?: number;
   ai?: number;
   ae?: number;
-  m?: string;   // mode: forward | whatif
+  m?: string;   // mode: revision | fix | forward | whatif
   we?: string;  // what-if event IDs (comma-separated)
   // Bracket rates: b1-b7 for brackets that differ from default
   b1?: number;

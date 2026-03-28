@@ -72,6 +72,7 @@ export function SimulatorLayout() {
       onAdvancedModeChange={sim.setAdvancedMode}
       onReset={sim.reset}
       onToggleWhatIfEvent={sim.toggleWhatIfEvent}
+      onModeChange={sim.setMode}
     />
   );
 
@@ -127,6 +128,7 @@ export function SimulatorLayout() {
                     currentYear={sim.state.currentYear}
                     whatIfCounterfactual={sim.whatIfData?.counterfactual}
                     whatIfDelta={sim.whatIfDelta}
+                    isRevisionMode={sim.isRevisionMode}
                   />
                   <WealthDistributionChart
                     data={sim.allData}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "./ModeToggle";
 import { ScenarioSelector } from "./ScenarioSelector";
 import { TaxControls } from "./TaxControls";
 import { ProgramToggles } from "./ProgramToggles";
@@ -8,6 +9,7 @@ import { WhatIfToggles } from "./WhatIfToggles";
 import { AdvancedAssumptions } from "./AdvancedAssumptions";
 import type {
   SimulationState,
+  SimMode,
   TaxPolicy,
   AdvancedAssumptions as AdvancedAssumptionsType,
 } from "@/lib/types";
@@ -25,6 +27,7 @@ interface SidebarProps {
   onAdvancedModeChange: (open: boolean) => void;
   onReset: () => void;
   onToggleWhatIfEvent: (eventId: string) => void;
+  onModeChange: (mode: SimMode) => void;
 }
 
 export function Sidebar({
@@ -37,6 +40,7 @@ export function Sidebar({
   onAdvancedModeChange,
   onReset,
   onToggleWhatIfEvent,
+  onModeChange,
 }: SidebarProps) {
   return (
     <aside
@@ -46,6 +50,8 @@ export function Sidebar({
         borderColor: "var(--simecon-border)",
       }}
     >
+      <ModeToggle mode={state.mode} onModeChange={onModeChange} />
+
       <ScenarioSelector
         scenarioId={state.scenarioId}
         onSelect={onScenarioChange}

@@ -13,6 +13,7 @@ import { HISTORICAL_DATA } from "@/lib/data/historical";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { WHAT_IF_EVENTS_MAP } from "@/lib/data/what-if-events";
 import { simulate } from "@/lib/engine/simulate";
+import { simulateRevision } from "@/lib/engine/simulate-revision";
 import { simulateWhatIfMulti, calculateWhatIfDelta } from "@/lib/engine/what-if";
 import { useURLStateSync } from "./useURLState";
 
@@ -31,7 +32,7 @@ function createInitialState(): SimulationState {
     historicalData: HISTORICAL_DATA,
     projectedData: [],
     advancedMode: false,
-    mode: "forward",
+    mode: "revision",
     whatIfEventIds: [],
   };
 }
@@ -39,7 +40,22 @@ function createInitialState(): SimulationState {
 export function useSimulation() {
   const [state, setState] = useState<SimulationState>(createInitialState);
 
-  // Projected data recalculated when policy/programs/assumptions change
+  const isRevisionMode = state.mode === "revision";
+
+  // === REVISION MODE: simulate user's policy from year 2000 onward ===
+  const revisionData = useMemo(() => {
+    if (!isRevisionMode) return null;
+    const startYear = HISTORICAL_DATA[0]; // Year 2000 starting conditions
+    return simulateRevision(
+      startYear,
+      state.taxPolicy,
+      state.enabledPrograms,
+      state.assumptions,
+      DEFAULT_END_YEAR
+    );
+  }, [isRevisionMode, state.taxPolicy, state.enabledPrograms, state.assumptions]);
+
+  // === FIX MODE: projected data from end of historical (current behavior) ===
   const projectedData = useMemo(
     () =>
       simulate(
@@ -65,26 +81,32 @@ export function useSimulation() {
     []
   );
 
-  // Combined timelines
-  const allData: YearData[] = useMemo(
-    () => [...HISTORICAL_DATA, ...projectedData],
-    [projectedData]
-  );
+  // Combined timelines — mode-aware
+  const allData: YearData[] = useMemo(() => {
+    if (isRevisionMode && revisionData) {
+      // In revision mode: the starting year seed + alternate timeline
+      const seed = HISTORICAL_DATA[0]; // year 2000 as anchor
+      return [seed, ...revisionData];
+    }
+    // Fix mode (and forward/whatif): historical + projections
+    return [...HISTORICAL_DATA, ...projectedData];
+  }, [isRevisionMode, revisionData, projectedData]);
 
   const baselineAllData: YearData[] = useMemo(
     () => [...HISTORICAL_DATA, ...baselineData],
     [baselineData]
   );
 
-  // What-if mode data
+  // What-if mode data — works in both modes
   const whatIfData = useMemo(() => {
-    if (state.mode !== "whatif" || state.whatIfEventIds.length === 0) return null;
+    if (state.whatIfEventIds.length === 0) return null;
+    // Only compute what-if when in whatif mode OR when events are toggled in either mode
     const events = state.whatIfEventIds
       .map((id) => WHAT_IF_EVENTS_MAP.get(id))
       .filter((e): e is NonNullable<typeof e> => e != null);
     if (events.length === 0) return null;
     return simulateWhatIfMulti(events, state.assumptions, DEFAULT_END_YEAR);
-  }, [state.mode, state.whatIfEventIds, state.assumptions]);
+  }, [state.whatIfEventIds, state.assumptions]);
 
   const whatIfDelta = useMemo(() => {
     if (!whatIfData) return null;
@@ -103,10 +125,14 @@ export function useSimulation() {
   );
 
   // "Today" data — always anchored to the last historical year (present day)
-  const todayYoursData = useMemo(
-    () => allData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? allData[0],
-    [allData]
-  );
+  const todayYoursData = useMemo(() => {
+    if (isRevisionMode && revisionData) {
+      // In revision mode: find year 2025 in the alternate timeline
+      const altToday = revisionData.find((d) => d.year === LAST_HISTORICAL_YEAR);
+      return altToday ?? allData[0];
+    }
+    return allData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? allData[0];
+  }, [isRevisionMode, revisionData, allData]);
 
   const todayActualData = useMemo(
     () => baselineAllData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? baselineAllData[0],
@@ -203,9 +229,7 @@ export function useSimulation() {
       const ids = prev.whatIfEventIds.includes(eventId)
         ? prev.whatIfEventIds.filter((id) => id !== eventId)
         : [...prev.whatIfEventIds, eventId];
-      // Auto-switch mode: "whatif" when any event is on, "forward" when all off
-      const mode: SimMode = ids.length > 0 ? "whatif" : "forward";
-      return { ...prev, whatIfEventIds: ids, mode };
+      return { ...prev, whatIfEventIds: ids };
     });
   }, []);
 
@@ -236,6 +260,7 @@ export function useSimulation() {
     todayActualData,
     whatIfData,
     whatIfDelta,
+    isRevisionMode,
     setTaxPolicy,
     setBracketRate,
     toggleProgram,

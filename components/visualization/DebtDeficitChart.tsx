@@ -21,6 +21,7 @@ interface DebtDeficitChartProps {
   currentYear: number;
   whatIfCounterfactual?: YearData[];
   whatIfDelta?: { debtDeltaTrillions: number } | null;
+  isRevisionMode?: boolean;
 }
 
 export function DebtDeficitChart({
@@ -29,6 +30,7 @@ export function DebtDeficitChart({
   currentYear,
   whatIfCounterfactual,
   whatIfDelta,
+  isRevisionMode = false,
 }: DebtDeficitChartProps) {
   const chartData = useMemo(() => {
     const filtered = data.filter((d) => d.year <= currentYear);
@@ -59,7 +61,7 @@ export function DebtDeficitChart({
     <div className="rounded-lg border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-zinc-300">
-          Debt & Deficit Over Time
+          {isRevisionMode ? "Alternate Timeline: Debt & Deficit" : "Debt & Deficit Over Time"}
         </h3>
         {deltaLabel && (
           <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-[#4ecca3]">
@@ -93,17 +95,19 @@ export function DebtDeficitChart({
             itemStyle={{ padding: 0 }}
             formatter={(value) => `$${Number(value).toFixed(2)}T`}
           />
-          <ReferenceLine
-            x={LAST_HISTORICAL_YEAR}
-            stroke="#555"
-            strokeDasharray="3 3"
-            label={{
-              value: "Projected \u25B8",
-              position: "top",
-              fill: "#71717a",
-              fontSize: 10,
-            }}
-          />
+          {!isRevisionMode && (
+            <ReferenceLine
+              x={LAST_HISTORICAL_YEAR}
+              stroke="#555"
+              strokeDasharray="3 3"
+              label={{
+                value: "Projected \u25B8",
+                position: "top",
+                fill: "#71717a",
+                fontSize: 10,
+              }}
+            />
+          )}
           <Bar
             dataKey="deficit"
             name="Deficit"
@@ -114,16 +118,17 @@ export function DebtDeficitChart({
           <Line
             type="monotone"
             dataKey="baselineDebt"
-            name="Current Policy (no changes)"
-            stroke="#444"
+            name={isRevisionMode ? "What Actually Happened" : "Current Policy (no changes)"}
+            stroke={isRevisionMode ? "#666" : "#444"}
             strokeDasharray="5 5"
+            strokeWidth={isRevisionMode ? 2 : 1}
             dot={false}
             connectNulls
           />
           <Line
             type="monotone"
             dataKey="debt"
-            name="Your Policy"
+            name={isRevisionMode ? "Your Alternate Timeline" : "Your Policy"}
             stroke="#e94560"
             strokeWidth={2}
             dot={false}

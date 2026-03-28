@@ -40,7 +40,11 @@ export function stateToURL(state: SimulationState): URLState {
   if (state.assumptions.behavioralElasticity !== DEFAULT_ASSUMPTIONS.behavioralElasticity)
     url.ae = state.assumptions.behavioralElasticity;
 
-  if (state.mode === "whatif") url.m = "whatif";
+  // Mode: only encode non-default. Default is "revision".
+  if (state.mode === "fix") url.m = "fix";
+  else if (state.mode === "whatif") url.m = "whatif";
+  else if (state.mode === "forward") url.m = "forward";
+  // "revision" is the default — don't encode it
   if (state.whatIfEventIds.length > 0) url.we = state.whatIfEventIds.join(",");
 
   // Encode bracket rates that differ from defaults
@@ -102,12 +106,17 @@ export function urlToState(urlState: URLState): Partial<SimulationState> {
   }
 
   // Mode and what-if event
-  if (urlState.m === "whatif") {
+  if (urlState.m === "fix") {
+    partial.mode = "fix" as SimMode;
+  } else if (urlState.m === "revision") {
+    partial.mode = "revision" as SimMode;
+  } else if (urlState.m === "whatif") {
     partial.mode = "whatif" as SimMode;
+  } else if (urlState.m === "forward") {
+    partial.mode = "forward" as SimMode;
   }
   if (urlState.we) {
     partial.whatIfEventIds = urlState.we.split(",").filter(Boolean);
-    partial.mode = "whatif" as SimMode;
   }
 
   // Decode bracket rates
