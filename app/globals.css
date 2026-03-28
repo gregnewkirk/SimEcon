@@ -138,6 +138,30 @@
   }
 }
 
+/* ─── Mode-specific color shifts ─── */
+
+/* Revision mode: warm amber tint — "looking at the past" */
+[data-mode="revision"] {
+  --simecon-bg-deep: #faf8f4;
+  --simecon-bg-sidebar: #fdfbf8;
+  --simecon-border: #e8e2d8;
+  --simecon-accent: #c4870a;
+}
+[data-mode="revision"] main {
+  background-color: #faf8f4 !important;
+}
+
+/* Fix mode: cool blue tint — "building the future" */
+[data-mode="fix"] {
+  --simecon-bg-deep: #f5f8fc;
+  --simecon-bg-sidebar: #f8fafd;
+  --simecon-border: #d8e2ef;
+  --simecon-accent: #007AFF;
+}
+[data-mode="fix"] main {
+  background-color: #f5f8fc !important;
+}
+
 /* Playback button pulse animation */
 @keyframes playback-pulse {
   0%, 100% {

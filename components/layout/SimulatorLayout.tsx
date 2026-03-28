@@ -87,7 +87,7 @@ export function SimulatorLayout() {
 
   return (
     <TooltipProvider delay={200}>
-      <div className="flex h-screen flex-col">
+      <div className="flex h-screen flex-col" data-mode={sim.isRevisionMode ? "revision" : "fix"}>
         <Header
           onMenuToggle={() => setSidebarOpen((o) => !o)}
           onShowYourWork={() => setShowYourWorkOpen(true)}
