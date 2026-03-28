@@ -10,6 +10,7 @@ import {
   Tooltip,
   ReferenceLine,
   ResponsiveContainer,
+  Label,
 } from "recharts";
 import type { YearData } from "@/lib/types";
 import { LAST_HISTORICAL_YEAR } from "@/lib/data/defaults";
@@ -18,32 +19,52 @@ interface DebtDeficitChartProps {
   data: YearData[];
   baselineData: YearData[];
   currentYear: number;
+  whatIfCounterfactual?: YearData[];
+  whatIfDelta?: { debtDeltaTrillions: number } | null;
 }
 
 export function DebtDeficitChart({
   data,
   baselineData,
   currentYear,
+  whatIfCounterfactual,
+  whatIfDelta,
 }: DebtDeficitChartProps) {
   const chartData = useMemo(() => {
     const filtered = data.filter((d) => d.year <= currentYear);
     const baselineMap = new Map(baselineData.map((d) => [d.year, d]));
+    const cfMap = whatIfCounterfactual
+      ? new Map(whatIfCounterfactual.map((d) => [d.year, d]))
+      : null;
 
     return filtered.map((d) => ({
       year: d.year,
       debt: d.debtTrillions,
       baselineDebt: baselineMap.get(d.year)?.debtTrillions ?? null,
       deficit: Math.abs(d.deficitBillions) / 1000,
+      counterfactualDebt: cfMap?.get(d.year)?.debtTrillions ?? null,
     }));
-  }, [data, baselineData, currentYear]);
+  }, [data, baselineData, whatIfCounterfactual, currentYear]);
 
   const formatTrillion = (v: number) => `$${v.toFixed(0)}T`;
 
+  const deltaLabel =
+    whatIfDelta != null
+      ? `Debt difference: ${whatIfDelta.debtDeltaTrillions >= 0 ? "+" : ""}$${Math.abs(whatIfDelta.debtDeltaTrillions).toFixed(1)}T`
+      : null;
+
   return (
     <div className="rounded-lg border bg-card p-4">
-      <h3 className="mb-3 text-sm font-semibold text-zinc-300">
-        Debt & Deficit Over Time
-      </h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-zinc-300">
+          Debt & Deficit Over Time
+        </h3>
+        {deltaLabel && (
+          <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-[#4ecca3]">
+            {deltaLabel}
+          </span>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={260}>
         <ComposedChart data={chartData}>
           <XAxis
@@ -104,6 +125,18 @@ export function DebtDeficitChart({
             strokeWidth={2}
             dot={false}
           />
+          {whatIfCounterfactual && (
+            <Line
+              type="monotone"
+              dataKey="counterfactualDebt"
+              name="Counterfactual Debt"
+              stroke="#4ecca3"
+              strokeWidth={2}
+              strokeDasharray="6 3"
+              dot={false}
+              connectNulls
+            />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
     </div>

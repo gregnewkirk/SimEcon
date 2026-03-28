@@ -62,7 +62,13 @@ export function SimulatorLayout() {
   return (
     <TooltipProvider delay={200}>
       <div className="flex h-screen flex-col">
-        <Header onMenuToggle={() => setSidebarOpen((o) => !o)} />
+        <Header
+          onMenuToggle={() => setSidebarOpen((o) => !o)}
+          mode={sim.state.mode}
+          whatIfEventId={sim.state.whatIfEventId}
+          onModeChange={sim.setMode}
+          onEventChange={sim.setWhatIfEvent}
+        />
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop sidebar — always visible at lg+ */}
           <div className="hidden lg:block">{sidebarContent}</div>
@@ -89,6 +95,8 @@ export function SimulatorLayout() {
               data={sim.allData}
               baselineData={sim.baselineAllData}
               currentYear={sim.state.currentYear}
+              whatIfCounterfactual={sim.whatIfData?.counterfactual}
+              whatIfDelta={sim.whatIfDelta}
             />
             <WealthDistributionChart
               data={sim.allData}

@@ -1,12 +1,24 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import type { SimMode } from "@/lib/types";
+import { WhatIfControls } from "@/components/shared/WhatIfControls";
 
 interface HeaderProps {
   onMenuToggle?: () => void;
+  mode?: SimMode;
+  whatIfEventId?: string;
+  onModeChange?: (mode: SimMode) => void;
+  onEventChange?: (eventId: string) => void;
 }
 
-export function Header({ onMenuToggle }: HeaderProps) {
+export function Header({
+  onMenuToggle,
+  mode = "forward",
+  whatIfEventId,
+  onModeChange,
+  onEventChange,
+}: HeaderProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = useCallback(() => {
@@ -49,6 +61,19 @@ export function Header({ onMenuToggle }: HeaderProps) {
           Economic Policy Simulator
         </span>
       </div>
+
+      {/* What-if controls — hidden on mobile */}
+      {onModeChange && onEventChange && (
+        <div className="hidden md:flex">
+          <WhatIfControls
+            mode={mode}
+            whatIfEventId={whatIfEventId}
+            onModeChange={onModeChange}
+            onEventChange={onEventChange}
+          />
+        </div>
+      )}
+
       <button
         onClick={handleShare}
         className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200"
