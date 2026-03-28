@@ -1,6 +1,8 @@
-import type { WhatIfEvent, AdvancedAssumptions, YearData } from "../types";
-import { simulate } from "./simulate";
+import type { WhatIfEvent, AdvancedAssumptions, TaxPolicy, YearData } from "../types";
+import { CURRENT_POLICY } from "../data/defaults";
 import { HISTORICAL_DATA } from "../data/historical";
+import { calculateTaxRevenue } from "./tax-revenue";
+import { redistributeWealth } from "./wealth-redistribution";
 
 export interface WhatIfResult {
   actual: YearData[];
@@ -15,72 +17,60 @@ export interface WhatIfDelta {
 }
 
 /**
- * Simulate a what-if scenario: what would have happened if a historical
- * policy event had NOT occurred (i.e. the counterfactual policy applied).
+ * Simulate a what-if scenario.
  *
- * Takes historical data up to (event.year - 1), then runs the simulation
- * forward with the counterfactual tax policy. Also runs the simulation
- * with the actual policy so both timelines can be compared.
+ * For TAX events: replays history from the event year with counterfactual tax rates.
+ * For SPENDING events: replays history with reduced spending (e.g., no war costs).
+ * For BOTH: applies both counterfactual tax rates AND spending reductions.
+ *
+ * The "actual" timeline uses real historical data + current-policy projections.
+ * The "counterfactual" timeline diverges from (event.year - 1) with alternate policy.
  */
 export function simulateWhatIf(
   event: WhatIfEvent,
   assumptions: AdvancedAssumptions,
   endYear: number
 ): WhatIfResult {
-  // Historical data up to and including the year before the event
+  // Historical data before the event
   const preEventData = HISTORICAL_DATA.filter((d) => d.year < event.year);
 
   if (preEventData.length === 0) {
     return { actual: [], counterfactual: [] };
   }
 
-  // Actual policy: use whatever rates were in effect after the event.
-  // We approximate this by finding the historical data entry at event.year
-  // and running the simulation from the pre-event baseline with a "status quo"
-  // policy derived from the year the event took effect.
-  const actualPostEventData = HISTORICAL_DATA.filter(
-    (d) => d.year >= event.year
-  );
+  // === ACTUAL TIMELINE ===
+  // Use real historical data, then project forward with current policy
+  const allHistorical = HISTORICAL_DATA.filter((d) => d.year <= endYear);
+  const lastHistYear = allHistorical[allHistorical.length - 1]?.year ?? endYear;
+  const actual: YearData[] = [...allHistorical];
 
-  // For the actual timeline, use full historical data plus projections
-  const actualHistorical = HISTORICAL_DATA.filter((d) => d.year <= endYear);
-  const lastHistoricalYear = actualHistorical[actualHistorical.length - 1]?.year ?? endYear;
-
-  // Derive actual policy from defaults (post-event rates)
-  // We infer the actual policy from the counterfactual by assuming
-  // the event changed rates FROM counterfactual TO the actual rates in history.
-  // The actual rates for TCJA era: 37% top, 20% CG, 21% corp, 40% estate
-  // We use the historical data as-is for the actual timeline.
-  const actual: YearData[] = [...actualHistorical];
-
-  // If we need to project beyond historical data
-  if (endYear > lastHistoricalYear) {
-    // Use a "status quo" policy for the actual timeline
-    // This approximates the rates that were actually in effect
-    const lastEntry = HISTORICAL_DATA[HISTORICAL_DATA.length - 1];
-    const actualProjected = simulate(
-      actualHistorical,
-      {
-        // Current law rates (post all events)
-        topMarginalRate: 37,
-        capitalGainsRate: 20,
-        corporateRate: 21,
-        estateRate: 40,
-      },
-      [],
+  if (endYear > lastHistYear) {
+    const projected = simulateForward(
+      allHistorical,
+      CURRENT_POLICY,
+      0, // no spending change
+      0,
+      endYear,
       assumptions,
-      endYear
+      endYear // never active (no spending reduction for actual)
     );
-    actual.push(...actualProjected);
+    actual.push(...projected);
   }
 
-  // Counterfactual: run from pre-event data with the counterfactual policy
-  const counterfactualProjected = simulate(
+  // === COUNTERFACTUAL TIMELINE ===
+  // Use pre-event historical data, then simulate forward with counterfactual
+  const cfPolicy = event.counterfactualPolicy ?? CURRENT_POLICY;
+  const spendingReduction = event.spendingReductionBillionsPerYear ?? 0;
+  const spendingEndYear = event.endYear ?? endYear;
+
+  const counterfactualProjected = simulateForward(
     preEventData,
-    event.counterfactualPolicy,
-    [],
+    cfPolicy,
+    spendingReduction,
+    event.year,
+    endYear,
     assumptions,
-    endYear
+    spendingEndYear
   );
 
   const counterfactual: YearData[] = [
@@ -92,8 +82,83 @@ export function simulateWhatIf(
 }
 
 /**
- * Calculate the delta between actual and counterfactual timelines
- * at a specific year.
+ * Forward simulation with optional spending reduction during a time window.
+ * Used by what-if to replay history under alternate policy.
+ */
+function simulateForward(
+  historicalData: YearData[],
+  taxPolicy: TaxPolicy,
+  spendingReductionPerYear: number,
+  spendingStartYear: number,
+  endYear: number,
+  assumptions: AdvancedAssumptions,
+  spendingEndYear: number
+): YearData[] {
+  if (historicalData.length === 0) return [];
+
+  const lastHistorical = historicalData[historicalData.length - 1];
+  const projected: YearData[] = [];
+  let prev = lastHistorical;
+
+  for (let year = lastHistorical.year + 1; year <= endYear; year++) {
+    // GDP growth
+    const gdpTrillions = prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100);
+
+    // Tax revenue under counterfactual policy
+    const revenueBillions = calculateTaxRevenue(prev, taxPolicy, gdpTrillions);
+
+    // Interest on debt
+    const interestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
+
+    // Non-interest spending (strip previous interest, grow with GDP)
+    const prevInterest = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
+    const prevNonInterest = Math.max(prev.spendingBillions - prevInterest, 0);
+    let nonInterestSpending = prevNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+
+    // Apply spending reduction if within the event window
+    if (spendingReductionPerYear > 0 && year >= spendingStartYear && year <= spendingEndYear) {
+      nonInterestSpending = Math.max(nonInterestSpending - spendingReductionPerYear, 0);
+    }
+
+    const spendingBillions = nonInterestSpending + interestBillions;
+
+    // Deficit
+    const deficitBillions = -(spendingBillions - revenueBillions);
+
+    // Debt
+    const debtTrillions = prev.debtTrillions - deficitBillions / 1000;
+
+    // Wealth redistribution
+    const wealthShares = redistributeWealth(
+      prev.wealthShares,
+      taxPolicy,
+      assumptions,
+      assumptions.gdpGrowthRate,
+      0,
+      gdpTrillions
+    );
+
+    const yearData: YearData = {
+      year,
+      debtTrillions,
+      deficitBillions,
+      revenueBillions,
+      spendingBillions,
+      gdpTrillions,
+      debtToGdpRatio: (debtTrillions / gdpTrillions) * 100,
+      wealthShares,
+      isProjected: true,
+    };
+
+    projected.push(yearData);
+    prev = yearData;
+  }
+
+  return projected;
+}
+
+/**
+ * Calculate the delta between actual and counterfactual timelines at a specific year.
  */
 export function calculateWhatIfDelta(
   actual: YearData[],

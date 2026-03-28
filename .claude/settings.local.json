@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx tsc:*)",
+      "Bash(npx shadcn@latest add tabs --yes)",
+      "Bash(npx shadcn@latest add sheet --yes)",
+      "Bash(timeout 15 npx next dev --turbopack)",
+      "mcp__obsidian__write_note",
+      "Bash(gh repo:*)",
+      "Bash(where vercel:*)",
+      "Bash(npm list:*)",
+      "Bash(vercel --yes)",
+      "Bash(vercel --yes --name simecon)",
+      "Bash(vercel domains:*)",
+      "Read(//c/Users/gnwk/.claude/**)",
+      "Bash(env)",
+      "mcp__mcp-registry__search_mcp_registry",
+      "mcp__obsidian__search_notes",
+      "Bash(curl -s -X POST https://api.porkbun.com/api/json/v3/dns/retrieve/simecon.app -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(nslookup simecon.app 8.8.8.8)"
+    ]
+  }
+}

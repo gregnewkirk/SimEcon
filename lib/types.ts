@@ -89,8 +89,12 @@ export interface WhatIfEvent {
   id: string;
   name: string;
   year: number;
+  endYear?: number; // When the spending ended (for wars, temporary programs)
   description: string;
-  counterfactualPolicy: TaxPolicy;
+  counterfactualPolicy?: TaxPolicy; // Tax policy counterfactual
+  spendingReductionBillionsPerYear?: number; // Annual spending avoided
+  totalCostTrillions?: number; // Display: total cost of the event
+  category: "tax" | "spending" | "both";
 }
 
 export interface Persona {

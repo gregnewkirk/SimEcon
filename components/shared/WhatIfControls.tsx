@@ -59,9 +59,33 @@ export function WhatIfControls({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {WHAT_IF_EVENTS.map((event) => (
+            <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              Spending Events
+            </div>
+            {WHAT_IF_EVENTS.filter((e) => e.category === "spending" || e.category === "both").map(
+              (event) => (
+                <SelectItem key={event.id} value={event.id}>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-zinc-500">{event.year}</span>
+                    <span>{event.name}</span>
+                    {event.totalCostTrillions && (
+                      <span className="text-[10px] text-[#e94560]">
+                        (${event.totalCostTrillions}T)
+                      </span>
+                    )}
+                  </span>
+                </SelectItem>
+              )
+            )}
+            <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mt-1">
+              Tax Policy Changes
+            </div>
+            {WHAT_IF_EVENTS.filter((e) => e.category === "tax").map((event) => (
               <SelectItem key={event.id} value={event.id}>
-                {event.year} — {event.name}
+                <span className="flex items-center gap-1.5">
+                  <span className="text-zinc-500">{event.year}</span>
+                  <span>{event.name}</span>
+                </span>
               </SelectItem>
             ))}
           </SelectContent>
