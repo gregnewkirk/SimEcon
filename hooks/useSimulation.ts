@@ -137,20 +137,25 @@ export function useSimulation() {
     [baselineAllData, state.currentYear]
   );
 
-  // "Today" data — always anchored to the last historical year (present day)
+  // "Today" data — mode-aware comparison point
+  // Revision mode: compare at 2025 (present day in the alternate timeline)
+  // Fix mode: compare at end of projection (2050) to show cumulative impact
   const todayYoursData = useMemo(() => {
     if (isRevisionMode && revisionData) {
-      // In revision mode: find year 2025 in the alternate timeline
       const altToday = revisionData.find((d) => d.year === LAST_HISTORICAL_YEAR);
       return altToday ?? allData[0];
     }
-    return allData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? allData[0];
+    // Fix mode: use end of projection to show full impact
+    return allData[allData.length - 1] ?? allData[0];
   }, [isRevisionMode, revisionData, allData]);
 
-  const todayActualData = useMemo(
-    () => baselineAllData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? baselineAllData[0],
-    [baselineAllData]
-  );
+  const todayActualData = useMemo(() => {
+    if (isRevisionMode) {
+      return baselineAllData.find((d) => d.year === LAST_HISTORICAL_YEAR) ?? baselineAllData[0];
+    }
+    // Fix mode: use end of baseline projection for apples-to-apples comparison
+    return baselineAllData[baselineAllData.length - 1] ?? baselineAllData[0];
+  }, [baselineAllData, isRevisionMode]);
 
   // Actions
   const setTaxPolicy = useCallback((policy: Partial<TaxPolicy>) => {

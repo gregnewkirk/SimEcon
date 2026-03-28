@@ -68,7 +68,10 @@ export function BudgetGame({
       {/* Budget Balance Bar + Grade */}
       <div className="rounded-xl border border-[#e5e5ea] bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#1d1d1f]">Budget Balance</h2>
+          <div>
+            <h2 className="text-sm font-semibold text-[#1d1d1f]">Annual Federal Budget</h2>
+            <p className="text-xs text-[#86868b]">How much the government takes in vs. spends each year</p>
+          </div>
           <div className="flex items-center gap-3">
             <span
               className="text-4xl font-black transition-all duration-500"
@@ -78,8 +81,8 @@ export function BudgetGame({
             </span>
             <span className="text-xs text-[#86868b]">
               {isSurplus
-                ? `Surplus: ${formatB(Math.abs(deficit))}`
-                : `Deficit: ${formatB(deficit)}`}
+                ? `Annual surplus: ${formatB(Math.abs(deficit))}/yr`
+                : `Annual deficit: ${formatB(deficit)}/yr`}
             </span>
           </div>
         </div>

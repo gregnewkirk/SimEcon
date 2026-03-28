@@ -125,14 +125,6 @@ export function SimulatorLayout() {
                 onPerspectiveChange={sim.setViewPerspective}
               />
 
-              {/* Trade-off cards for simple + revision mode */}
-              {sim.isRevisionMode && sim.state.whatIfEventIds.length > 0 && (
-                <TradeOffCards
-                  whatIfEventIds={sim.state.whatIfEventIds}
-                  enabledPrograms={sim.state.enabledPrograms}
-                />
-              )}
-
               {/* Conditional rendering based on view */}
               {sim.state.viewPerspective === "kitchen" && sim.state.viewComplexity === "simple" ? (
                 <HouseholdImpact
@@ -147,13 +139,6 @@ export function SimulatorLayout() {
                 />
               ) : sim.state.viewComplexity === "simple" ? (
                 <>
-                  <BudgetGame
-                    taxPolicy={sim.state.taxPolicy}
-                    enabledPrograms={sim.state.enabledPrograms}
-                    onToggleProgram={sim.toggleProgram}
-                    todayYours={sim.todayYoursData}
-                    todayActual={sim.todayActualData}
-                  />
                   <SimpleView
                     todayYours={sim.todayYoursData}
                     todayActual={sim.todayActualData}
@@ -161,6 +146,13 @@ export function SimulatorLayout() {
                     baselineAllData={sim.baselineAllData}
                     currentYear={sim.state.currentYear}
                     isRevisionMode={sim.isRevisionMode}
+                  />
+                  <BudgetGame
+                    taxPolicy={sim.state.taxPolicy}
+                    enabledPrograms={sim.state.enabledPrograms}
+                    onToggleProgram={sim.toggleProgram}
+                    todayYours={sim.todayYoursData}
+                    todayActual={sim.todayActualData}
                   />
                 </>
               ) : (
@@ -179,6 +171,14 @@ export function SimulatorLayout() {
                   whatIfCounterfactual={sim.whatIfData?.counterfactual}
                   whatIfDelta={sim.whatIfDelta}
                   isRevisionMode={sim.isRevisionMode}
+                />
+              )}
+
+              {/* Trade-off cards — bottom of page, simple view only */}
+              {sim.state.viewComplexity === "simple" && sim.isRevisionMode && sim.state.whatIfEventIds.length > 0 && (
+                <TradeOffCards
+                  whatIfEventIds={sim.state.whatIfEventIds}
+                  enabledPrograms={sim.state.enabledPrograms}
                 />
               )}
 
