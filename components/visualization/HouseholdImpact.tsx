@@ -120,7 +120,7 @@ export function HouseholdImpact({
   const maxBarPct = 70; // max bar width %
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {personas.map((p) => {
         const isPositive = p.netImpact >= 0;
         const barWidth = logScale(p.netImpact, maxBarPct);
@@ -128,83 +128,57 @@ export function HouseholdImpact({
         return (
           <div
             key={p.id}
-            className="rounded-lg border border-[#e5e5ea] bg-white shadow-sm p-4"
+            className="flex items-center gap-3 rounded-lg border border-[#e5e5ea] bg-white shadow-sm px-3 py-2.5"
           >
-            <div className="flex items-center gap-3">
-              {/* Icon */}
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-xl">
-                {p.icon}
-              </span>
+            {/* Icon */}
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-lg">
+              {p.icon}
+            </span>
 
-              {/* Name + income */}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold text-[#1d1d1f]">
-                    {p.title}
-                  </span>
-                  <span className="text-xs text-[#86868b]">
-                    {p.name} &middot; {formatIncome(p.income)}/yr
-                  </span>
-                </div>
-
-                {/* Diverging bar */}
-                <div className="mt-2 flex items-center gap-1">
-                  {/* Left side (negative / pays more) */}
-                  <div className="flex h-5 w-1/2 justify-end">
-                    {!isPositive && (
-                      <div
-                        className="h-full rounded-l bg-[#ff3b30]/80 transition-all duration-500"
-                        style={{ width: `${barWidth}%` }}
-                      />
-                    )}
-                  </div>
-                  {/* Center line */}
-                  <div className="h-6 w-px bg-[#c7c7cc]" />
-                  {/* Right side (positive / saves money) */}
-                  <div className="flex h-5 w-1/2">
-                    {isPositive && (
-                      <div
-                        className="h-full rounded-r bg-[#34c759]/80 transition-all duration-500"
-                        style={{ width: `${barWidth}%` }}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Labels under bar */}
-                <div className="mt-1 flex justify-between text-[10px] text-[#86868b]">
-                  <span>Pays more</span>
-                  <span>Saves money</span>
-                </div>
+            {/* Name + income */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-semibold text-[#1d1d1f]">
+                  {p.title}
+                </span>
+                <span className="text-[11px] text-[#86868b]">
+                  {formatIncome(p.income)}/yr
+                </span>
               </div>
 
-              {/* Net impact amount */}
-              <div className="shrink-0 text-right">
-                <p
-                  className={`text-lg font-bold tabular-nums ${
-                    isPositive ? "text-[#34c759]" : "text-[#ff3b30]"
-                  }`}
-                >
-                  {p.netImpact >= 0 ? "+" : "-"}
-                  {formatDollars(p.netImpact)}<span className="text-xs font-normal text-[#86868b]">/yr</span>
-                </p>
-                <div className="mt-0.5 flex items-center gap-2 text-[10px] text-[#86868b]">
-                  {p.taxChange !== 0 && (
-                    <span
-                      className={
-                        p.taxChange > 0 ? "text-[#ff3b30]/70" : "text-[#34c759]/70"
-                      }
-                    >
-                      Tax: {p.taxChange > 0 ? "+" : "-"}{formatDollars(p.taxChange)}
-                    </span>
+              {/* Compact horizontal bar */}
+              <div className="mt-1 flex items-center gap-0.5 h-3">
+                <div className="flex h-full w-1/2 justify-end">
+                  {!isPositive && (
+                    <div
+                      className="h-full rounded-l bg-[#ff3b30]/80 transition-all duration-500"
+                      style={{ width: `${barWidth}%` }}
+                    />
                   )}
-                  {p.benefits > 0 && (
-                    <span className="text-[#34c759]/70">
-                      Benefits: +{formatDollars(p.benefits)}
-                    </span>
+                </div>
+                <div className="h-full w-px bg-[#c7c7cc]" />
+                <div className="flex h-full w-1/2">
+                  {isPositive && (
+                    <div
+                      className="h-full rounded-r bg-[#34c759]/80 transition-all duration-500"
+                      style={{ width: `${barWidth}%` }}
+                    />
                   )}
                 </div>
               </div>
+            </div>
+
+            {/* Net impact amount */}
+            <div className="shrink-0 text-right">
+              <p
+                className={`text-base font-bold tabular-nums ${
+                  isPositive ? "text-[#34c759]" : "text-[#ff3b30]"
+                }`}
+              >
+                {p.netImpact >= 0 ? "+" : "-"}
+                {formatDollars(p.netImpact)}
+                <span className="text-xs font-normal text-[#86868b]">/yr</span>
+              </p>
             </div>
           </div>
         );

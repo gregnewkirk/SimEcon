@@ -410,17 +410,38 @@ export function SinglePageLayout() {
               <h3 className="mb-1 mt-8 text-xs font-semibold uppercase tracking-wider text-[#af52de]">
                 Experimental
               </h3>
-              <p className="mb-3 text-[10px] text-[#c7c7cc]">Bold ideas with real economics</p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {experimentalPrograms.map((p) => (
-                  <ProgramCard
-                    key={p.id}
-                    program={p}
-                    enabled={sim.state.enabledPrograms.includes(p.id)}
-                    type={p.netCostBillions < 0 ? "revenue" : "spending"}
-                    onToggle={() => sim.toggleProgram(p.id)}
-                  />
-                ))}
+              <p className="mb-3 text-[10px] text-[#c7c7cc]">Bold ideas with real economics behind them</p>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {/* Left column: costs money */}
+                <div>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#ff3b30]">💸 Costs Money (with ROI)</p>
+                  <div className="space-y-2">
+                    {experimentalPrograms.filter((p) => p.netCostBillions > 0).map((p) => (
+                      <ProgramCard
+                        key={p.id}
+                        program={p}
+                        enabled={sim.state.enabledPrograms.includes(p.id)}
+                        type="spending"
+                        onToggle={() => sim.toggleProgram(p.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Right column: makes money */}
+                <div>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#34c759]">💰 Generates Revenue</p>
+                  <div className="space-y-2">
+                    {experimentalPrograms.filter((p) => p.netCostBillions <= 0).map((p) => (
+                      <ProgramCard
+                        key={p.id}
+                        program={p}
+                        enabled={sim.state.enabledPrograms.includes(p.id)}
+                        type="revenue"
+                        onToggle={() => sim.toggleProgram(p.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -619,6 +640,8 @@ export function SinglePageLayout() {
           enabledPrograms={sim.state.enabledPrograms}
           todayYours={sim.todayYoursData}
           todayActual={sim.todayActualData}
+          allData={sim.allData}
+          baselineAllData={sim.baselineAllData}
           shareUrl={typeof window !== "undefined" ? window.location.href : "https://simecon.app"}
         />
       </div>

@@ -22,6 +22,9 @@ interface ShareCardProps {
   todayYours: YearData;
   todayActual: YearData;
   shareUrl: string;
+  /** Full timeline data for mini chart */
+  allData?: YearData[];
+  baselineAllData?: YearData[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -207,16 +210,122 @@ function drawCard(
     metricsY + 48
   );
 
-  // ─── Separator ─────────────────────────────────────────────────────
+  // ─── Mini Debt Trajectory Chart ────────────────────────────────────
+  const chartX = 40;
+  const chartY = 230;
+  const chartW = W - 80;
+  const chartH = 160;
+
+  // Draw chart background
+  ctx.fillStyle = "#f8f9fa";
+  roundRect(ctx, chartX, chartY, chartW, chartH, 8);
+  ctx.fill();
   ctx.strokeStyle = "#e5e5ea";
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(40, 240);
-  ctx.lineTo(W - 40, 240);
+  roundRect(ctx, chartX, chartY, chartW, chartH, 8);
   ctx.stroke();
 
+  // Chart label
+  ctx.fillStyle = "#86868b";
+  ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("DEBT TRAJECTORY", chartX + 12, chartY + 18);
+
+  if (props.allData && props.baselineAllData && props.allData.length > 1) {
+    const allData = props.allData;
+    const baseline = props.baselineAllData;
+    const baselineMap = new Map(baseline.map((d) => [d.year, d]));
+
+    // Find min/max for scaling
+    let maxDebt = 0;
+    for (const d of allData) {
+      maxDebt = Math.max(maxDebt, d.debtTrillions);
+      const bl = baselineMap.get(d.year);
+      if (bl) maxDebt = Math.max(maxDebt, bl.debtTrillions);
+    }
+    maxDebt = Math.max(maxDebt, 1); // prevent div by zero
+
+    const padLeft = 12;
+    const padRight = 12;
+    const padTop = 30;
+    const padBot = 20;
+    const plotW = chartW - padLeft - padRight;
+    const plotH = chartH - padTop - padBot;
+
+    const yearMin = allData[0].year;
+    const yearMax = allData[allData.length - 1].year;
+    const yearRange = Math.max(yearMax - yearMin, 1);
+
+    const toX = (year: number) => chartX + padLeft + ((year - yearMin) / yearRange) * plotW;
+    const toY = (debt: number) => chartY + padTop + plotH - (debt / maxDebt) * plotH;
+
+    // Draw baseline (gray dashed)
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "#c7c7cc";
+    ctx.lineWidth = 2;
+    let first = true;
+    for (const d of allData) {
+      const bl = baselineMap.get(d.year);
+      if (!bl) continue;
+      const x = toX(d.year);
+      const y = toY(bl.debtTrillions);
+      if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw "yours" line (colored)
+    const yourDebtEnd = allData[allData.length - 1].debtTrillions;
+    const baselineDebtEnd = baselineMap.get(allData[allData.length - 1].year)?.debtTrillions ?? yourDebtEnd;
+    const saving = yourDebtEnd < baselineDebtEnd;
+    const lineColor = saving ? "#34c759" : "#ff3b30";
+
+    // Fill area under yours line
+    ctx.beginPath();
+    for (let i = 0; i < allData.length; i++) {
+      const x = toX(allData[i].year);
+      const y = toY(allData[i].debtTrillions);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.lineTo(toX(allData[allData.length - 1].year), chartY + padTop + plotH);
+    ctx.lineTo(toX(allData[0].year), chartY + padTop + plotH);
+    ctx.closePath();
+    ctx.fillStyle = saving ? "rgba(52,199,89,0.1)" : "rgba(255,59,48,0.1)";
+    ctx.fill();
+
+    // Draw yours line
+    ctx.beginPath();
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 3;
+    for (let i = 0; i < allData.length; i++) {
+      const x = toX(allData[i].year);
+      const y = toY(allData[i].debtTrillions);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Year labels
+    ctx.fillStyle = "#86868b";
+    ctx.font = "10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(String(yearMin), toX(yearMin), chartY + chartH - 4);
+    ctx.fillText(String(yearMax), toX(yearMax), chartY + chartH - 4);
+
+    // Legend
+    ctx.textAlign = "right";
+    ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    ctx.fillStyle = lineColor;
+    ctx.fillText(`Yours: $${yourDebtEnd.toFixed(1)}T`, chartX + chartW - 12, chartY + 18);
+    ctx.fillStyle = "#c7c7cc";
+    ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    ctx.fillText(`Baseline: $${baselineDebtEnd.toFixed(1)}T`, chartX + chartW - 12, chartY + 32);
+  }
+
+  ctx.textAlign = "left";
+
   // ─── Tax Rates + Programs ──────────────────────────────────────────
-  const detailY = 270;
+  const detailY = chartY + chartH + 20;
 
   // Tax rates column
   drawMetricLabel(ctx, 40, detailY, "TAX RATES");
@@ -272,7 +381,7 @@ function drawCard(
   }
 
   // ─── Household impact ──────────────────────────────────────────────
-  const impactY = 430;
+  const impactY = detailY + 120;
   ctx.strokeStyle = "#e5e5ea";
   ctx.lineWidth = 1;
   ctx.beginPath();
