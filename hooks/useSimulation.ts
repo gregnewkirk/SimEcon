@@ -101,10 +101,14 @@ export function useSimulation() {
     return [lastHistorical, ...projectedData];
   }, [isRevisionMode, revisionData, projectedData]);
 
-  const baselineAllData: YearData[] = useMemo(
-    () => [...HISTORICAL_DATA, ...baselineData],
-    [baselineData]
-  );
+  const baselineAllData: YearData[] = useMemo(() => {
+    if (isRevisionMode) {
+      return [...HISTORICAL_DATA, ...baselineData];
+    }
+    // Fix mode: match allData range — start from present day
+    const lastHistorical = HISTORICAL_DATA[HISTORICAL_DATA.length - 1];
+    return [lastHistorical, ...baselineData];
+  }, [baselineData, isRevisionMode]);
 
   // What-if mode data — works in both modes
   const whatIfData = useMemo(() => {
