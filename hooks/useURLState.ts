@@ -58,6 +58,10 @@ export function stateToURL(state: SimulationState): URLState {
     });
   }
 
+  // View toggles: only encode non-defaults
+  if (state.viewComplexity === "advanced") url.vc = "advanced";
+  if (state.viewPerspective === "kitchen") url.vp = "kitchen";
+
   return url;
 }
 
@@ -117,6 +121,14 @@ export function urlToState(urlState: URLState): Partial<SimulationState> {
   }
   if (urlState.we) {
     partial.whatIfEventIds = urlState.we.split(",").filter(Boolean);
+  }
+
+  // View toggles
+  if (urlState.vc === "advanced") {
+    partial.viewComplexity = "advanced";
+  }
+  if (urlState.vp === "kitchen") {
+    partial.viewPerspective = "kitchen";
   }
 
   // Decode bracket rates

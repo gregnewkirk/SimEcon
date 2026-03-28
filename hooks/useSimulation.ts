@@ -7,6 +7,8 @@ import type {
   TaxPolicy,
   AdvancedAssumptions,
   YearData,
+  ViewComplexity,
+  ViewPerspective,
 } from "@/lib/types";
 import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR, DEFAULT_END_YEAR, LAST_HISTORICAL_YEAR } from "@/lib/data/defaults";
 import { HISTORICAL_DATA } from "@/lib/data/historical";
@@ -34,6 +36,8 @@ function createInitialState(): SimulationState {
     advancedMode: false,
     mode: "revision",
     whatIfEventIds: [],
+    viewComplexity: "simple",
+    viewPerspective: "macro",
   };
 }
 
@@ -224,6 +228,14 @@ export function useSimulation() {
     setState((prev) => ({ ...prev, mode }));
   }, []);
 
+  const setViewComplexity = useCallback((viewComplexity: ViewComplexity) => {
+    setState((prev) => ({ ...prev, viewComplexity }));
+  }, []);
+
+  const setViewPerspective = useCallback((viewPerspective: ViewPerspective) => {
+    setState((prev) => ({ ...prev, viewPerspective }));
+  }, []);
+
   const toggleWhatIfEvent = useCallback((eventId: string) => {
     setState((prev) => {
       const ids = prev.whatIfEventIds.includes(eventId)
@@ -272,6 +284,8 @@ export function useSimulation() {
     setAdvancedMode,
     setMode,
     toggleWhatIfEvent,
+    setViewComplexity,
+    setViewPerspective,
     reset,
   };
 }

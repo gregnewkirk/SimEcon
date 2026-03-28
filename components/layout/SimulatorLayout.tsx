@@ -5,10 +5,10 @@ import { useSimulation } from "@/hooks/useSimulation";
 import { usePlayback } from "@/hooks/usePlayback";
 import { Header } from "./Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { KPICards } from "@/components/visualization/KPICards";
-import { DebtDeficitChart } from "@/components/visualization/DebtDeficitChart";
-import { WealthDistributionChart } from "@/components/visualization/WealthDistributionChart";
-import { VisualizationTabs } from "@/components/visualization/VisualizationTabs";
+import { ViewToggle } from "@/components/visualization/ViewToggle";
+import { SimpleView } from "@/components/visualization/SimpleView";
+import { AdvancedView } from "@/components/visualization/AdvancedView";
+import { KitchenTableView } from "@/components/visualization/KitchenTableView";
 import { PlaybackBar } from "@/components/playback/PlaybackBar";
 import { TransparencyBanner } from "@/components/shared/TransparencyBanner";
 import { ShowYourWork } from "@/components/shared/ShowYourWork";
@@ -113,36 +113,48 @@ export function SimulatorLayout() {
               <span className="font-mono text-zinc-500">{sim.state.currentYear}</span>
             </button>
 
-            <KPICards
-              todayYours={sim.todayYoursData}
-              todayActual={sim.todayActualData}
-              projectedYours={sim.state.currentYear > 2025 ? sim.currentYearData : undefined}
-              playbackYear={sim.state.currentYear}
+            {/* View toggles */}
+            <ViewToggle
+              complexity={sim.state.viewComplexity}
+              perspective={sim.state.viewPerspective}
+              onComplexityChange={sim.setViewComplexity}
+              onPerspectiveChange={sim.setViewPerspective}
             />
-            <VisualizationTabs
-              chartsContent={
-                <>
-                  <DebtDeficitChart
-                    data={sim.allData}
-                    baselineData={sim.baselineAllData}
-                    currentYear={sim.state.currentYear}
-                    whatIfCounterfactual={sim.whatIfData?.counterfactual}
-                    whatIfDelta={sim.whatIfDelta}
-                    isRevisionMode={sim.isRevisionMode}
-                  />
-                  <WealthDistributionChart
-                    data={sim.allData}
-                    currentYear={sim.state.currentYear}
-                  />
-                </>
-              }
-              taxPolicy={sim.state.taxPolicy}
-              enabledPrograms={sim.state.enabledPrograms}
-              assumptions={sim.state.assumptions}
-              currentYearData={sim.currentYearData}
-              allData={sim.allData}
-              currentYear={sim.state.currentYear}
-            />
+
+            {/* Conditional rendering based on view */}
+            {sim.state.viewPerspective === "kitchen" ? (
+              <KitchenTableView
+                taxPolicy={sim.state.taxPolicy}
+                enabledPrograms={sim.state.enabledPrograms}
+              />
+            ) : sim.state.viewComplexity === "simple" ? (
+              <SimpleView
+                todayYours={sim.todayYoursData}
+                todayActual={sim.todayActualData}
+                allData={sim.allData}
+                baselineAllData={sim.baselineAllData}
+                currentYear={sim.state.currentYear}
+                isRevisionMode={sim.isRevisionMode}
+              />
+            ) : (
+              <AdvancedView
+                todayYours={sim.todayYoursData}
+                todayActual={sim.todayActualData}
+                projectedYours={sim.state.currentYear > 2025 ? sim.currentYearData : undefined}
+                playbackYear={sim.state.currentYear}
+                allData={sim.allData}
+                baselineAllData={sim.baselineAllData}
+                currentYear={sim.state.currentYear}
+                taxPolicy={sim.state.taxPolicy}
+                enabledPrograms={sim.state.enabledPrograms}
+                assumptions={sim.state.assumptions}
+                currentYearData={sim.currentYearData}
+                whatIfCounterfactual={sim.whatIfData?.counterfactual}
+                whatIfDelta={sim.whatIfDelta}
+                isRevisionMode={sim.isRevisionMode}
+              />
+            )}
+
             <TransparencyBanner />
           </main>
         </div>

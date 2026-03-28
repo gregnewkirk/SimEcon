@@ -77,6 +77,9 @@ export interface YearData {
   isProjected: boolean;
 }
 
+export type ViewComplexity = "simple" | "advanced";
+export type ViewPerspective = "macro" | "kitchen";
+
 export interface SimulationState {
   taxPolicy: TaxPolicy;
   enabledPrograms: string[];
@@ -90,6 +93,8 @@ export interface SimulationState {
   advancedMode: boolean;
   mode: SimMode;
   whatIfEventIds: string[];
+  viewComplexity: ViewComplexity;
+  viewPerspective: ViewPerspective;
 }
 
 export type SimMode = "revision" | "fix" | "forward" | "whatif";
@@ -139,4 +144,7 @@ export interface URLState {
   b5?: number;
   b6?: number;
   b7?: number;
+  // View toggles
+  vc?: string;  // viewComplexity: simple | advanced
+  vp?: string;  // viewPerspective: macro | kitchen
 }
