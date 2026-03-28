@@ -369,19 +369,29 @@ export function ShareCard({
 
   useEffect(() => {
     if (!open) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
 
-    ctx.clearRect(0, 0, W, H);
-    drawCard(ctx, {
-      taxPolicy,
-      enabledPrograms,
-      todayYours,
-      todayActual,
-      shareUrl,
-    });
+    // Small delay to let Sheet animation complete and canvas mount
+    const timer = setTimeout(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Ensure canvas has correct pixel dimensions
+      canvas.width = W;
+      canvas.height = H;
+
+      ctx.clearRect(0, 0, W, H);
+      drawCard(ctx, {
+        taxPolicy,
+        enabledPrograms,
+        todayYours,
+        todayActual,
+        shareUrl,
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [open, taxPolicy, enabledPrograms, todayYours, todayActual, shareUrl]);
 
   const handleDownload = useCallback(() => {
