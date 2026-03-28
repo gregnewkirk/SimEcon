@@ -219,8 +219,25 @@ export function SinglePageLayout() {
   const spendingPct = 100 - revenuePct;
 
   /* Debt numbers (for revision mode scoreboard) */
-  const debtYours = sim.todayYoursData.debtTrillions;
-  const debtActual = sim.todayActualData.debtTrillions;
+  // In revision mode with what-if events: show counterfactual vs actual from whatIfData
+  // This way toggling events actually moves the bar
+  const whatIfCounterfactual = sim.whatIfData?.counterfactual;
+  const whatIfActual = sim.whatIfData?.actual;
+  const debtYours = useMemo(() => {
+    if (sim.isRevisionMode && whatIfCounterfactual && whatIfCounterfactual.length > 0) {
+      // Use the counterfactual endpoint (what WOULD have happened without these events)
+      return whatIfCounterfactual[whatIfCounterfactual.length - 1].debtTrillions;
+    }
+    return sim.todayYoursData.debtTrillions;
+  }, [sim.isRevisionMode, whatIfCounterfactual, sim.todayYoursData]);
+
+  const debtActual = useMemo(() => {
+    if (sim.isRevisionMode && whatIfActual && whatIfActual.length > 0) {
+      return whatIfActual[whatIfActual.length - 1].debtTrillions;
+    }
+    return sim.todayActualData.debtTrillions;
+  }, [sim.isRevisionMode, whatIfActual, sim.todayActualData]);
+
   const debtDiff = debtYours - debtActual;
   const debtSaving = debtDiff < 0;
 
