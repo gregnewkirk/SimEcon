@@ -135,6 +135,9 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
   },
 ];
 
+// Sort by year ascending (earliest first)
+WHAT_IF_EVENTS.sort((a, b) => a.year - b.year);
+
 export const WHAT_IF_EVENTS_MAP = new Map(
   WHAT_IF_EVENTS.map((e) => [e.id, e])
 );
