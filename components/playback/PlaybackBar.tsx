@@ -32,14 +32,25 @@ export function PlaybackBar({
   shareUrl,
 }: PlaybackBarProps) {
   return (
-    <div className="sticky bottom-0 z-50 flex items-center gap-4 border-t border-zinc-800 bg-[#0a0a1a] px-4 py-3">
+    <div
+      data-playback-bar
+      className="sticky bottom-0 z-50 flex items-center gap-4 border-t border-zinc-800 bg-[#0a0a1a] px-4 py-3"
+    >
+      {/* Play/pause button — larger, with glow when paused */}
       <button
         onClick={onPlayToggle}
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#e94560] text-white transition-colors hover:bg-[#e94560]/80"
+        className={`flex size-12 shrink-0 items-center justify-center rounded-full bg-[#e94560] text-white text-lg transition-all hover:bg-[#e94560]/80 ${
+          !isPlaying ? "animate-playback-pulse shadow-[0_0_16px_rgba(233,69,96,0.5)]" : ""
+        }`}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? "\u23F8" : "\u25B6"}
       </button>
+
+      {/* Label next to button */}
+      <span className="hidden shrink-0 text-xs font-medium text-zinc-300 sm:block min-w-[60px]">
+        {isPlaying ? "Playing..." : "Play"}
+      </span>
 
       <div className="flex-1">
         <Slider
@@ -52,7 +63,8 @@ export function PlaybackBar({
         />
       </div>
 
-      <span className="min-w-[3.5rem] text-center font-mono text-sm text-zinc-400">
+      {/* Prominent year display */}
+      <span className="min-w-[4rem] text-center font-mono text-lg font-bold text-zinc-200">
         {currentYear}
       </span>
 

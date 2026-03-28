@@ -12,11 +12,20 @@ export interface CitedValue {
   citation: Citation;
 }
 
+export interface TaxBracket {
+  label: string;        // e.g., "$0-$11K"
+  minIncome: number;    // dollars
+  maxIncome: number;    // dollars (Infinity for top)
+  rate: number;         // 0-100
+  defaultRate: number;  // current actual rate
+}
+
 export interface TaxPolicy {
   topMarginalRate: number;
   capitalGainsRate: number;
   corporateRate: number;
   estateRate: number;
+  brackets: TaxBracket[];
 }
 
 export interface AdvancedAssumptions {
@@ -122,4 +131,12 @@ export interface URLState {
   ae?: number;
   m?: string;   // mode: forward | whatif
   we?: string;  // what-if event IDs (comma-separated)
+  // Bracket rates: b1-b7 for brackets that differ from default
+  b1?: number;
+  b2?: number;
+  b3?: number;
+  b4?: number;
+  b5?: number;
+  b6?: number;
+  b7?: number;
 }

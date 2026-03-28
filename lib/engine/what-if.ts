@@ -80,13 +80,24 @@ export function simulateWhatIfMulti(
 
   // === COUNTERFACTUAL TIMELINE ===
   // Merge counterfactual tax policies — use the most aggressive counterfactual rate
-  const mergedPolicy: TaxPolicy = { ...CURRENT_POLICY };
+  const mergedPolicy: TaxPolicy = {
+    ...CURRENT_POLICY,
+    brackets: CURRENT_POLICY.brackets.map((b) => ({ ...b })),
+  };
   for (const event of events) {
     if (event.counterfactualPolicy) {
       mergedPolicy.topMarginalRate = Math.max(mergedPolicy.topMarginalRate, event.counterfactualPolicy.topMarginalRate);
       mergedPolicy.capitalGainsRate = Math.max(mergedPolicy.capitalGainsRate, event.counterfactualPolicy.capitalGainsRate);
       mergedPolicy.corporateRate = Math.max(mergedPolicy.corporateRate, event.counterfactualPolicy.corporateRate);
       mergedPolicy.estateRate = Math.max(mergedPolicy.estateRate, event.counterfactualPolicy.estateRate);
+      // Merge brackets — take highest rate per bracket
+      if (event.counterfactualPolicy.brackets) {
+        event.counterfactualPolicy.brackets.forEach((b, i) => {
+          if (mergedPolicy.brackets[i]) {
+            mergedPolicy.brackets[i].rate = Math.max(mergedPolicy.brackets[i].rate, b.rate);
+          }
+        });
+      }
     }
   }
 

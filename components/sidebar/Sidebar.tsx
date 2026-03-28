@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScenarioSelector } from "./ScenarioSelector";
 import { TaxControls } from "./TaxControls";
 import { ProgramToggles } from "./ProgramToggles";
+import { WhatIfToggles } from "./WhatIfToggles";
 import { AdvancedAssumptions } from "./AdvancedAssumptions";
 import type {
   SimulationState,
@@ -15,6 +16,7 @@ interface SidebarProps {
   state: SimulationState;
   onScenarioChange: (id: string) => void;
   onTaxChange: (field: keyof TaxPolicy, value: number) => void;
+  onBracketChange: (index: number, rate: number) => void;
   onProgramToggle: (programId: string) => void;
   onAssumptionsChange: (
     field: keyof AdvancedAssumptionsType,
@@ -22,16 +24,19 @@ interface SidebarProps {
   ) => void;
   onAdvancedModeChange: (open: boolean) => void;
   onReset: () => void;
+  onToggleWhatIfEvent: (eventId: string) => void;
 }
 
 export function Sidebar({
   state,
   onScenarioChange,
   onTaxChange,
+  onBracketChange,
   onProgramToggle,
   onAssumptionsChange,
   onAdvancedModeChange,
   onReset,
+  onToggleWhatIfEvent,
 }: SidebarProps) {
   return (
     <aside
@@ -51,11 +56,17 @@ export function Sidebar({
         advancedMode={state.advancedMode}
         onAdvancedModeChange={onAdvancedModeChange}
         onChange={onTaxChange}
+        onBracketChange={onBracketChange}
       />
 
       <ProgramToggles
         enabledPrograms={state.enabledPrograms}
         onToggle={onProgramToggle}
+      />
+
+      <WhatIfToggles
+        whatIfEventIds={state.whatIfEventIds}
+        onToggleEvent={onToggleWhatIfEvent}
       />
 
       <AdvancedAssumptions

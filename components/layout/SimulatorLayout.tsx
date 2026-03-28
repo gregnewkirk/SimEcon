@@ -50,15 +50,28 @@ export function SimulatorLayout() {
     onFinished: handlePlaybackFinished,
   });
 
+  const handleScrollToPlayback = useCallback(() => {
+    const playbackBar = document.querySelector('[data-playback-bar]');
+    if (playbackBar) {
+      playbackBar.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+    // Also start playing
+    if (!sim.state.isPlaying) {
+      sim.setIsPlaying(true);
+    }
+  }, [sim.state.isPlaying, sim.setIsPlaying]);
+
   const sidebarContent = (
     <Sidebar
       state={sim.state}
       onScenarioChange={sim.loadScenario}
       onTaxChange={handleTaxChange}
+      onBracketChange={sim.setBracketRate}
       onProgramToggle={sim.toggleProgram}
       onAssumptionsChange={handleAssumptionsChange}
       onAdvancedModeChange={sim.setAdvancedMode}
       onReset={sim.reset}
+      onToggleWhatIfEvent={sim.toggleWhatIfEvent}
     />
   );
 
@@ -67,17 +80,13 @@ export function SimulatorLayout() {
       <div className="flex h-screen flex-col">
         <Header
           onMenuToggle={() => setSidebarOpen((o) => !o)}
-          mode={sim.state.mode}
-          whatIfEventIds={sim.state.whatIfEventIds}
-          onModeChange={sim.setMode}
-          onToggleEvent={sim.toggleWhatIfEvent}
           onShowYourWork={() => setShowYourWorkOpen(true)}
         />
         <div className="flex flex-1 overflow-hidden">
-          {/* Desktop sidebar — always visible at lg+ */}
+          {/* Desktop sidebar -- always visible at lg+ */}
           <div className="hidden lg:block">{sidebarContent}</div>
 
-          {/* Mobile sidebar overlay — below lg */}
+          {/* Mobile sidebar overlay -- below lg */}
           {sidebarOpen && (
             <div className="fixed inset-0 z-50 flex lg:hidden">
               {/* Backdrop */}
@@ -91,6 +100,18 @@ export function SimulatorLayout() {
           )}
 
           <main className="flex-1 space-y-4 overflow-y-auto p-4">
+            {/* Play Simulation button at top of viz area */}
+            <button
+              onClick={handleScrollToPlayback}
+              className="flex items-center gap-2 rounded-lg border border-zinc-700/50 bg-zinc-900/50 px-4 py-2 text-sm text-zinc-400 transition-all hover:border-[#e94560]/50 hover:text-zinc-200 hover:bg-zinc-800/50"
+            >
+              <span className={`inline-flex size-6 items-center justify-center rounded-full bg-[#e94560] text-white text-xs ${!sim.state.isPlaying ? 'animate-pulse' : ''}`}>
+                {sim.state.isPlaying ? "\u23F8" : "\u25B6"}
+              </span>
+              <span>{sim.state.isPlaying ? "Playing..." : "Play Simulation"}</span>
+              <span className="font-mono text-zinc-500">{sim.state.currentYear}</span>
+            </button>
+
             <KPICards
               current={sim.currentYearData}
               baseline={sim.baselineYearData}

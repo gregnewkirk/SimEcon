@@ -137,3 +137,17 @@
     @apply font-sans;
   }
 }
+
+/* Playback button pulse animation */
+@keyframes playback-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(233, 69, 96, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.7);
+  }
+}
+
+.animate-playback-pulse {
+  animation: playback-pulse 2s ease-in-out infinite;
+}

@@ -18,7 +18,10 @@ import { useURLStateSync } from "./useURLState";
 
 function createInitialState(): SimulationState {
   return {
-    taxPolicy: { ...CURRENT_POLICY },
+    taxPolicy: {
+      ...CURRENT_POLICY,
+      brackets: CURRENT_POLICY.brackets.map((b) => ({ ...b })),
+    },
     enabledPrograms: [],
     assumptions: { ...DEFAULT_ASSUMPTIONS },
     currentYear: START_YEAR,
@@ -101,11 +104,37 @@ export function useSimulation() {
 
   // Actions
   const setTaxPolicy = useCallback((policy: Partial<TaxPolicy>) => {
-    setState((prev) => ({
-      ...prev,
-      taxPolicy: { ...prev.taxPolicy, ...policy },
-      scenarioId: "custom",
-    }));
+    setState((prev) => {
+      const newPolicy = { ...prev.taxPolicy, ...policy };
+      // Keep top bracket in sync with topMarginalRate
+      if (policy.topMarginalRate !== undefined && newPolicy.brackets) {
+        const brackets = newPolicy.brackets.map((b) => ({ ...b }));
+        brackets[brackets.length - 1].rate = policy.topMarginalRate;
+        newPolicy.brackets = brackets;
+      }
+      return {
+        ...prev,
+        taxPolicy: newPolicy,
+        scenarioId: "custom",
+      };
+    });
+  }, []);
+
+  const setBracketRate = useCallback((index: number, rate: number) => {
+    setState((prev) => {
+      const brackets = prev.taxPolicy.brackets.map((b) => ({ ...b }));
+      brackets[index] = { ...brackets[index], rate };
+      const topRate = brackets[brackets.length - 1].rate;
+      return {
+        ...prev,
+        taxPolicy: {
+          ...prev.taxPolicy,
+          brackets,
+          topMarginalRate: topRate,
+        },
+        scenarioId: "custom",
+      };
+    });
   }, []);
 
   const toggleProgram = useCallback((programId: string) => {
@@ -130,7 +159,10 @@ export function useSimulation() {
     setState((prev) => ({
       ...prev,
       scenarioId,
-      taxPolicy: { ...scenario.policy },
+      taxPolicy: {
+        ...scenario.policy,
+        brackets: scenario.policy.brackets.map((b) => ({ ...b })),
+      },
       enabledPrograms: [...scenario.programs],
     }));
   }, []);
@@ -160,7 +192,9 @@ export function useSimulation() {
       const ids = prev.whatIfEventIds.includes(eventId)
         ? prev.whatIfEventIds.filter((id) => id !== eventId)
         : [...prev.whatIfEventIds, eventId];
-      return { ...prev, whatIfEventIds: ids, mode: "whatif" as SimMode };
+      // Auto-switch mode: "whatif" when any event is on, "forward" when all off
+      const mode: SimMode = ids.length > 0 ? "whatif" : "forward";
+      return { ...prev, whatIfEventIds: ids, mode };
     });
   }, []);
 
@@ -190,6 +224,7 @@ export function useSimulation() {
     whatIfData,
     whatIfDelta,
     setTaxPolicy,
+    setBracketRate,
     toggleProgram,
     setAssumptions,
     loadScenario,

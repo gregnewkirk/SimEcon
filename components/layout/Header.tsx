@@ -1,24 +1,14 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { SimMode } from "@/lib/types";
-import { WhatIfControls } from "@/components/shared/WhatIfControls";
 
 interface HeaderProps {
   onMenuToggle?: () => void;
-  mode?: SimMode;
-  whatIfEventIds?: string[];
-  onModeChange?: (mode: SimMode) => void;
-  onToggleEvent?: (eventId: string) => void;
   onShowYourWork?: () => void;
 }
 
 export function Header({
   onMenuToggle,
-  mode = "forward",
-  whatIfEventIds = [],
-  onModeChange,
-  onToggleEvent,
   onShowYourWork,
 }: HeaderProps) {
   const [copied, setCopied] = useState(false);
@@ -33,7 +23,7 @@ export function Header({
   return (
     <header className="flex items-center justify-between border-b border-zinc-800 bg-card px-4 py-2">
       <div className="flex items-center gap-2">
-        {/* Hamburger menu — visible below lg */}
+        {/* Hamburger menu -- visible below lg */}
         {onMenuToggle && (
           <button
             onClick={onMenuToggle}
@@ -63,18 +53,6 @@ export function Header({
           Economic Policy Simulator
         </span>
       </div>
-
-      {/* What-if controls — hidden on mobile */}
-      {onModeChange && onToggleEvent && (
-        <div className="hidden md:flex">
-          <WhatIfControls
-            mode={mode}
-            whatIfEventIds={whatIfEventIds}
-            onModeChange={onModeChange}
-            onToggleEvent={onToggleEvent}
-          />
-        </div>
-      )}
 
       <div className="flex items-center gap-2">
         {onShowYourWork && (

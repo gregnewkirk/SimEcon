@@ -1,4 +1,14 @@
 import type { WhatIfEvent } from "../types";
+import { DEFAULT_BRACKETS } from "./defaults";
+
+/** Helper: create brackets with a custom top bracket rate */
+function bracketsWithTopRate(topRate: number) {
+  return DEFAULT_BRACKETS.map((b, i) =>
+    i === DEFAULT_BRACKETS.length - 1
+      ? { ...b, rate: topRate }
+      : { ...b }
+  );
+}
 
 export const WHAT_IF_EVENTS: WhatIfEvent[] = [
   // === TAX POLICY EVENTS ===
@@ -14,6 +24,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 20,
       corporateRate: 35,
       estateRate: 40,
+      brackets: bracketsWithTopRate(39.6),
     },
   },
   {
@@ -28,6 +39,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 20,
       corporateRate: 35,
       estateRate: 55,
+      brackets: bracketsWithTopRate(39.6),
     },
   },
   {
@@ -42,6 +54,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 20,
       corporateRate: 35,
       estateRate: 49,
+      brackets: bracketsWithTopRate(38.6),
     },
   },
   {
@@ -56,6 +69,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 23.8,
       corporateRate: 35,
       estateRate: 45,
+      brackets: bracketsWithTopRate(39.6),
     },
   },
   {
@@ -70,6 +84,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 20,
       corporateRate: 35,
       estateRate: 55,
+      brackets: bracketsWithTopRate(39.6),
     },
   },
 
@@ -82,7 +97,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     category: "spending",
     description:
       "The Iraq War cost an estimated $1.9 trillion in direct spending, plus trillions more in veterans' care and interest. What if we never invaded?",
-    spendingReductionBillionsPerYear: 210, // ~$1.9T over 9 years
+    spendingReductionBillionsPerYear: 210,
     totalCostTrillions: 1.9,
   },
   {
@@ -93,7 +108,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     category: "spending",
     description:
       "The longest US war cost an estimated $2.3 trillion in direct spending over 20 years. What if we never deployed?",
-    spendingReductionBillionsPerYear: 115, // ~$2.3T over 20 years
+    spendingReductionBillionsPerYear: 115,
     totalCostTrillions: 2.3,
   },
   {
@@ -104,7 +119,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     category: "spending",
     description:
       "Combined post-9/11 wars cost over $4 trillion in direct spending. What if neither war happened?",
-    spendingReductionBillionsPerYear: 200, // ~$4T+ over 20 years (overlapping periods)
+    spendingReductionBillionsPerYear: 200,
     totalCostTrillions: 4.0,
   },
   {
@@ -115,7 +130,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     category: "spending",
     description:
       "The Troubled Asset Relief Program and related bailouts cost ~$700B initially (much was repaid). Net cost ~$450B. What if there was no bailout?",
-    spendingReductionBillionsPerYear: 90, // ~$450B over 5 years
+    spendingReductionBillionsPerYear: 90,
     totalCostTrillions: 0.45,
   },
   {
@@ -126,7 +141,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
     category: "spending",
     description:
       "CARES Act, PPP, stimulus checks, and other COVID relief totaled ~$5.2 trillion. What if there was no pandemic spending?",
-    spendingReductionBillionsPerYear: 2600, // ~$5.2T over 2 years
+    spendingReductionBillionsPerYear: 2600,
     totalCostTrillions: 5.2,
   },
   {
@@ -142,6 +157,7 @@ export const WHAT_IF_EVENTS: WhatIfEvent[] = [
       capitalGainsRate: 20,
       corporateRate: 35,
       estateRate: 55,
+      brackets: bracketsWithTopRate(39.6),
     },
     spendingReductionBillionsPerYear: 200,
     totalCostTrillions: 8.0,

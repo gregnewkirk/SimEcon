@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import type { SimulationState, SimMode, URLState } from "@/lib/types";
-import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, START_YEAR } from "@/lib/data/defaults";
+import { CURRENT_POLICY, DEFAULT_ASSUMPTIONS, DEFAULT_BRACKETS, START_YEAR } from "@/lib/data/defaults";
 import { SCENARIOS_MAP } from "@/lib/data/scenarios";
 import { encodeURLState, decodeURLState } from "@/lib/url-state";
 
@@ -42,6 +42,17 @@ export function stateToURL(state: SimulationState): URLState {
 
   if (state.mode === "whatif") url.m = "whatif";
   if (state.whatIfEventIds.length > 0) url.we = state.whatIfEventIds.join(",");
+
+  // Encode bracket rates that differ from defaults
+  if (state.taxPolicy.brackets) {
+    const bracketKeys = ["b1", "b2", "b3", "b4", "b5", "b6", "b7"] as const;
+    state.taxPolicy.brackets.forEach((bracket, i) => {
+      const defaultRate = DEFAULT_BRACKETS[i]?.defaultRate;
+      if (defaultRate !== undefined && bracket.rate !== defaultRate) {
+        url[bracketKeys[i]] = bracket.rate;
+      }
+    });
+  }
 
   return url;
 }
@@ -97,6 +108,30 @@ export function urlToState(urlState: URLState): Partial<SimulationState> {
   if (urlState.we) {
     partial.whatIfEventIds = urlState.we.split(",").filter(Boolean);
     partial.mode = "whatif" as SimMode;
+  }
+
+  // Decode bracket rates
+  const bracketKeys = ["b1", "b2", "b3", "b4", "b5", "b6", "b7"] as const;
+  const hasBracketOverrides = bracketKeys.some((k) => urlState[k] !== undefined);
+  if (hasBracketOverrides || urlState.tr !== undefined) {
+    const baseBrackets = partial.taxPolicy?.brackets ?? DEFAULT_BRACKETS.map((b) => ({ ...b }));
+    const brackets = baseBrackets.map((b, i) => {
+      const overrideRate = urlState[bracketKeys[i]];
+      if (overrideRate !== undefined) {
+        return { ...b, rate: overrideRate };
+      }
+      return { ...b };
+    });
+    // Backward compat: if tr= is set but no b7, apply tr to top bracket
+    if (urlState.tr !== undefined && urlState.b7 === undefined) {
+      brackets[brackets.length - 1].rate = urlState.tr;
+    }
+    if (!partial.taxPolicy) {
+      partial.taxPolicy = { ...CURRENT_POLICY };
+    }
+    partial.taxPolicy.brackets = brackets;
+    // Keep topMarginalRate in sync
+    partial.taxPolicy.topMarginalRate = brackets[brackets.length - 1].rate;
   }
 
   return partial;

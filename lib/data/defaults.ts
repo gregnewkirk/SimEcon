@@ -1,10 +1,21 @@
-import type { TaxPolicy, AdvancedAssumptions, WealthBracket } from "../types";
+import type { TaxPolicy, AdvancedAssumptions, WealthBracket, TaxBracket } from "../types";
+
+export const DEFAULT_BRACKETS: TaxBracket[] = [
+  { label: "$0 - $11K", minIncome: 0, maxIncome: 11000, rate: 10, defaultRate: 10 },
+  { label: "$11K - $44K", minIncome: 11000, maxIncome: 44725, rate: 12, defaultRate: 12 },
+  { label: "$44K - $95K", minIncome: 44725, maxIncome: 95375, rate: 22, defaultRate: 22 },
+  { label: "$95K - $183K", minIncome: 95375, maxIncome: 182100, rate: 24, defaultRate: 24 },
+  { label: "$183K - $231K", minIncome: 182100, maxIncome: 231250, rate: 32, defaultRate: 32 },
+  { label: "$231K - $578K", minIncome: 231250, maxIncome: 578125, rate: 35, defaultRate: 35 },
+  { label: "$578K+", minIncome: 578125, maxIncome: Infinity, rate: 37, defaultRate: 37 },
+];
 
 export const CURRENT_POLICY: TaxPolicy = {
   topMarginalRate: 37,
   capitalGainsRate: 20,
   corporateRate: 21,
   estateRate: 40,
+  brackets: DEFAULT_BRACKETS.map((b) => ({ ...b })),
 };
 
 export const DEFAULT_ASSUMPTIONS: AdvancedAssumptions = {
