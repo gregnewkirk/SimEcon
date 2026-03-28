@@ -116,6 +116,31 @@ function estimateBenefits(
         value = 0;
         desc = "Indirect benefits (jobs, infrastructure)";
         break;
+      case "baby_bonds":
+        value = household.kids > 0 ? 1000 : 0;
+        desc = household.kids > 0 ? "$1,000/child at birth" : "No children";
+        break;
+      case "mental_health":
+        value = household.adults * 2000;
+        desc = "~$2,000/adult in therapy access";
+        break;
+      case "public_internet":
+        value = household.income < 100000 ? 1200 : 0;
+        desc = household.income < 100000 ? "~$100/mo broadband savings" : "Already connected";
+        break;
+      case "green_jobs":
+        value = 0;
+        desc = "Indirect benefits (jobs, clean air)";
+        break;
+      case "rd_moonshot":
+        value = 0;
+        desc = "Long-term economic returns";
+        break;
+      // Revenue generators have no direct household benefit (they save through deficit reduction)
+      default:
+        value = 0;
+        desc = prog.netCostBillions < 0 ? "Reduces the deficit" : "Indirect benefits";
+        break;
     }
 
     lines.push({

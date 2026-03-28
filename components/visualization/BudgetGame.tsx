@@ -45,13 +45,21 @@ export function BudgetGame({
 
   const grade = useMemo(() => getGrade(deficit, gdp), [deficit, gdp]);
 
+  const experimentalIds = useMemo(() => new Set([
+    "wealth_tax", "sports_betting_tax", "robot_tax", "sugar_tax", "land_value_tax",
+    "baby_bonds", "mental_health", "public_internet", "green_jobs", "rd_moonshot",
+  ]), []);
   const spendingPrograms = useMemo(
-    () => PROGRAMS.filter((p) => p.netCostBillions > 0),
-    []
+    () => PROGRAMS.filter((p) => p.netCostBillions > 0 && !experimentalIds.has(p.id)),
+    [experimentalIds]
   );
   const revenuePrograms = useMemo(
-    () => PROGRAMS.filter((p) => p.netCostBillions < 0),
-    []
+    () => PROGRAMS.filter((p) => p.netCostBillions < 0 && !experimentalIds.has(p.id)),
+    [experimentalIds]
+  );
+  const experimentalPrograms = useMemo(
+    () => PROGRAMS.filter((p) => experimentalIds.has(p.id)),
+    [experimentalIds]
   );
 
   // Budget bar: ratio of revenue to total (revenue + spending)
@@ -228,6 +236,28 @@ export function BudgetGame({
                   program={p}
                   enabled={enabled}
                   type="spending"
+                  onToggle={() => onToggleProgram(p.id)}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Experimental */}
+        <div>
+          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#af52de]">
+            Experimental
+          </h3>
+          <p className="mb-2 text-[10px] text-[#c7c7cc]">Bold ideas with real economics</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {experimentalPrograms.map((p) => {
+              const enabled = enabledPrograms.includes(p.id);
+              return (
+                <ProgramCard
+                  key={p.id}
+                  program={p}
+                  enabled={enabled}
+                  type={p.netCostBillions < 0 ? "revenue" : "spending"}
                   onToggle={() => onToggleProgram(p.id)}
                 />
               );

@@ -222,6 +222,189 @@ export const PROGRAMS: Program[] = [
     description:
       "Expand the 2022 IRA drug negotiation provisions to all Medicare drugs (currently limited to 20). CBO estimates full negotiation saves ~$100B/yr. The VA already negotiates and pays 40-50% less than Medicare.",
   },
+
+  // ─── EXPERIMENTAL (bold ideas, real economics) ───
+
+  {
+    id: "wealth_tax",
+    name: "Wealth Tax (2% on $50M+)",
+    icon: "\uD83C\uDFE6",
+    annualCostBillions: 0,
+    annualSavingsBillions: 250,
+    netCostBillions: -250,
+    source: {
+      value: 250,
+      agency: "UC Berkeley / Saez & Zucman",
+      dataset: "Progressive Wealth Tax Revenue Estimates",
+      year: 2024,
+      url: "https://eml.berkeley.edu/~saez/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Tax net worth above $50M at 2%, above $1B at 3%. The ultra-wealthy hold assets, not income — income tax doesn't touch most of their wealth. Used in Norway, Spain, Switzerland. Warren & Sanders both proposed versions.",
+  },
+  {
+    id: "sports_betting_tax",
+    name: "Federal Sports Betting Tax",
+    icon: "\uD83C\uDFB0",
+    annualCostBillions: 0,
+    annualSavingsBillions: 18,
+    netCostBillions: -18,
+    source: {
+      value: 18,
+      agency: "American Gaming Association",
+      dataset: "Commercial Gaming Revenue Tracker",
+      year: 2024,
+      url: "https://www.americangaming.org/resources/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Federally regulate and tax sports gambling at 15% of gross gaming revenue. The market is $120B+/yr and growing. Currently taxed unevenly by states. A sin tax that people voluntarily pay.",
+  },
+  {
+    id: "robot_tax",
+    name: "Automation / Robot Tax",
+    icon: "\uD83E\uDD16",
+    annualCostBillions: 0,
+    annualSavingsBillions: 50,
+    netCostBillions: -50,
+    source: {
+      value: 50,
+      agency: "Brookings Institution",
+      dataset: "Automation and the Future of Work",
+      year: 2023,
+      url: "https://www.brookings.edu/topic/automation/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Companies replacing workers with AI/robots pay a displacement fee per automated position. Funds retraining programs. Bill Gates proposed this. As AI replaces millions of jobs, the income tax base erodes unless we tax the machines.",
+  },
+  {
+    id: "sugar_tax",
+    name: "Sugar / Junk Food Tax",
+    icon: "\uD83D\uDC8A",
+    annualCostBillions: 0,
+    annualSavingsBillions: 30,
+    netCostBillions: -30,
+    source: {
+      value: 30,
+      agency: "USDA Economic Research Service",
+      dataset: "Fiscal Policies for Diet and Prevention of Noncommunicable Diseases",
+      year: 2023,
+      url: "https://www.ers.usda.gov/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Tax sugary drinks and ultra-processed foods at 20%. ~$30B/yr revenue PLUS reduces healthcare costs $50-80B/yr long-term (obesity, diabetes). Mexico did this in 2014 — soda consumption dropped 12%. UK has a version too.",
+  },
+  {
+    id: "land_value_tax",
+    name: "Federal Land Value Tax",
+    icon: "\uD83C\uDFE0",
+    annualCostBillions: 0,
+    annualSavingsBillions: 100,
+    netCostBillions: -100,
+    source: {
+      value: 100,
+      agency: "Lincoln Institute of Land Policy",
+      dataset: "Land Value Taxation Research",
+      year: 2023,
+      url: "https://www.lincolninst.edu/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Tax unimproved land value (not buildings) at 1%. Encourages development, discourages speculation and empty lots. Milton Friedman called it 'the least bad tax.' Endorsed by economists left and right.",
+  },
+  {
+    id: "baby_bonds",
+    name: "Baby Bonds ($1K/child)",
+    icon: "\uD83D\uDC76",
+    annualCostBillions: 4,
+    annualSavingsBillions: 0,
+    netCostBillions: 4,
+    source: {
+      value: 4,
+      agency: "Urban Institute",
+      dataset: "Baby Bonds Policy Analysis",
+      year: 2023,
+      url: "https://www.urban.org/research",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Every American child gets $1,000 in a government investment account at birth, growing until 18. Estimated to close the racial wealth gap by 50% in one generation. Senator Cory Booker's proposal. Only ~$4B/yr.",
+  },
+  {
+    id: "mental_health",
+    name: "Federal Mental Health Corps",
+    icon: "\uD83E\uDDE0",
+    annualCostBillions: 50,
+    annualSavingsBillions: 0,
+    netCostBillions: 50,
+    source: {
+      value: 50,
+      agency: "National Institute of Mental Health",
+      dataset: "Mental Illness Economic Burden Estimates",
+      year: 2023,
+      url: "https://www.nimh.nih.gov/health/statistics",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Free therapy/counseling for all Americans. 1 in 5 adults has a mental health condition. Untreated mental illness costs the economy $280B/yr in lost productivity. Program cost ~$50B/yr but saves $100B+ downstream.",
+  },
+  {
+    id: "public_internet",
+    name: "Federal Public Internet",
+    icon: "\uD83C\uDF10",
+    annualCostBillions: 40,
+    annualSavingsBillions: 0,
+    netCostBillions: 40,
+    source: {
+      value: 40,
+      agency: "FCC Broadband Deployment Report",
+      dataset: "National Broadband Map",
+      year: 2024,
+      url: "https://broadbandmap.fcc.gov/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Treat internet as a utility — build federal broadband in underserved areas. 42M Americans lack broadband. Chattanooga's municipal broadband delivers 10Gbps at $70/mo. Private ISPs charge more for less.",
+  },
+  {
+    id: "green_jobs",
+    name: "Green Jobs Corps",
+    icon: "\uD83C\uDFED",
+    annualCostBillions: 60,
+    annualSavingsBillions: 0,
+    netCostBillions: 60,
+    source: {
+      value: 60,
+      agency: "Political Economy Research Institute",
+      dataset: "Green New Deal Job Creation Estimates",
+      year: 2023,
+      url: "https://peri.umass.edu/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "A modern CCC — 1M+ government jobs in renewable energy, ecosystem restoration, and climate resilience. Creates jobs in areas hit by fossil fuel decline, builds infrastructure, reduces emissions. ~$60B/yr.",
+  },
+  {
+    id: "rd_moonshot",
+    name: "R&D Moonshot Fund",
+    icon: "\uD83D\uDD2C",
+    annualCostBillions: 200,
+    annualSavingsBillions: 0,
+    netCostBillions: 200,
+    source: {
+      value: 200,
+      agency: "Congressional Research Service",
+      dataset: "Federal R&D Funding: FY2025",
+      year: 2024,
+      url: "https://crsreports.congress.gov/",
+      accessedDate: "2025-03-28",
+    },
+    description:
+      "Triple the federal basic research budget (currently ~$100B/yr). The internet, GPS, mRNA vaccines, and touchscreens all came from government-funded research. Every $1 of federal R&D returns $4-8 to the economy.",
+  },
 ];
 
 export const PROGRAMS_MAP = new Map(PROGRAMS.map((p) => [p.id, p]));

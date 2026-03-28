@@ -91,4 +91,55 @@ export const EXPLAINERS: Record<string, { title: string; simple: string; detail:
     simple: "The government spent $450 billion bailing out banks that caused the financial crisis. Most was repaid, but the net cost to taxpayers was ~$31 billion.",
     detail: "The Troubled Asset Relief Program authorized $700B, disbursed $443B. Most was repaid with interest — CBO estimated net taxpayer cost of ~$31B. Broader bailout-related programs (AIG, auto industry, Fannie/Freddie) brought total net federal outlay to ~$450B. The crisis itself cost the economy an estimated $12.8T in lost output.",
   },
+  // ─── Experimental Programs ───
+  wealth_tax: {
+    title: "Wealth Tax",
+    simple: "Tax the super-rich on what they OWN, not just what they earn. 2% on wealth over $50M, 3% over $1B. Raises ~$250B/yr.",
+    detail: "The top 0.1% holds more wealth than the bottom 90% combined. Income taxes miss most of this because the wealthy hold assets, not salaries. A 2% annual tax on net worth above $50M (3% above $1B) would generate ~$250B/yr. Norway, Spain, and Switzerland have versions. Enforcement uses IRS wealth reporting. Economists Saez & Zucman at UC Berkeley designed the model.",
+  },
+  sports_betting_tax: {
+    title: "Federal Sports Betting Tax",
+    simple: "Tax the booming sports gambling industry at 15%. Americans bet $120B+/yr — might as well fund schools with it.",
+    detail: "Legal sports betting has exploded since the 2018 Supreme Court ruling. Americans wagered $120B+ in 2024. Currently, states tax this at wildly different rates (6-51%). A federal 15% tax on gross gaming revenue would generate ~$18B/yr. This is a voluntary sin tax — nobody has to gamble. The UK has taxed betting at 15% for decades.",
+  },
+  robot_tax: {
+    title: "Automation / Robot Tax",
+    simple: "When a company replaces a human worker with AI or a robot, they pay a fee. Funds retraining for displaced workers.",
+    detail: "Bill Gates proposed taxing robots at the same rate we tax the human workers they replace. As AI automates millions of jobs (McKinsey estimates 30% of hours worked by 2030), the income tax base erodes. A displacement fee of ~$25K per automated position funds retraining and generates ~$50B/yr. South Korea reduced its automation tax incentives in 2018 — a step in this direction.",
+  },
+  sugar_tax: {
+    title: "Sugar / Junk Food Tax",
+    simple: "A 20% tax on sugary drinks and ultra-processed food. Raises $30B AND cuts healthcare costs by reducing obesity and diabetes.",
+    detail: "Obesity costs the U.S. healthcare system $173B/yr. A 20% tax on sugary drinks and ultra-processed foods generates ~$30B/yr in direct revenue while reducing consumption 10-15%. Mexico's 2014 sugar tax cut soda consumption 12%. The UK's sugar levy reduced sugar in drinks 44%. Long-term healthcare savings of $50-80B/yr as obesity-related disease declines.",
+  },
+  land_value_tax: {
+    title: "Federal Land Value Tax",
+    simple: "Tax the land, not the building on it. Discourages empty lots and speculation, encourages building homes and businesses.",
+    detail: "A 1% tax on unimproved land value (not structures). Milton Friedman called it 'the least bad tax' because it doesn't distort economic behavior — you can't create more land. It encourages development (building adds no tax) and discourages speculation (holding empty lots costs money). Generates ~$100B/yr. Used in parts of Pennsylvania, Denmark, Estonia, and Singapore.",
+  },
+  baby_bonds: {
+    title: "Baby Bonds",
+    simple: "Every newborn gets $1,000 in a government savings account that grows until they turn 18. Costs just $4B/yr.",
+    detail: "Senator Cory Booker's proposal: $1,000 at birth plus up to $2,000/yr for low-income families, invested in a government-managed index fund. By 18, accounts could reach $20,000-$50,000. Estimated to close the racial wealth gap by 50% in one generation. Cost: ~$4B/yr — one of the cheapest programs with the highest long-term ROI. Connecticut and DC have pilot programs.",
+  },
+  mental_health: {
+    title: "Federal Mental Health Corps",
+    simple: "Free therapy for every American. 1 in 5 adults has a mental health condition, and untreated illness costs $280B/yr in lost productivity.",
+    detail: "A national mental health service providing free therapy, counseling, and crisis intervention. The U.S. has 350,000 therapists but needs 500,000+. Program trains and deploys 150,000 new mental health workers, especially in rural areas. Cost: ~$50B/yr. But untreated mental illness costs $280B/yr in lost productivity, $100B in criminal justice costs, and $50B in homelessness services. Net economic benefit is strongly positive.",
+  },
+  public_internet: {
+    title: "Federal Public Internet",
+    simple: "Treat broadband like electricity — a public utility. 42 million Americans don't have it. Municipal broadband is faster AND cheaper.",
+    detail: "42M Americans lack broadband access. Rural areas and low-income neighborhoods are worst hit. Municipal broadband (like Chattanooga, TN) delivers 10Gbps at $70/mo — private ISPs charge more for 1/10th the speed. A federal program building infrastructure in underserved areas costs ~$40B/yr for 10 years. Internet access is now essential for education, healthcare, and economic participation.",
+  },
+  green_jobs: {
+    title: "Green Jobs Corps",
+    simple: "A modern version of FDR's Civilian Conservation Corps — 1 million government jobs building solar farms, restoring ecosystems, and climate-proofing infrastructure.",
+    detail: "During the Great Depression, the CCC employed 3M young men in conservation work. A modern version would create 1M+ jobs in renewable energy installation, ecosystem restoration, wildfire prevention, and climate resilience infrastructure. Cost: ~$60B/yr. Creates jobs in coal/oil communities hit by the energy transition. Every $1 in clean energy investment creates 3x more jobs than fossil fuel investment.",
+  },
+  rd_moonshot: {
+    title: "R&D Moonshot Fund",
+    simple: "Triple federal research spending. The internet, GPS, mRNA vaccines, and touchscreens ALL came from government-funded research.",
+    detail: "Federal basic research funding is ~$100B/yr — down from 2% of GDP in the 1960s to 0.7% today. Every $1 of federal R&D generates $4-8 in economic returns. The internet (DARPA), GPS (DoD), mRNA vaccines (NIH), touchscreens (DOE), Google's PageRank (NSF grant) — all government-funded research. Tripling the budget to ~$300B/yr costs $200B/yr additional but could generate $800B-$1.6T in economic returns over a decade.",
+  },
 };

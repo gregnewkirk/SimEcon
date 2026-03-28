@@ -32,8 +32,13 @@ export function ProgramToggles({
   programCostOverrides = {},
   onProgramCostOverride,
 }: ProgramTogglesProps) {
-  const spendingPrograms = PROGRAMS.filter((p) => p.netCostBillions >= 0);
-  const revenuePrograms = PROGRAMS.filter((p) => p.netCostBillions < 0);
+  const experimentalIds = new Set([
+    "wealth_tax", "sports_betting_tax", "robot_tax", "sugar_tax", "land_value_tax",
+    "baby_bonds", "mental_health", "public_internet", "green_jobs", "rd_moonshot",
+  ]);
+  const spendingPrograms = PROGRAMS.filter((p) => p.netCostBillions >= 0 && !experimentalIds.has(p.id));
+  const revenuePrograms = PROGRAMS.filter((p) => p.netCostBillions < 0 && !experimentalIds.has(p.id));
+  const experimentalPrograms = PROGRAMS.filter((p) => experimentalIds.has(p.id));
 
   const renderProgram = (program: (typeof PROGRAMS)[0]) => {
     const enabled = enabledPrograms.includes(program.id);
@@ -127,6 +132,17 @@ export function ProgramToggles({
         </span>
         <TooltipProvider>
           {revenuePrograms.map(renderProgram)}
+        </TooltipProvider>
+      </div>
+
+      {/* Experimental */}
+      <div className="space-y-1">
+        <span className="text-xs uppercase tracking-wider font-semibold text-[#af52de]">
+          Experimental
+        </span>
+        <p className="text-[10px] text-[#c7c7cc] leading-tight mb-1">Bold ideas with real economics behind them</p>
+        <TooltipProvider>
+          {experimentalPrograms.map(renderProgram)}
         </TooltipProvider>
       </div>
     </div>
