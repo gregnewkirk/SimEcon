@@ -9,10 +9,10 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import type { TaxPolicy, YearData } from "@/lib/types";
-import { PROGRAMS_MAP } from "@/lib/data/programs";
+import { PROGRAMS, PROGRAMS_MAP } from "@/lib/data/programs";
 import { CURRENT_POLICY } from "@/lib/data/defaults";
 
-// ─── Types ───────────────────────────────────────────────────────────
+// --- Types -------------------------------------------------------------------
 
 interface ShareCardProps {
   open: boolean;
@@ -27,7 +27,34 @@ interface ShareCardProps {
   baselineAllData?: YearData[];
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────
+// --- Constants ---------------------------------------------------------------
+
+const W = 1080;
+const H = 1920;
+
+const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+const BLUE = "#007AFF";
+const GREEN = "#34c759";
+const RED = "#ff3b30";
+const GRAY_LABEL = "#86868b";
+const GRAY_DIM = "#c7c7cc";
+const TEXT_PRIMARY = "#1d1d1f";
+
+const EXPERIMENTAL_IDS = new Set([
+  "wealth_tax",
+  "sports_betting_tax",
+  "robot_tax",
+  "sugar_tax",
+  "land_value_tax",
+  "baby_bonds",
+  "mental_health",
+  "public_internet",
+  "green_jobs",
+  "rd_moonshot",
+]);
+
+// --- Helpers -----------------------------------------------------------------
 
 function calculateTaxForBrackets(
   income: number,
@@ -58,38 +85,32 @@ function computeGrade(todayYours: YearData): {
   const deficitPctGdp =
     (deficit / (todayYours.gdpTrillions * 1000)) * 100;
 
-  if (deficitPctGdp <= 0)
-    return { letter: "A+", color: "#34c759" };
-  if (deficitPctGdp < 1)
-    return { letter: "A", color: "#34c759" };
-  if (deficitPctGdp < 3)
-    return { letter: "B", color: "#30d158" };
-  if (deficitPctGdp < 5)
-    return { letter: "C", color: "#ff9500" };
-  if (deficitPctGdp < 8)
-    return { letter: "D", color: "#ff3b30" };
-  return { letter: "F", color: "#ff3b30" };
+  if (deficitPctGdp <= 0) return { letter: "A+", color: GREEN };
+  if (deficitPctGdp < 1) return { letter: "A", color: GREEN };
+  if (deficitPctGdp < 3) return { letter: "B", color: "#30d158" };
+  if (deficitPctGdp < 5) return { letter: "C", color: "#ff9500" };
+  if (deficitPctGdp < 8) return { letter: "D", color: RED };
+  return { letter: "F", color: RED };
 }
 
 function estimateMedianHouseholdBenefits(enabledPrograms: string[]): number {
-  // Median household: 2 adults, 1 kid, 0 students, $75K income
   let total = 0;
   for (const progId of enabledPrograms) {
     switch (progId) {
       case "healthcare":
-        total += 2 * 7500; // 2 adults
+        total += 2 * 7500;
         break;
       case "college":
-        total += 0; // 0 students
+        total += 0;
         break;
       case "prek":
-        total += 10000; // 1 kid
+        total += 10000;
         break;
       case "housing":
-        total += 3000; // $75K income => $3000
+        total += 3000;
         break;
       case "ubi":
-        total += 2 * 12000; // 2 adults
+        total += 2 * 12000;
         break;
       case "infrastructure":
         total += 0;
@@ -115,332 +136,78 @@ function fmtDollars(v: number): string {
   return `$${abs.toFixed(0)}`;
 }
 
-// ─── Canvas drawing ──────────────────────────────────────────────────
-
-const W = 1200;
-const H = 630;
-
-function drawCard(
-  ctx: CanvasRenderingContext2D,
-  props: Omit<ShareCardProps, "open" | "onOpenChange">
-) {
-  const { taxPolicy, enabledPrograms, todayYours, todayActual, shareUrl } =
-    props;
-
-  const grade = computeGrade(todayYours);
-  const deficit = todayYours.spendingBillions - todayYours.revenueBillions;
-  const debtProjected = todayYours.debtTrillions;
-
-  // Median household impact
-  const medianIncome = 75000;
-  const taxDefault = calculateTaxForBrackets(
-    medianIncome,
-    CURRENT_POLICY.brackets
-  );
-  const taxUser = calculateTaxForBrackets(medianIncome, taxPolicy.brackets);
-  const taxChange = taxUser - taxDefault;
-  const benefits = estimateMedianHouseholdBenefits(enabledPrograms);
-  const netImpact = benefits - taxChange;
-  const netPct = ((netImpact / medianIncome) * 100).toFixed(1);
-
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, "#ffffff");
-  grad.addColorStop(1, "#f0f4ff");
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  roundRect(ctx, 0, 0, W, H, 0);
-  ctx.fill();
-
-  // Subtle border
-  ctx.strokeStyle = "#e5e5ea";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, W - 2, H - 2);
-
-  // Header row
-  ctx.fillStyle = "#1d1d1f";
-  ctx.font = "bold 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText("\u26A1 SimEcon", 40, 50);
-
-  ctx.fillStyle = "#86868b";
-  ctx.font = "16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "right";
-  ctx.fillText("simecon.app", W - 40, 50);
-
-  // Title
-  ctx.fillStyle = "#1d1d1f";
-  ctx.font = "bold 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText("MY ECONOMIC POLICY", 40, 100);
-
-  // Divider line under title
-  ctx.strokeStyle = "#007AFF";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(40, 115);
-  ctx.lineTo(380, 115);
-  ctx.stroke();
-
-  // ─── Grade / Debt / Deficit row ────────────────────────────────────
-  const metricsY = 160;
-  const colWidth = 220;
-
-  // Budget Grade
-  drawMetricLabel(ctx, 40, metricsY, "BUDGET GRADE");
-  ctx.fillStyle = grade.color;
-  ctx.font = "bold 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.fillText(grade.letter, 40, metricsY + 48);
-
-  // Debt by end
-  const debtColor = debtProjected < todayActual.debtTrillions ? "#34c759" : "#ff3b30";
-  drawMetricLabel(ctx, 40 + colWidth, metricsY, "DEBT PROJECTED");
-  ctx.fillStyle = debtColor;
-  ctx.font = "bold 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.fillText(fmtTrillions(debtProjected), 40 + colWidth, metricsY + 48);
-
-  // Deficit
-  const deficitColor = deficit <= 0 ? "#34c759" : "#ff3b30";
-  drawMetricLabel(ctx, 40 + colWidth * 2, metricsY, "ANNUAL DEFICIT");
-  ctx.fillStyle = deficitColor;
-  ctx.font = "bold 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.fillText(
-    deficit <= 0 ? `+${fmtBillions(Math.abs(deficit))}/yr` : `${fmtBillions(deficit)}/yr`,
-    40 + colWidth * 2,
-    metricsY + 48
-  );
-
-  // ─── Mini Debt Trajectory Chart ────────────────────────────────────
-  const chartX = 40;
-  const chartY = 230;
-  const chartW = W - 80;
-  const chartH = 160;
-
-  // Draw chart background
-  ctx.fillStyle = "#f8f9fa";
-  roundRect(ctx, chartX, chartY, chartW, chartH, 8);
-  ctx.fill();
-  ctx.strokeStyle = "#e5e5ea";
-  ctx.lineWidth = 1;
-  roundRect(ctx, chartX, chartY, chartW, chartH, 8);
-  ctx.stroke();
-
-  // Chart label
-  ctx.fillStyle = "#86868b";
-  ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText("DEBT TRAJECTORY", chartX + 12, chartY + 18);
-
-  if (props.allData && props.baselineAllData && props.allData.length > 1) {
-    const allData = props.allData;
-    const baseline = props.baselineAllData;
-    const baselineMap = new Map(baseline.map((d) => [d.year, d]));
-
-    // Find min/max for scaling
-    let maxDebt = 0;
-    for (const d of allData) {
-      maxDebt = Math.max(maxDebt, d.debtTrillions);
-      const bl = baselineMap.get(d.year);
-      if (bl) maxDebt = Math.max(maxDebt, bl.debtTrillions);
-    }
-    maxDebt = Math.max(maxDebt, 1); // prevent div by zero
-
-    const padLeft = 12;
-    const padRight = 12;
-    const padTop = 30;
-    const padBot = 20;
-    const plotW = chartW - padLeft - padRight;
-    const plotH = chartH - padTop - padBot;
-
-    const yearMin = allData[0].year;
-    const yearMax = allData[allData.length - 1].year;
-    const yearRange = Math.max(yearMax - yearMin, 1);
-
-    const toX = (year: number) => chartX + padLeft + ((year - yearMin) / yearRange) * plotW;
-    const toY = (debt: number) => chartY + padTop + plotH - (debt / maxDebt) * plotH;
-
-    // Draw baseline (gray dashed)
-    ctx.beginPath();
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = "#c7c7cc";
-    ctx.lineWidth = 2;
-    let first = true;
-    for (const d of allData) {
-      const bl = baselineMap.get(d.year);
-      if (!bl) continue;
-      const x = toX(d.year);
-      const y = toY(bl.debtTrillions);
-      if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Draw "yours" line (colored)
-    const yourDebtEnd = allData[allData.length - 1].debtTrillions;
-    const baselineDebtEnd = baselineMap.get(allData[allData.length - 1].year)?.debtTrillions ?? yourDebtEnd;
-    const saving = yourDebtEnd < baselineDebtEnd;
-    const lineColor = saving ? "#34c759" : "#ff3b30";
-
-    // Fill area under yours line
-    ctx.beginPath();
-    for (let i = 0; i < allData.length; i++) {
-      const x = toX(allData[i].year);
-      const y = toY(allData[i].debtTrillions);
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.lineTo(toX(allData[allData.length - 1].year), chartY + padTop + plotH);
-    ctx.lineTo(toX(allData[0].year), chartY + padTop + plotH);
-    ctx.closePath();
-    ctx.fillStyle = saving ? "rgba(52,199,89,0.1)" : "rgba(255,59,48,0.1)";
-    ctx.fill();
-
-    // Draw yours line
-    ctx.beginPath();
-    ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 3;
-    for (let i = 0; i < allData.length; i++) {
-      const x = toX(allData[i].year);
-      const y = toY(allData[i].debtTrillions);
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Year labels
-    ctx.fillStyle = "#86868b";
-    ctx.font = "10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(String(yearMin), toX(yearMin), chartY + chartH - 4);
-    ctx.fillText(String(yearMax), toX(yearMax), chartY + chartH - 4);
-
-    // Legend
-    ctx.textAlign = "right";
-    ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    ctx.fillStyle = lineColor;
-    ctx.fillText(`Yours: $${yourDebtEnd.toFixed(1)}T`, chartX + chartW - 12, chartY + 18);
-    ctx.fillStyle = "#c7c7cc";
-    ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    ctx.fillText(`Baseline: $${baselineDebtEnd.toFixed(1)}T`, chartX + chartW - 12, chartY + 32);
-  }
-
-  ctx.textAlign = "left";
-
-  // ─── Tax Rates + Programs ──────────────────────────────────────────
-  const detailY = chartY + chartH + 20;
-
-  // Tax rates column
-  drawMetricLabel(ctx, 40, detailY, "TAX RATES");
-  ctx.fillStyle = "#1d1d1f";
-  ctx.font = "16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.fillText(`Top Marginal: ${taxPolicy.topMarginalRate}%`, 40, detailY + 28);
-  ctx.fillText(`Corporate: ${taxPolicy.corporateRate}%`, 40, detailY + 52);
-  ctx.fillText(`Cap Gains: ${taxPolicy.capitalGainsRate}%`, 40, detailY + 76);
-  ctx.fillText(`Estate: ${taxPolicy.estateRate}%`, 40, detailY + 100);
-
-  // Programs column
-  drawMetricLabel(ctx, 440, detailY, "PROGRAMS ENABLED");
-  const spendingPrograms = enabledPrograms.filter((id) => {
-    const p = PROGRAMS_MAP.get(id);
-    return p && p.netCostBillions > 0;
-  });
-  const revenuePrograms = enabledPrograms.filter((id) => {
-    const p = PROGRAMS_MAP.get(id);
-    return p && p.netCostBillions <= 0;
-  });
-  const allProgDisplay = [...spendingPrograms, ...revenuePrograms];
-
-  if (allProgDisplay.length === 0) {
-    ctx.fillStyle = "#86868b";
-    ctx.font = "16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    ctx.fillText("None", 440, detailY + 28);
-  } else {
-    ctx.font = "16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    const maxShow = Math.min(allProgDisplay.length, 6);
-    for (let i = 0; i < maxShow; i++) {
-      const prog = PROGRAMS_MAP.get(allProgDisplay[i]);
-      if (!prog) continue;
-      const isRevenue = prog.netCostBillions <= 0;
-      ctx.fillStyle = isRevenue ? "#34c759" : "#1d1d1f";
-      const prefix = isRevenue ? "\u2713 " : "\u2713 ";
-      // Render in two columns if > 3
-      const col = i < 3 ? 0 : 1;
-      const row = i < 3 ? i : i - 3;
-      ctx.fillText(
-        `${prefix}${prog.name}`,
-        440 + col * 340,
-        detailY + 28 + row * 24
-      );
-    }
-    if (allProgDisplay.length > 6) {
-      ctx.fillStyle = "#86868b";
-      ctx.fillText(
-        `+${allProgDisplay.length - 6} more`,
-        440,
-        detailY + 28 + 3 * 24
-      );
-    }
-  }
-
-  // ─── Household impact ──────────────────────────────────────────────
-  const impactY = detailY + 120;
-  ctx.strokeStyle = "#e5e5ea";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(40, impactY - 20);
-  ctx.lineTo(W - 40, impactY - 20);
-  ctx.stroke();
-
-  drawMetricLabel(ctx, 40, impactY, "IMPACT ON MEDIAN HOUSEHOLD ($75K)");
-  const impactColor = netImpact >= 0 ? "#34c759" : "#ff3b30";
-  ctx.fillStyle = impactColor;
-  ctx.font = "bold 32px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  const sign = netImpact >= 0 ? "+" : "-";
-  ctx.fillText(
-    `Net: ${sign}${fmtDollars(netImpact)}/yr (${netPct}% of income)`,
-    40,
-    impactY + 40
-  );
-
-  // Breakdown
-  ctx.fillStyle = "#86868b";
-  ctx.font = "14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  const taxSign = taxChange >= 0 ? "+" : "-";
-  ctx.fillText(
-    `Tax change: ${taxSign}${fmtDollars(taxChange)}  |  Benefits: +${fmtDollars(benefits)}`,
-    40,
-    impactY + 68
-  );
-
-  // ─── Footer ────────────────────────────────────────────────────────
-  ctx.strokeStyle = "#e5e5ea";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(40, H - 60);
-  ctx.lineTo(W - 40, H - 60);
-  ctx.stroke();
-
-  ctx.fillStyle = "#007AFF";
-  ctx.font = "bold 18px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText("What would YOU do?", 40, H - 30);
-
-  ctx.fillStyle = "#007AFF";
-  ctx.font = "18px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "right";
-  ctx.fillText("simecon.app", W - 40, H - 30);
-
-  ctx.textAlign = "left";
+function fmtCost(netCost: number): string {
+  if (netCost < 0) return `+${fmtBillions(Math.abs(netCost))}/yr`;
+  return `-${fmtBillions(netCost)}/yr`;
 }
 
-function drawMetricLabel(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  label: string
-) {
-  ctx.fillStyle = "#86868b";
-  ctx.font = "bold 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  ctx.textAlign = "left";
-  ctx.fillText(label, x, y);
+function generateExplainer(
+  enabledPrograms: string[],
+  grade: { letter: string },
+  deficit: number,
+  netImpact: number
+): string {
+  const hasHealthcare = enabledPrograms.includes("healthcare");
+  const hasUBI = enabledPrograms.includes("ubi");
+  const hasRevGenerators = enabledPrograms.some((id) => {
+    const p = PROGRAMS_MAP.get(id);
+    return p && p.netCostBillions < 0;
+  });
+  const programCount = enabledPrograms.length;
+  const isSurplus = deficit <= 0;
+
+  let explainer = "";
+
+  // Opening based on grade
+  if (grade.letter.startsWith("A")) {
+    explainer =
+      "This policy achieves a balanced or near-balanced budget \u2014 a rare feat. ";
+  } else if (grade.letter.startsWith("B")) {
+    explainer = "A solid fiscal plan that keeps deficits manageable. ";
+  } else if (grade.letter.startsWith("C")) {
+    explainer =
+      "This plan funds important programs but runs a significant deficit. ";
+  } else if (grade.letter.startsWith("D")) {
+    explainer =
+      "Heavy spending without enough revenue to support it. The debt grows fast. ";
+  } else {
+    explainer =
+      "This policy creates an unsustainable fiscal path. Major revenue increases or spending cuts needed. ";
+  }
+
+  // Middle based on what's enabled
+  if (programCount === 0) {
+    explainer +=
+      "No new programs are funded \u2014 this is the status quo with adjusted tax rates. ";
+  } else if (hasHealthcare && hasUBI) {
+    explainer +=
+      "Universal healthcare AND basic income is ambitious \u2014 covering everyone's health and a cash floor. ";
+  } else if (hasHealthcare) {
+    explainer +=
+      "Universal healthcare replaces private insurance with a single-payer system \u2014 no more premiums or deductibles. ";
+  } else if (hasUBI) {
+    explainer +=
+      "Universal basic income provides $1,000/month to every adult \u2014 the most expensive program in the simulator. ";
+  } else if (programCount >= 5) {
+    explainer += `With ${programCount} programs enabled, this is an ambitious investment in America's future. `;
+  } else {
+    explainer += `${programCount} targeted program${programCount > 1 ? "s" : ""} funded \u2014 a focused approach. `;
+  }
+
+  // Closing based on revenue generators
+  if (hasRevGenerators && isSurplus) {
+    explainer += "Revenue generators more than cover the spending.";
+  } else if (hasRevGenerators) {
+    explainer +=
+      "Revenue generators help offset costs but don't fully close the gap.";
+  } else if (isSurplus) {
+    explainer += "Tax revenue alone covers all spending.";
+  } else {
+    explainer +=
+      "Consider adding revenue generators to bring the budget closer to balance.";
+  }
+
+  return explainer;
 }
 
 function roundRect(
@@ -462,7 +229,514 @@ function roundRect(
   ctx.quadraticCurveTo(x, y, x + r, y);
 }
 
-// ─── Component ───────────────────────────────────────────────────────
+function drawMetricLabel(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  label: string
+) {
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `bold 13px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText(label, x, y);
+}
+
+/** Word-wrap text and return array of lines */
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number
+): string[] {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
+// --- Canvas drawing ----------------------------------------------------------
+
+function drawCard(
+  ctx: CanvasRenderingContext2D,
+  props: Omit<ShareCardProps, "open" | "onOpenChange">
+) {
+  const { taxPolicy, enabledPrograms, todayYours, todayActual } = props;
+
+  const grade = computeGrade(todayYours);
+  const deficit = todayYours.spendingBillions - todayYours.revenueBillions;
+  const debtProjected = todayYours.debtTrillions;
+
+  // Median household impact
+  const medianIncome = 75000;
+  const taxDefault = calculateTaxForBrackets(
+    medianIncome,
+    CURRENT_POLICY.brackets
+  );
+  const taxUser = calculateTaxForBrackets(medianIncome, taxPolicy.brackets);
+  const taxChange = taxUser - taxDefault;
+  const benefits = estimateMedianHouseholdBenefits(enabledPrograms);
+  const netImpact = benefits - taxChange;
+  const netPct = ((netImpact / medianIncome) * 100).toFixed(1);
+
+  const enabledSet = new Set(enabledPrograms);
+
+  // --- Background gradient ---
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "#ffffff");
+  grad.addColorStop(1, "#f0f4ff");
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  roundRect(ctx, 0, 0, W, H, 0);
+  ctx.fill();
+
+  // Subtle border
+  ctx.strokeStyle = "#e5e5ea";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, W - 2, H - 2);
+
+  const PAD = 48;
+
+  // ==========================================================================
+  // 1. HEADER (y: 0-120)
+  // ==========================================================================
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `bold 28px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("\u26A1 SimEcon", PAD, 60);
+
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `18px ${FONT}`;
+  ctx.textAlign = "right";
+  ctx.fillText("simecon.app", W - PAD, 60);
+
+  // Blue accent line
+  ctx.strokeStyle = BLUE;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(PAD, 90);
+  ctx.lineTo(W - PAD, 90);
+  ctx.stroke();
+
+  // ==========================================================================
+  // 2. BIG HOOK + GRADE (y: 100-380) — scroll-stopping headline
+  // ==========================================================================
+  ctx.textAlign = "center";
+
+  // Big hook text — the thing that makes people stop scrolling
+  const isSurplus = deficit <= 0;
+  const hookText = isSurplus
+    ? "I BALANCED THE BUDGET."
+    : netImpact > 5000
+      ? `+$${Math.round(netImpact).toLocaleString()}/yr FOR THE MEDIAN FAMILY`
+      : enabledPrograms.length >= 6
+        ? `${enabledPrograms.length} PROGRAMS. CAN YOU DO BETTER?`
+        : "HERE'S MY PLAN.";
+
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `900 54px ${FONT}`;
+  const hookLines = wrapText(ctx, hookText, W - PAD * 2);
+  for (let i = 0; i < hookLines.length; i++) {
+    ctx.fillText(hookLines[i], W / 2, 150 + i * 62);
+  }
+  const hookBottom = 150 + hookLines.length * 62;
+
+  // Grade — massive, centered
+  ctx.fillStyle = grade.color;
+  ctx.font = `900 140px ${FONT}`;
+  ctx.fillText(grade.letter, W / 2, hookBottom + 110);
+
+  // Grade label
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `bold 18px ${FONT}`;
+  ctx.fillText("BUDGET GRADE", W / 2, hookBottom + 140);
+
+  // Explainer text
+  const explainer = generateExplainer(enabledPrograms, grade, deficit, netImpact);
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `17px ${FONT}`;
+  ctx.textAlign = "center";
+  const explainerLines = wrapText(ctx, explainer, W - PAD * 2 - 40);
+  for (let i = 0; i < Math.min(explainerLines.length, 3); i++) {
+    ctx.fillText(explainerLines[i], W / 2, hookBottom + 175 + i * 24);
+  }
+
+  ctx.textAlign = "left";
+
+  // ==========================================================================
+  // 3. KEY METRICS ROW (y: 320-440)
+  // ==========================================================================
+  const metricsY = 320;
+  const boxW = (W - PAD * 2 - 24) / 3; // 3 boxes with 12px gaps
+  const boxH = 100;
+
+  const metrics = [
+    {
+      label: "DEBT BY 2050",
+      value: fmtTrillions(debtProjected),
+      color: debtProjected < todayActual.debtTrillions ? GREEN : RED,
+    },
+    {
+      label: "ANNUAL DEFICIT",
+      value:
+        deficit <= 0
+          ? `+${fmtBillions(Math.abs(deficit))}/yr`
+          : `${fmtBillions(deficit)}/yr`,
+      color: deficit <= 0 ? GREEN : RED,
+    },
+    {
+      label: "MEDIAN IMPACT",
+      value: `${netImpact >= 0 ? "+" : "-"}${fmtDollars(netImpact)}/yr`,
+      color: netImpact >= 0 ? GREEN : RED,
+    },
+  ];
+
+  for (let i = 0; i < 3; i++) {
+    const bx = PAD + i * (boxW + 12);
+    // Box background
+    ctx.fillStyle = "#f8f9fa";
+    ctx.beginPath();
+    roundRect(ctx, bx, metricsY, boxW, boxH, 12);
+    ctx.fill();
+    ctx.strokeStyle = "#e5e5ea";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    roundRect(ctx, bx, metricsY, boxW, boxH, 12);
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = GRAY_LABEL;
+    ctx.font = `bold 12px ${FONT}`;
+    ctx.textAlign = "left";
+    ctx.fillText(metrics[i].label, bx + 16, metricsY + 30);
+
+    // Value
+    ctx.fillStyle = metrics[i].color;
+    ctx.font = `bold 32px ${FONT}`;
+    ctx.fillText(metrics[i].value, bx + 16, metricsY + 72);
+  }
+
+  // ==========================================================================
+  // 4. MINI DEBT CHART (y: 440-700)
+  // ==========================================================================
+  const chartX = PAD;
+  const chartY = 450;
+  const chartW = W - PAD * 2;
+  const chartH = 240;
+
+  // Chart background
+  ctx.fillStyle = "#f8f9fa";
+  ctx.beginPath();
+  roundRect(ctx, chartX, chartY, chartW, chartH, 12);
+  ctx.fill();
+  ctx.strokeStyle = "#e5e5ea";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  roundRect(ctx, chartX, chartY, chartW, chartH, 12);
+  ctx.stroke();
+
+  // Chart label
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `bold 13px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("DEBT TRAJECTORY", chartX + 16, chartY + 24);
+
+  if (props.allData && props.baselineAllData && props.allData.length > 1) {
+    const allData = props.allData;
+    const baseline = props.baselineAllData;
+    const baselineMap = new Map(baseline.map((d) => [d.year, d]));
+
+    let maxDebt = 0;
+    for (const d of allData) {
+      maxDebt = Math.max(maxDebt, d.debtTrillions);
+      const bl = baselineMap.get(d.year);
+      if (bl) maxDebt = Math.max(maxDebt, bl.debtTrillions);
+    }
+    maxDebt = Math.max(maxDebt, 1);
+
+    const padLeft = 16;
+    const padRight = 16;
+    const padTop = 40;
+    const padBot = 28;
+    const plotW = chartW - padLeft - padRight;
+    const plotH = chartH - padTop - padBot;
+
+    const yearMin = allData[0].year;
+    const yearMax = allData[allData.length - 1].year;
+    const yearRange = Math.max(yearMax - yearMin, 1);
+
+    const toX = (year: number) =>
+      chartX + padLeft + ((year - yearMin) / yearRange) * plotW;
+    const toY = (debt: number) =>
+      chartY + padTop + plotH - (debt / maxDebt) * plotH;
+
+    // Baseline (gray dashed)
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = GRAY_DIM;
+    ctx.lineWidth = 2;
+    let first = true;
+    for (const d of allData) {
+      const bl = baselineMap.get(d.year);
+      if (!bl) continue;
+      const x = toX(d.year);
+      const y = toY(bl.debtTrillions);
+      if (first) {
+        ctx.moveTo(x, y);
+        first = false;
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // "Yours" line
+    const yourDebtEnd = allData[allData.length - 1].debtTrillions;
+    const baselineDebtEnd =
+      baselineMap.get(allData[allData.length - 1].year)?.debtTrillions ??
+      yourDebtEnd;
+    const saving = yourDebtEnd < baselineDebtEnd;
+    const lineColor = saving ? GREEN : RED;
+
+    // Fill area under yours line
+    ctx.beginPath();
+    for (let i = 0; i < allData.length; i++) {
+      const x = toX(allData[i].year);
+      const y = toY(allData[i].debtTrillions);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.lineTo(
+      toX(allData[allData.length - 1].year),
+      chartY + padTop + plotH
+    );
+    ctx.lineTo(toX(allData[0].year), chartY + padTop + plotH);
+    ctx.closePath();
+    ctx.fillStyle = saving
+      ? "rgba(52,199,89,0.1)"
+      : "rgba(255,59,48,0.1)";
+    ctx.fill();
+
+    // Yours line
+    ctx.beginPath();
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 3;
+    for (let i = 0; i < allData.length; i++) {
+      const x = toX(allData[i].year);
+      const y = toY(allData[i].debtTrillions);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Year labels
+    ctx.fillStyle = GRAY_LABEL;
+    ctx.font = `12px ${FONT}`;
+    ctx.textAlign = "center";
+    ctx.fillText(String(yearMin), toX(yearMin), chartY + chartH - 6);
+    ctx.fillText(String(yearMax), toX(yearMax), chartY + chartH - 6);
+
+    // Legend (top-right)
+    ctx.textAlign = "right";
+    ctx.font = `bold 13px ${FONT}`;
+    ctx.fillStyle = lineColor;
+    ctx.fillText(
+      `Your Policy: $${yourDebtEnd.toFixed(1)}T`,
+      chartX + chartW - 16,
+      chartY + 24
+    );
+    ctx.fillStyle = GRAY_DIM;
+    ctx.font = `13px ${FONT}`;
+    ctx.fillText(
+      `Baseline: $${baselineDebtEnd.toFixed(1)}T`,
+      chartX + chartW - 16,
+      chartY + 42
+    );
+  }
+
+  ctx.textAlign = "left";
+
+  // ==========================================================================
+  // 5. ALL PROGRAMS CHECKLIST (y: 700-1500)
+  // ==========================================================================
+  const progsY = 710;
+
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `bold 20px ${FONT}`;
+  ctx.fillText("PROGRAMS", PAD, progsY);
+
+  // Split programs into three groups
+  const spendingProgs = PROGRAMS.filter(
+    (p) => p.netCostBillions > 0 && !EXPERIMENTAL_IDS.has(p.id)
+  );
+  const revenueProgs = PROGRAMS.filter(
+    (p) => p.netCostBillions < 0 && !EXPERIMENTAL_IDS.has(p.id)
+  );
+  const experimentalProgs = PROGRAMS.filter((p) => EXPERIMENTAL_IDS.has(p.id));
+
+  let curY = progsY + 30;
+  const lineH = 32;
+  const progFontSize = 14;
+  const colRight = W - PAD;
+
+  function drawProgramSection(
+    title: string,
+    programs: typeof PROGRAMS,
+    startY: number
+  ): number {
+    // Section header
+    ctx.fillStyle = GRAY_LABEL;
+    ctx.font = `bold 13px ${FONT}`;
+    ctx.textAlign = "left";
+    ctx.fillText(title, PAD, startY);
+    let y = startY + lineH - 4;
+
+    for (const prog of programs) {
+      const enabled = enabledSet.has(prog.id);
+      const icon = enabled ? "\u2705" : "\u274C";
+      const nameColor = enabled ? TEXT_PRIMARY : GRAY_DIM;
+      const costColor =
+        prog.netCostBillions < 0
+          ? enabled
+            ? GREEN
+            : GRAY_DIM
+          : enabled
+            ? RED
+            : GRAY_DIM;
+
+      // Icon + name
+      ctx.fillStyle = nameColor;
+      ctx.font = `${progFontSize}px ${FONT}`;
+      ctx.textAlign = "left";
+      ctx.fillText(`${icon} ${prog.name}`, PAD, y);
+
+      // Cost right-aligned
+      ctx.fillStyle = costColor;
+      ctx.font = `${progFontSize}px ${FONT}`;
+      ctx.textAlign = "right";
+      ctx.fillText(fmtCost(prog.netCostBillions), colRight, y);
+
+      y += lineH;
+    }
+
+    return y;
+  }
+
+  curY = drawProgramSection("SPENDING", spendingProgs, curY);
+  curY += 8;
+  curY = drawProgramSection("REVENUE GENERATORS", revenueProgs, curY);
+  curY += 8;
+  curY = drawProgramSection("EXPERIMENTAL", experimentalProgs, curY);
+
+  // ==========================================================================
+  // 6. TAX RATES (y: 1500-1620)
+  // ==========================================================================
+  const taxY = 1510;
+
+  // Separator line
+  ctx.strokeStyle = "#e5e5ea";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, taxY - 16);
+  ctx.lineTo(W - PAD, taxY - 16);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `bold 20px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("TAX RATES", PAD, taxY);
+
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `18px ${FONT}`;
+  ctx.fillText(
+    `Top: ${taxPolicy.topMarginalRate}%  \u00B7  Corp: ${taxPolicy.corporateRate}%  \u00B7  Cap Gains: ${taxPolicy.capitalGainsRate}%  \u00B7  Estate: ${taxPolicy.estateRate}%`,
+    PAD,
+    taxY + 38
+  );
+
+  // ==========================================================================
+  // 7. HOUSEHOLD IMPACT (y: 1620-1740)
+  // ==========================================================================
+  const impactY = 1620;
+
+  // Separator
+  ctx.strokeStyle = "#e5e5ea";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, impactY - 10);
+  ctx.lineTo(W - PAD, impactY - 10);
+  ctx.stroke();
+
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `bold 20px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("IMPACT ON MEDIAN HOUSEHOLD ($75K)", PAD, impactY + 10);
+
+  // Big impact number
+  const impactColor = netImpact >= 0 ? GREEN : RED;
+  const impactSign = netImpact >= 0 ? "+" : "-";
+  ctx.fillStyle = impactColor;
+  ctx.font = `bold 42px ${FONT}`;
+  ctx.fillText(
+    `${impactSign}${fmtDollars(netImpact)}/yr (${netPct}% raise)`,
+    PAD,
+    impactY + 66
+  );
+
+  // Breakdown
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `16px ${FONT}`;
+  const taxSign = taxChange >= 0 ? "+" : "-";
+  ctx.fillText(
+    `Tax change: ${taxSign}${fmtDollars(taxChange)}  |  Benefits: +${fmtDollars(benefits)}`,
+    PAD,
+    impactY + 100
+  );
+
+  // ==========================================================================
+  // 8. FOOTER (y: 1740-1920)
+  // ==========================================================================
+
+  // Separator
+  ctx.strokeStyle = "#e5e5ea";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, H - 160);
+  ctx.lineTo(W - PAD, H - 160);
+  ctx.stroke();
+
+  // "What would YOU do?" left
+  ctx.fillStyle = TEXT_PRIMARY;
+  ctx.font = `bold 24px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("What would YOU do?", PAD, H - 110);
+
+  // "simecon.app" right
+  ctx.fillStyle = GRAY_LABEL;
+  ctx.font = `20px ${FONT}`;
+  ctx.textAlign = "right";
+  ctx.fillText("simecon.app", W - PAD, H - 110);
+
+  // "Try it yourself ->" center, blue
+  ctx.fillStyle = BLUE;
+  ctx.font = `bold 22px ${FONT}`;
+  ctx.textAlign = "center";
+  ctx.fillText("Try it yourself \u2192", W / 2, H - 60);
+
+  ctx.textAlign = "left";
+}
+
+// --- Component ---------------------------------------------------------------
 
 export function ShareCard({
   open,
@@ -472,6 +746,8 @@ export function ShareCard({
   todayYours,
   todayActual,
   shareUrl,
+  allData,
+  baselineAllData,
 }: ShareCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
@@ -497,11 +773,22 @@ export function ShareCard({
         todayYours,
         todayActual,
         shareUrl,
+        allData,
+        baselineAllData,
       });
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [open, taxPolicy, enabledPrograms, todayYours, todayActual, shareUrl]);
+  }, [
+    open,
+    taxPolicy,
+    enabledPrograms,
+    todayYours,
+    todayActual,
+    shareUrl,
+    allData,
+    baselineAllData,
+  ]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;
@@ -535,7 +822,8 @@ export function ShareCard({
         <SheetHeader>
           <SheetTitle>Share Your Policy</SheetTitle>
           <SheetDescription>
-            Download a shareable image of your economic policy or copy the link.
+            Download a shareable image of your economic policy or copy the
+            link.
           </SheetDescription>
         </SheetHeader>
 
