@@ -352,13 +352,13 @@ function drawCard(
 
   // Grade — massive, centered
   ctx.fillStyle = grade.color;
-  ctx.font = `900 140px ${FONT}`;
-  ctx.fillText(grade.letter, W / 2, hookBottom + 110);
+  ctx.font = `900 100px ${FONT}`;
+  ctx.fillText(grade.letter, W / 2, hookBottom + 90);
 
   // Grade label
   ctx.fillStyle = GRAY_LABEL;
   ctx.font = `bold 18px ${FONT}`;
-  ctx.fillText("BUDGET GRADE", W / 2, hookBottom + 140);
+  ctx.fillText("BUDGET GRADE", W / 2, hookBottom + 118);
 
   // Explainer text
   const explainer = generateExplainer(enabledPrograms, grade, deficit, netImpact);
@@ -367,15 +367,15 @@ function drawCard(
   ctx.textAlign = "center";
   const explainerLines = wrapText(ctx, explainer, W - PAD * 2 - 40);
   for (let i = 0; i < Math.min(explainerLines.length, 3); i++) {
-    ctx.fillText(explainerLines[i], W / 2, hookBottom + 175 + i * 24);
+    ctx.fillText(explainerLines[i], W / 2, hookBottom + 150 + i * 24);
   }
 
   ctx.textAlign = "left";
 
   // ==========================================================================
-  // 3. KEY METRICS ROW (y: 320-440)
+  // 3. KEY METRICS ROW — tight after grade/explainer
   // ==========================================================================
-  const metricsY = 320;
+  const metricsY = hookBottom + 150 + Math.min(explainerLines.length, 3) * 24 + 20;
   const boxW = (W - PAD * 2 - 24) / 3; // 3 boxes with 12px gaps
   const boxH = 100;
 
@@ -415,21 +415,21 @@ function drawCard(
 
     // Label
     ctx.fillStyle = GRAY_LABEL;
-    ctx.font = `bold 12px ${FONT}`;
+    ctx.font = `bold 13px ${FONT}`;
     ctx.textAlign = "left";
     ctx.fillText(metrics[i].label, bx + 16, metricsY + 30);
 
     // Value
     ctx.fillStyle = metrics[i].color;
-    ctx.font = `bold 32px ${FONT}`;
+    ctx.font = `bold 34px ${FONT}`;
     ctx.fillText(metrics[i].value, bx + 16, metricsY + 72);
   }
 
   // ==========================================================================
-  // 4. MINI DEBT CHART (y: 440-700)
+  // 4. MINI DEBT CHART — tight after metrics
   // ==========================================================================
   const chartX = PAD;
-  const chartY = 450;
+  const chartY = metricsY + boxH + 16;
   const chartW = W - PAD * 2;
   const chartH = 240;
 
@@ -567,9 +567,9 @@ function drawCard(
   ctx.textAlign = "left";
 
   // ==========================================================================
-  // 5. ALL PROGRAMS CHECKLIST (y: 700-1500)
+  // 5. ALL PROGRAMS CHECKLIST — tight after chart
   // ==========================================================================
-  const progsY = 710;
+  const progsY = chartY + chartH + 24;
 
   ctx.fillStyle = TEXT_PRIMARY;
   ctx.font = `bold 20px ${FONT}`;
@@ -585,8 +585,8 @@ function drawCard(
   const experimentalProgs = PROGRAMS.filter((p) => EXPERIMENTAL_IDS.has(p.id));
 
   let curY = progsY + 30;
-  const lineH = 32;
-  const progFontSize = 14;
+  const lineH = 34;
+  const progFontSize = 18;
   const colRight = W - PAD;
 
   function drawProgramSection(
@@ -596,7 +596,7 @@ function drawCard(
   ): number {
     // Section header
     ctx.fillStyle = GRAY_LABEL;
-    ctx.font = `bold 13px ${FONT}`;
+    ctx.font = `bold 15px ${FONT}`;
     ctx.textAlign = "left";
     ctx.fillText(title, PAD, startY);
     let y = startY + lineH - 4;
@@ -614,11 +614,14 @@ function drawCard(
             ? RED
             : GRAY_DIM;
 
-      // Icon + name
+      // Icon (bigger) + name
+      ctx.font = `20px ${FONT}`;
+      ctx.textAlign = "left";
+      ctx.fillText(icon, PAD, y);
+      const iconWidth = ctx.measureText(icon).width;
       ctx.fillStyle = nameColor;
       ctx.font = `${progFontSize}px ${FONT}`;
-      ctx.textAlign = "left";
-      ctx.fillText(`${icon} ${prog.name}`, PAD, y);
+      ctx.fillText(prog.name, PAD + iconWidth + 6, y);
 
       // Cost right-aligned
       ctx.fillStyle = costColor;
@@ -639,9 +642,9 @@ function drawCard(
   curY = drawProgramSection("EXPERIMENTAL", experimentalProgs, curY);
 
   // ==========================================================================
-  // 6. TAX RATES (y: 1500-1620)
+  // 6. TAX RATES — tight after programs
   // ==========================================================================
-  const taxY = 1510;
+  const taxY = curY + 24;
 
   // Separator line
   ctx.strokeStyle = "#e5e5ea";
@@ -657,7 +660,7 @@ function drawCard(
   ctx.fillText("TAX RATES", PAD, taxY);
 
   ctx.fillStyle = TEXT_PRIMARY;
-  ctx.font = `18px ${FONT}`;
+  ctx.font = `20px ${FONT}`;
   ctx.fillText(
     `Top: ${taxPolicy.topMarginalRate}%  \u00B7  Corp: ${taxPolicy.corporateRate}%  \u00B7  Cap Gains: ${taxPolicy.capitalGainsRate}%  \u00B7  Estate: ${taxPolicy.estateRate}%`,
     PAD,
@@ -665,9 +668,9 @@ function drawCard(
   );
 
   // ==========================================================================
-  // 7. HOUSEHOLD IMPACT (y: 1620-1740)
+  // 7. HOUSEHOLD IMPACT — tight after tax rates
   // ==========================================================================
-  const impactY = 1620;
+  const impactY = taxY + 60;
 
   // Separator
   ctx.strokeStyle = "#e5e5ea";
@@ -686,16 +689,16 @@ function drawCard(
   const impactColor = netImpact >= 0 ? GREEN : RED;
   const impactSign = netImpact >= 0 ? "+" : "-";
   ctx.fillStyle = impactColor;
-  ctx.font = `bold 42px ${FONT}`;
+  ctx.font = `bold 48px ${FONT}`;
   ctx.fillText(
     `${impactSign}${fmtDollars(netImpact)}/yr (${netPct}% raise)`,
     PAD,
-    impactY + 66
+    impactY + 68
   );
 
   // Breakdown
   ctx.fillStyle = GRAY_LABEL;
-  ctx.font = `16px ${FONT}`;
+  ctx.font = `18px ${FONT}`;
   const taxSign = taxChange >= 0 ? "+" : "-";
   ctx.fillText(
     `Tax change: ${taxSign}${fmtDollars(taxChange)}  |  Benefits: +${fmtDollars(benefits)}`,
@@ -717,21 +720,21 @@ function drawCard(
 
   // "What would YOU do?" left
   ctx.fillStyle = TEXT_PRIMARY;
-  ctx.font = `bold 24px ${FONT}`;
+  ctx.font = `bold 28px ${FONT}`;
   ctx.textAlign = "left";
-  ctx.fillText("What would YOU do?", PAD, H - 110);
+  ctx.fillText("What would YOU do?", PAD, H - 100);
 
   // "simecon.app" right
   ctx.fillStyle = GRAY_LABEL;
-  ctx.font = `20px ${FONT}`;
+  ctx.font = `22px ${FONT}`;
   ctx.textAlign = "right";
-  ctx.fillText("simecon.app", W - PAD, H - 110);
+  ctx.fillText("simecon.app", W - PAD, H - 100);
 
   // "Try it yourself ->" center, blue
   ctx.fillStyle = BLUE;
-  ctx.font = `bold 22px ${FONT}`;
+  ctx.font = `bold 26px ${FONT}`;
   ctx.textAlign = "center";
-  ctx.fillText("Try it yourself \u2192", W / 2, H - 60);
+  ctx.fillText("Try it yourself \u2192", W / 2, H - 50);
 
   ctx.textAlign = "left";
 }
