@@ -584,62 +584,63 @@ function drawCard(
   );
   const experimentalProgs = PROGRAMS.filter((p) => EXPERIMENTAL_IDS.has(p.id));
 
-  let curY = progsY + 30;
-  const lineH = 34;
-  const progFontSize = 18;
-  const colRight = W - PAD;
+  const lineH = 28;
+  const progFont = 15;
+  const colMid = W / 2;
+  const colGap = 16;
 
-  function drawProgramSection(
-    title: string,
+  // Two columns: LEFT = costs money, RIGHT = makes money
+  const costProgs = [...spendingProgs, ...experimentalProgs.filter((p) => p.netCostBillions > 0)];
+  const revProgs = [...revenueProgs, ...experimentalProgs.filter((p) => p.netCostBillions <= 0)];
+
+  function drawProgColumn(
     programs: typeof PROGRAMS,
+    startX: number,
+    endX: number,
     startY: number
   ): number {
-    // Section header
-    ctx.fillStyle = GRAY_LABEL;
-    ctx.font = `bold 15px ${FONT}`;
-    ctx.textAlign = "left";
-    ctx.fillText(title, PAD, startY);
-    let y = startY + lineH - 4;
-
+    let y = startY;
     for (const prog of programs) {
       const enabled = enabledSet.has(prog.id);
       const icon = enabled ? "\u2705" : "\u274C";
       const nameColor = enabled ? TEXT_PRIMARY : GRAY_DIM;
-      const costColor =
-        prog.netCostBillions < 0
-          ? enabled
-            ? GREEN
-            : GRAY_DIM
-          : enabled
-            ? RED
-            : GRAY_DIM;
+      const costColor = prog.netCostBillions < 0
+        ? (enabled ? GREEN : GRAY_DIM)
+        : (enabled ? RED : GRAY_DIM);
 
-      // Icon (bigger) + name
-      ctx.font = `20px ${FONT}`;
+      // Icon + name
+      ctx.font = `16px ${FONT}`;
       ctx.textAlign = "left";
-      ctx.fillText(icon, PAD, y);
-      const iconWidth = ctx.measureText(icon).width;
+      ctx.fillText(icon, startX, y);
       ctx.fillStyle = nameColor;
-      ctx.font = `${progFontSize}px ${FONT}`;
-      ctx.fillText(prog.name, PAD + iconWidth + 6, y);
+      ctx.font = `${progFont}px ${FONT}`;
+      ctx.fillText(prog.name, startX + 22, y);
 
-      // Cost right-aligned
+      // Cost right-aligned within column
       ctx.fillStyle = costColor;
-      ctx.font = `${progFontSize}px ${FONT}`;
+      ctx.font = `bold ${progFont}px ${FONT}`;
       ctx.textAlign = "right";
-      ctx.fillText(fmtCost(prog.netCostBillions), colRight, y);
+      ctx.fillText(fmtCost(prog.netCostBillions), endX, y);
 
       y += lineH;
     }
-
     return y;
   }
 
-  curY = drawProgramSection("SPENDING", spendingProgs, curY);
-  curY += 8;
-  curY = drawProgramSection("REVENUE GENERATORS", revenueProgs, curY);
-  curY += 8;
-  curY = drawProgramSection("EXPERIMENTAL", experimentalProgs, curY);
+  // Column headers
+  let curY = progsY + 28;
+  ctx.fillStyle = RED;
+  ctx.font = `bold 13px ${FONT}`;
+  ctx.textAlign = "left";
+  ctx.fillText("COSTS MONEY", PAD, curY);
+  ctx.fillStyle = GREEN;
+  ctx.fillText("MAKES MONEY", colMid + colGap, curY);
+  curY += lineH;
+
+  // Draw both columns
+  const leftBottom = drawProgColumn(costProgs, PAD, colMid - colGap, curY);
+  const rightBottom = drawProgColumn(revProgs, colMid + colGap, W - PAD, curY);
+  curY = Math.max(leftBottom, rightBottom);
 
   // ==========================================================================
   // 6. TAX RATES — tight after programs
