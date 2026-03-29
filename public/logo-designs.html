@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimEcon — 10 Logo Designs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@200;300;400;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Bebas+Neue&family=Libre+Franklin:wght@200;300;400;600;700;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Space+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Hanken+Grotesk:wght@200;300;400;600;700;800&display=swap" crossorigin>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #f5f5f7; font-family: -apple-system, sans-serif; }
+
+.header {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+.header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 8px;
+}
+.header p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: #1d1d1f;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 0 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-label {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+}
+.card-num { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 300; color: #ccc; }
+.card-name { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999; }
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   01 — MERIDIAN
+   Clean gradient, Outfit Black, subtle $ watermark
+   ═══════════════════════════════════════════ */
+.d1 .logo-area { background: #fff; }
+.d1 .logo-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #007AFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.d1 .logo-sub {
+  position: absolute;
+  bottom: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: #c7c7cc;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   02 — LEDGER
+   Split color: Sim in black, Econ in gold
+   ═══════════════════════════════════════════ */
+.d2 .logo-area { background: #faf9f6; }
+.d2 .logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.d2 .sim { color: #1d1d1f; }
+.d2 .econ { color: #b8860b; }
+.d2 .pipe {
+  color: #e5e5ea;
+  font-weight: 300;
+  margin: 0 4px;
+}
+.d2 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 6px;
+  color: #b8a080;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   03 — MINT
+   Green accent, Hanken Grotesk, clean
+   ═══════════════════════════════════════════ */
+.d3 .logo-area { background: #f0faf4; }
+.d3 .logo-text {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 58px;
+  font-weight: 800;
+  color: #1a2e24;
+  letter-spacing: -1px;
+}
+.d3 .accent { color: #34c759; }
+.d3 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: #7a9a8a;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   04 — MONUMENT
+   Bebas Neue, all caps, wide tracking, blue line
+   ═══════════════════════════════════════════ */
+.d4 .logo-area { background: #fff; }
+.d4 .logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  letter-spacing: 12px;
+  color: #1d1d1f;
+}
+.d4 .blue-line {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 3px;
+  background: #007AFF;
+}
+.d4 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 8px;
+  color: #86868b;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   05 — SERIF LUXE
+   Cormorant italic + weight contrast
+   ═══════════════════════════════════════════ */
+.d5 .logo-area { background: #fdfcfa; }
+.d5 .logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 62px;
+}
+.d5 .sim-part {
+  font-weight: 300;
+  font-style: italic;
+  color: #4a4a48;
+}
+.d5 .econ-part {
+  font-weight: 700;
+  color: #1d1d1f;
+}
+.d5 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 6px;
+  color: #c4a860;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   06 — DARK FINANCE
+   Dark bg, white text, red accent
+   ═══════════════════════════════════════════ */
+.d6 .logo-area { background: #0f0f12; }
+.d6 .logo-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 60px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+}
+.d6 .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #ff3b30;
+  border-radius: 50%;
+  margin-left: 2px;
+  vertical-align: super;
+  font-size: 0;
+}
+.d6 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #444;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   07 — STENCIL
+   Fraunces display, editorial weight
+   ═══════════════════════════════════════════ */
+.d7 .logo-area { background: #fff; }
+.d7 .logo-text {
+  font-family: 'Fraunces', serif;
+  font-size: 58px;
+  font-weight: 900;
+  color: #1d1d1f;
+  letter-spacing: -1px;
+}
+.d7 .underline-bar {
+  position: absolute;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #007AFF, #34c759);
+  border-radius: 2px;
+}
+.d7 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: #86868b;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   08 — TICKER
+   Monospace, stock ticker aesthetic
+   ═══════════════════════════════════════════ */
+.d8 .logo-area { background: #f8f8fa; }
+.d8 .logo-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: #1d1d1f;
+  letter-spacing: -1px;
+}
+.d8 .bracket { color: #007AFF; font-weight: 400; }
+.d8 .ticker-line {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #34c759;
+  letter-spacing: 2px;
+}
+.d8 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #86868b;
+  letter-spacing: 3px;
+}
+
+/* ═══════════════════════════════════════════
+   09 — CURRENCY
+   Plus Jakarta, $ integrated into the S
+   ═══════════════════════════════════════════ */
+.d9 .logo-area { background: #fff; }
+.d9 .logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 60px;
+  font-weight: 700;
+  color: #1d1d1f;
+  letter-spacing: -1px;
+}
+.d9 .dollar-s {
+  background: linear-gradient(180deg, #34c759 0%, #007AFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+.d9 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 5px;
+  color: #86868b;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   10 — INSTRUMENT
+   Instrument Serif italic, minimal, premium
+   ═══════════════════════════════════════════ */
+.d10 .logo-area { background: #faf9f7; }
+.d10 .logo-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 64px;
+  font-weight: 400;
+  color: #2a2a28;
+  letter-spacing: 2px;
+}
+.d10 .italic-part { font-style: italic; }
+.d10 .divider {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 1px;
+  background: #c4a860;
+}
+.d10 .logo-sub {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 6px;
+  color: #b0a898;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SimEcon &mdash; Logo Exploration</h1>
+  <p>10 Designs</p>
+</div>
+
+<div class="grid">
+
+<!-- 01 MERIDIAN -->
+<div class="card d1">
+  <div class="card-label"><span class="card-num">01</span><span class="card-name">Meridian</span></div>
+  <div class="logo-area">
+    <span class="logo-text">SimEcon</span>
+    <span class="logo-sub">Economic Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 02 LEDGER -->
+<div class="card d2">
+  <div class="card-label"><span class="card-num">02</span><span class="card-name">Ledger</span></div>
+  <div class="logo-area">
+    <span class="logo-text"><span class="sim">Sim</span><span class="pipe">|</span><span class="econ">Econ</span></span>
+    <span class="logo-sub">Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 03 MINT -->
+<div class="card d3">
+  <div class="card-label"><span class="card-num">03</span><span class="card-name">Mint</span></div>
+  <div class="logo-area">
+    <span class="logo-text">Sim<span class="accent">Econ</span></span>
+    <span class="logo-sub">Economic Simulator</span>
+  </div>
+</div>
+
+<!-- 04 MONUMENT -->
+<div class="card d4">
+  <div class="card-label"><span class="card-num">04</span><span class="card-name">Monument</span></div>
+  <div class="logo-area">
+    <span class="logo-text">SIMECON</span>
+    <div class="blue-line"></div>
+    <span class="logo-sub">Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 05 SERIF LUXE -->
+<div class="card d5">
+  <div class="card-label"><span class="card-num">05</span><span class="card-name">Serif Luxe</span></div>
+  <div class="logo-area">
+    <span class="logo-text"><span class="sim-part">Sim</span><span class="econ-part">Econ</span></span>
+    <span class="logo-sub">Economic Policy</span>
+  </div>
+</div>
+
+<!-- 06 DARK FINANCE -->
+<div class="card d6">
+  <div class="card-label"><span class="card-num">06</span><span class="card-name">Dark Finance</span></div>
+  <div class="logo-area">
+    <span class="logo-text">SimEcon<span class="dot"></span></span>
+    <span class="logo-sub">Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 07 STENCIL -->
+<div class="card d7">
+  <div class="card-label"><span class="card-num">07</span><span class="card-name">Editorial</span></div>
+  <div class="logo-area">
+    <span class="logo-text">SimEcon</span>
+    <div class="underline-bar"></div>
+    <span class="logo-sub">Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 08 TICKER -->
+<div class="card d8">
+  <div class="card-label"><span class="card-num">08</span><span class="card-name">Ticker</span></div>
+  <div class="logo-area">
+    <span class="ticker-line">SMECON &#9650; +2.4%</span>
+    <span class="logo-text"><span class="bracket">[</span>SimEcon<span class="bracket">]</span></span>
+    <span class="logo-sub">POLICY &middot; SIMULATOR</span>
+  </div>
+</div>
+
+<!-- 09 CURRENCY -->
+<div class="card d9">
+  <div class="card-label"><span class="card-num">09</span><span class="card-name">Currency</span></div>
+  <div class="logo-area">
+    <span class="logo-text"><span class="dollar-s">$</span>imEcon</span>
+    <span class="logo-sub">Policy Simulator</span>
+  </div>
+</div>
+
+<!-- 10 INSTRUMENT -->
+<div class="card d10">
+  <div class="card-label"><span class="card-num">10</span><span class="card-name">Instrument</span></div>
+  <div class="logo-area">
+    <span class="logo-text"><span class="italic-part">Sim</span>Econ</span>
+    <div class="divider"></div>
+    <span class="logo-sub">Economic Policy</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
