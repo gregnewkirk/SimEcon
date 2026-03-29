@@ -93,7 +93,7 @@ export const SCENARIOS: Scenario[] = [
     id: "eisenhower",
     category: "ideology",
     name: "Eisenhower Era",
-    mode: "revision",
+    mode: "both",
     description:
       "1950s-era tax rates when top marginal rate was 91%. No new social programs in this model.",
     policy: {

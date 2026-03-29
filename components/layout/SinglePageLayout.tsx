@@ -526,7 +526,7 @@ export function SinglePageLayout() {
               <PersonalCalculator
                 taxPolicy={sim.state.taxPolicy}
                 enabledPrograms={sim.state.enabledPrograms}
-                whatIfEventIds={sim.state.whatIfEventIds}
+                whatIfEventIds={sim.isRevisionMode ? sim.state.whatIfEventIds : []}
               />
             </section>
 

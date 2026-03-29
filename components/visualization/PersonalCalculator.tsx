@@ -335,13 +335,13 @@ export function PersonalCalculator({
             {calc.benefits.map((b) => (
               <div key={b.programId} className="flex items-center justify-between text-sm">
                 <span className="text-[#1d1d1f]">
-                  {b.annualValue > 0 ? "\u2713" : "\u2717"} {b.label}
+                  <span className="text-[#34c759]">{"\u2713"}</span> {b.label}
                 </span>
                 <span
                   className="font-medium tabular-nums"
-                  style={{ color: b.annualValue > 0 ? "#34c759" : "#86868b" }}
+                  style={{ color: b.annualValue > 0 ? "#34c759" : "#34c759" }}
                 >
-                  {b.annualValue > 0 ? `+${fmtDollars(b.annualValue)}/yr` : b.description}
+                  {b.annualValue > 0 ? `+${fmtDollars(b.annualValue)}/yr` : <span className="text-[#34c759]">{b.description}</span>}
                 </span>
               </div>
             ))}
