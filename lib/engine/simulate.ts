@@ -33,6 +33,14 @@ export function simulate(
 
   let prev = lastHistorical;
 
+  // Program-free, interest-free spending base. Carried independently of prev.spending
+  // so program costs and interest are never folded back in and re-grown (see step 4).
+  let prevBaselineNonInterest = Math.max(
+    lastHistorical.spendingBillions -
+      lastHistorical.debtTrillions * 1000 * (assumptions.interestRate / 100),
+    0
+  );
+
   for (let year = lastHistorical.year + 1; year <= endYear; year++) {
     // Inflate program costs from base year — costs grow in nominal terms each year
     const yearsFromBase = year - baseYear;
@@ -50,12 +58,12 @@ export function simulate(
     // 3. Interest on current debt
     const interestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
 
-    // 4. Non-interest spending: strip out previous year's interest before growing
-    //    Historical spending already includes interest, so we must separate them
-    //    to avoid double-counting interest each year.
-    const prevInterestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
-    const prevNonInterestSpending = Math.max(prev.spendingBillions - prevInterestBillions, 0);
-    const nonInterestSpending = prevNonInterestSpending * (1 + assumptions.gdpGrowthRate / 100);
+    // 4. Non-interest spending: grow the program-free base on its own track, then add
+    //    this year's program cost and interest fresh. Folding program cost into the
+    //    carried-forward base (the old approach) made a flat program compound and
+    //    balloon — a $450B/yr program reached ~$5.5T/yr of modeled spend by year 10.
+    const nonInterestSpending = prevBaselineNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    prevBaselineNonInterest = nonInterestSpending;
     const spendingBillions = nonInterestSpending + programCostBillions + interestBillions;
 
     // 5. Deficit: negative means deficit, positive means surplus

@@ -154,6 +154,14 @@ function simulateForward(
   const projected: YearData[] = [];
   let prev = lastHistorical;
 
+  // Program-free, interest-free spending base, carried independently of prev.spending so
+  // a windowed reduction applies only within its years and reverses afterward.
+  let prevBaselineNonInterest = Math.max(
+    lastHistorical.spendingBillions -
+      lastHistorical.debtTrillions * 1000 * (assumptions.interestRate / 100),
+    0
+  );
+
   for (let year = lastHistorical.year + 1; year <= endYear; year++) {
     // GDP growth
     const gdpTrillions = prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100);
@@ -164,14 +172,15 @@ function simulateForward(
     // Interest on debt
     const interestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
 
-    // Non-interest spending (strip previous interest, grow with GDP)
-    const prevInterest = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
-    const prevNonInterest = Math.max(prev.spendingBillions - prevInterest, 0);
-    let nonInterestSpending = prevNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    // Non-interest spending: grow the base on its own track, then apply this year's
+    // reduction fresh (so it does not compound into future years).
+    const baselineNonInterest = prevBaselineNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    prevBaselineNonInterest = baselineNonInterest;
+    let nonInterestSpending = baselineNonInterest;
 
     // Apply spending reduction if within the event window
     if (spendingReductionPerYear > 0 && year >= spendingStartYear && year <= spendingEndYear) {
-      nonInterestSpending = Math.max(nonInterestSpending - spendingReductionPerYear, 0);
+      nonInterestSpending = Math.max(baselineNonInterest - spendingReductionPerYear, 0);
     }
 
     const spendingBillions = nonInterestSpending + interestBillions;
@@ -228,17 +237,25 @@ function simulateForwardMulti(
   const projected: YearData[] = [];
   let prev = lastHistorical;
 
+  // Program-free, interest-free spending base, carried independently of prev.spending so
+  // windowed reductions apply only within their years and reverse afterward.
+  let prevBaselineNonInterest = Math.max(
+    lastHistorical.spendingBillions -
+      lastHistorical.debtTrillions * 1000 * (assumptions.interestRate / 100),
+    0
+  );
+
   for (let year = lastHistorical.year + 1; year <= endYear; year++) {
     const gdpTrillions = prev.gdpTrillions * (1 + assumptions.gdpGrowthRate / 100);
     const revenueBillions = calculateTaxRevenue(prev, taxPolicy, gdpTrillions);
     const interestBillions = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
-    const prevInterest = prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
-    const prevNonInterest = Math.max(prev.spendingBillions - prevInterest, 0);
-    let nonInterestSpending = prevNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    const baselineNonInterest = prevBaselineNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    prevBaselineNonInterest = baselineNonInterest;
+    let nonInterestSpending = baselineNonInterest;
 
     const reduction = spendingSchedule.get(year) ?? 0;
     if (reduction > 0) {
-      nonInterestSpending = Math.max(nonInterestSpending - reduction, 0);
+      nonInterestSpending = Math.max(baselineNonInterest - reduction, 0);
     }
 
     const spendingBillions = nonInterestSpending + interestBillions;

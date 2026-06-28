@@ -32,6 +32,14 @@ export function simulateRevision(
 
   let prev = startingConditions;
 
+  // Program-free, interest-free spending base. Carried independently of prev.spending
+  // so program costs and interest are never folded back in and re-grown (see step 4).
+  let prevBaselineNonInterest = Math.max(
+    startingConditions.spendingBillions -
+      startingConditions.debtTrillions * 1000 * (assumptions.interestRate / 100),
+    0
+  );
+
   for (let year = startingConditions.year + 1; year <= endYear; year++) {
     // Adjust program costs to this year's nominal dollars.
     // Positive exponent = future (inflate). Negative = past (deflate).
@@ -53,15 +61,12 @@ export function simulateRevision(
     const interestBillions =
       prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
 
-    // 4. Non-interest spending: strip out previous year's interest before growing
-    const prevInterestBillions =
-      prev.debtTrillions * 1000 * (assumptions.interestRate / 100);
-    const prevNonInterestSpending = Math.max(
-      prev.spendingBillions - prevInterestBillions,
-      0
-    );
+    // 4. Non-interest spending: grow the program-free base on its own track, then add
+    //    this year's program cost and interest fresh. Folding program cost into the
+    //    carried-forward base made a flat program compound and balloon over time.
     const nonInterestSpending =
-      prevNonInterestSpending * (1 + assumptions.gdpGrowthRate / 100);
+      prevBaselineNonInterest * (1 + assumptions.gdpGrowthRate / 100);
+    prevBaselineNonInterest = nonInterestSpending;
     const spendingBillions =
       nonInterestSpending + programCostBillions + interestBillions;
 
