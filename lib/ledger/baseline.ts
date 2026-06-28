@@ -46,6 +46,14 @@ registerSources([
     url: "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/",
     accessed: "2026-06-28",
   },
+  {
+    id: "model_container",
+    agency: "SimEcon model",
+    dataset: "Policy container line (seeded at $0; populated only by active levers)",
+    year: 2025,
+    url: "",
+    accessed: "2026-06-28",
+  },
 ]);
 
 export const BASELINE_GDP_T = 29.3;
@@ -69,4 +77,8 @@ export const BASELINE_2025: BudgetLine[] = [
   { id: "defense", label: "Defense discretionary", side: "spending", valueB: 900, growthBasis: "inflation", citationId: "omb_hist_3_2" },
   { id: "nondefense_discretionary", label: "Non-defense discretionary", side: "spending", valueB: 910, growthBasis: "inflation", citationId: "omb_hist_3_2" },
   { id: "net_interest", label: "Net interest", side: "spending", valueB: 950, growthBasis: "computed", citationId: "cbo_mbr_2025" },
+
+  // ---- Policy containers (seeded at 0; populated by active levers) ----
+  { id: "policy_revenue", label: "New policy revenue", side: "revenue", valueB: 0, growthBasis: "nominalGDP", citationId: "model_container" },
+  { id: "policy_programs", label: "New policy programs", side: "spending", valueB: 0, growthBasis: "inflation", citationId: "model_container" },
 ];
