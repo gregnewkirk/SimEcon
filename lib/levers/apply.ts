@@ -19,7 +19,13 @@ export function applyLevers(
   baseLines: BudgetLine[],
   levers: Lever[],
   cfg: LeverConfig,
-  useDynamic: boolean
+  useDynamic: boolean,
+  /**
+   * Optional per-line cumulative growth factor. Each lever delta on a line is multiplied
+   * by this before being applied, so a 2025-dollar score inflates / grows with its base
+   * in projected years. Defaults to 1 (no scaling), which is what the static tests use.
+   */
+  scale?: Record<string, number>
 ): ApplyResult {
   const lines = baseLines.map((l) => ({ ...l }));
   const byId = new Map(lines.map((l) => [l.id, l]));
@@ -36,13 +42,15 @@ export function applyLevers(
       ...(useDynamic && lever.dynamic ? lever.dynamic(cfg) : []),
     ];
     for (const d of deltas) {
-      if (d.amountB === 0) continue;
+      const factor = scale?.[d.lineId] ?? 1;
+      const amountB = d.amountB * factor;
+      if (amountB === 0) continue;
       const line = byId.get(d.lineId);
       if (!line) continue;
-      line.valueB += d.amountB;
+      line.valueB += amountB;
       (provenance[d.lineId] ??= []).push({
         source: d.leverId,
-        amountB: d.amountB,
+        amountB,
         citationId: d.citationId,
       });
     }
