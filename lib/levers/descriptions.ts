@@ -40,4 +40,22 @@ export const LEVER_DESCRIPTIONS: Record<string, string> = {
   robot_tax: "A displacement fee on automation that replaces workers, funding retraining. Proposed by Bill Gates.",
   sugar_tax: "A 20% tax on sugary drinks and ultra-processed food. Mexico's version cut soda consumption 12%.",
   land_value_tax: "A 1% tax on unimproved land value (not buildings). Milton Friedman called it 'the least bad tax.'",
+
+  // Next-gen spending moonshots
+  child_tax_credit: "A permanent $300/month per child, fully refundable. The 2021 version cut child poverty ~40% in six months before it expired. ~$110B/yr.",
+  child_care: "Caps child care at 7% of income for families and funds early learning for ages 0-5. Care often costs more than college today.",
+  paid_leave: "Federal paid family and medical leave. The US is the only wealthy country without it; ~$250B/yr depending on design.",
+  job_guarantee: "A standing federal offer of a public job at a living wage to anyone who wants one. ~$500B/yr gross, partly offset by lower safety-net spending.",
+  school_meals: "Free breakfast and lunch for every public-school student, no paperwork. ~$25B/yr, and it ends lunch debt.",
+
+  // The giants people underestimate
+  vat5: "A 5% value-added tax, the consumption tax every other rich country uses. At ~$1.4T/yr it is the single largest untapped federal revenue source. Regressive unless paired with rebates (not modeled).",
+  cap_employer_health: "The exclusion of employer health insurance from taxable income is the single largest tax break in the code (~$300B/yr) and almost invisible. Capping it claws back a big chunk.",
+  billionaire_min_tax: "A 25% minimum tax on the income of households worth over $100M, counting unrealized gains. Targets billionaires who borrow against stock instead of selling. Different from a wealth tax: it taxes gains, not net worth.",
+  buyback_tax: "Raises the 2022 stock-buyback excise tax from 1% to 4%. Corporations spend ~$1T/yr buying back their own shares to lift the stock price.",
+
+  // The reveals people overestimate
+  carried_interest: "Lets private-equity and hedge-fund managers pay the lower capital-gains rate on fees that are really wages. Famous and hated, but closing it raises only ~$1.5B/yr. Mostly symbolic.",
+  end_fossil_subsidies: "Repeals explicit federal tax preferences for oil, gas, and coal (intangible drilling costs, percentage depletion). Only ~$15B/yr: the 'trillions' figure people cite is the IMF's implicit, unpriced-pollution number, not a federal line item.",
+  cannabis_tax: "Legalize cannabis federally and tax it like alcohol or tobacco. A growing legal market; ~$10B/yr in federal excise.",
 };

@@ -40,4 +40,20 @@ describe("lever registry", () => {
     const programs = lines.find((l) => l.id === "policy_programs")!;
     expect(programs.valueB).toBeCloseTo(450, 6);
   });
+
+  it("VAT is the giant: ~$1.4T of new revenue", () => {
+    const rev = (lines: { side: string; valueB: number }[]) => lines.filter((l) => l.side === "revenue").reduce((s, l) => s + l.valueB, 0);
+    const base = rev(applyLevers(BASELINE_2025, ALL_LEVERS, defaultConfig(), false).lines);
+    const withVat = rev(applyLevers(BASELINE_2025, ALL_LEVERS, { ...defaultConfig(), vat5: true }, false).lines);
+    expect(withVat - base).toBeCloseTo(1400, 0);
+  });
+
+  it("carried interest is the reveal: a rounding error (~$1.5B)", () => {
+    expect(LEVERS_BY_ID.get("carried_interest")!.conventional({ carried_interest: true })[0].amountB).toBeCloseTo(1.5, 6);
+  });
+
+  it("the new moonshots are programs and the new revenue options are revenue", () => {
+    expect(LEVERS_BY_ID.get("child_tax_credit")!.category).toBe("program");
+    expect(LEVERS_BY_ID.get("vat5")!.category).toBe("revenue");
+  });
 });

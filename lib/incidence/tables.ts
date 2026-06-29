@@ -39,6 +39,20 @@ export const INCIDENCE: Record<string, IncidenceShares> = {
   college: { top1: 0.05, next9: 0.2, middle40: 0.45, bottom50: 0.3 },
   housing: { top1: 0, next9: 0.05, middle40: 0.35, bottom50: 0.6 },
   baby_bonds: { top1: 0, next9: 0.05, middle40: 0.35, bottom50: 0.6 },
+  child_tax_credit: { top1: 0, next9: 0.05, middle40: 0.45, bottom50: 0.5 },
+  child_care: { top1: 0.02, next9: 0.1, middle40: 0.43, bottom50: 0.45 },
+  paid_leave: { top1: 0.05, next9: 0.2, middle40: 0.45, bottom50: 0.3 },
+  job_guarantee: { top1: 0, next9: 0.02, middle40: 0.28, bottom50: 0.7 },
+  school_meals: { top1: 0, next9: 0.03, middle40: 0.32, bottom50: 0.65 },
+
+  // New revenue levers
+  vat5: { top1: 0.1, next9: 0.2, middle40: 0.35, bottom50: 0.35 }, // regressive consumption tax
+  cannabis_tax: { top1: 0.1, next9: 0.2, middle40: 0.35, bottom50: 0.35 },
+  cap_employer_health: { top1: 0.15, next9: 0.3, middle40: 0.45, bottom50: 0.1 },
+  billionaire_min_tax: { top1: 0.97, next9: 0.03, middle40: 0, bottom50: 0 },
+  buyback_tax: { top1: 0.6, next9: 0.25, middle40: 0.13, bottom50: 0.02 },
+  carried_interest: { top1: 0.95, next9: 0.05, middle40: 0, bottom50: 0 },
+  end_fossil_subsidies: { top1: 0.5, next9: 0.25, middle40: 0.2, bottom50: 0.05 },
 };
 
 /** Fallback distribution by lever category when no specific table exists. */

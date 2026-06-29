@@ -18,6 +18,38 @@ registerSources([
     url: "https://eml.berkeley.edu/~saez/",
     accessed: "2026-06-28",
   },
+  {
+    id: "tpc_vat",
+    agency: "Tax Policy Center",
+    dataset: "Revenue from a broad-based 5% value-added tax",
+    year: 2023,
+    url: "https://www.taxpolicycenter.org/",
+    accessed: "2026-06-28",
+  },
+  {
+    id: "jct_tax_expenditures",
+    agency: "Joint Committee on Taxation",
+    dataset: "Estimates of Federal Tax Expenditures (employer health exclusion, buybacks, carried interest)",
+    year: 2024,
+    url: "https://www.jct.gov/publications/",
+    accessed: "2026-06-28",
+  },
+  {
+    id: "treasury_greenbook",
+    agency: "U.S. Treasury",
+    dataset: "General Explanations of the Administration's Revenue Proposals (billionaire minimum tax; fossil-fuel preferences)",
+    year: 2024,
+    url: "https://home.treasury.gov/policy-issues/tax-policy/revenue-proposals",
+    accessed: "2026-06-28",
+  },
+  {
+    id: "crs_cannabis",
+    agency: "Congressional Research Service / Tax Foundation",
+    dataset: "Federal revenue from cannabis legalization and excise tax",
+    year: 2023,
+    url: "https://crsreports.congress.gov/",
+    accessed: "2026-06-28",
+  },
 ]);
 
 /**
@@ -47,6 +79,15 @@ const OPTIONS: RevenueDef[] = [
   { id: "robot_tax", label: "Automation / Robot Tax", amountB: 50, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
   { id: "sugar_tax", label: "Sugar / Junk Food Tax", amountB: 30, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
   { id: "land_value_tax", label: "Federal Land Value Tax", amountB: 100, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
+  // The giants people underestimate
+  { id: "vat5", label: "Value-Added Tax (5%)", amountB: 1400, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "tpc_vat" },
+  { id: "cap_employer_health", label: "Cap Employer Health Exclusion", amountB: 300, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
+  { id: "billionaire_min_tax", label: "Billionaire Minimum Tax (unrealized gains)", amountB: 40, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "treasury_greenbook" },
+  { id: "buyback_tax", label: "Stock Buyback Tax (1% to 4%)", amountB: 25, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
+  // The reveals people overestimate
+  { id: "carried_interest", label: "Close Carried-Interest Loophole", amountB: 1.5, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
+  { id: "end_fossil_subsidies", label: "End Fossil-Fuel Subsidies", amountB: 15, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "treasury_greenbook" },
+  { id: "cannabis_tax", label: "Federal Cannabis Tax", amountB: 10, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "crs_cannabis" },
 ];
 
 export const REVENUE_LEVERS: Lever[] = OPTIONS.map((o) => ({
