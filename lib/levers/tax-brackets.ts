@@ -41,6 +41,14 @@ function bracketDelta(key: string, baseRate: number, stackedB: number, cfg: Leve
   return [{ lineId: "individual_income", amountB, citationId: "jct_rates", leverId: key }];
 }
 
+// Dynamic: income shifting and reduced labor supply offset part of a static rate increase.
+// The offset is larger at the top (more elastic income). JCT behavioral elasticities.
+function bracketDynamic(key: string, baseRate: number, stackedB: number, elasticity: number, cfg: LeverConfig): LineDelta[] {
+  const rate = (cfg[key] as number) ?? baseRate;
+  const staticDelta = stackedB * ((rate - baseRate) / 100);
+  return [{ lineId: "individual_income", amountB: -elasticity * staticDelta, citationId: "jct_rates", leverId: key }];
+}
+
 /** Bracket rate levers b1..b6 (the top bracket is exported separately as topRateLever). */
 export const bracketLevers: Lever[] = SOI_TAXABLE_BY_BRACKET.slice(0, 6).map((b) => ({
   id: b.key,
@@ -52,6 +60,7 @@ export const bracketLevers: Lever[] = SOI_TAXABLE_BY_BRACKET.slice(0, 6).map((b)
   range: { min: 0, max: 60, step: 1, baseline: b.baseRate },
   defaultValue: b.baseRate,
   conventional: (cfg) => bracketDelta(b.key, b.baseRate, b.stackedB, cfg),
+  dynamic: (cfg) => bracketDynamic(b.key, b.baseRate, b.stackedB, 0.1, cfg),
 }));
 
 /** Top marginal rate lever ($578K+), config key "topRate", baseline 37%. */
@@ -67,5 +76,7 @@ export const topRateLever: Lever = (() => {
     range: { min: 0, max: 60, step: 0.1, baseline: 37 },
     defaultValue: 37,
     conventional: (cfg) => bracketDelta("topRate", top.baseRate, top.stackedB, cfg),
+    // Top earners are the most elastic: ~25% of a static increase shifts away.
+    dynamic: (cfg) => bracketDynamic("topRate", top.baseRate, top.stackedB, 0.25, cfg),
   };
 })();

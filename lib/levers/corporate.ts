@@ -33,4 +33,10 @@ export const corporateLever: Lever = {
     const rate = (cfg.corpRate as number) ?? BASE_RATE;
     return [{ lineId: "corporate", amountB: (rate - BASE_RATE) * PER_POINT_B, citationId: "jct_corporate", leverId: "corpRate" }];
   },
+  // Dynamic: profit shifting and reduced investment claw back ~15% of a static increase.
+  dynamic: (cfg) => {
+    const rate = (cfg.corpRate as number) ?? BASE_RATE;
+    const staticDelta = (rate - BASE_RATE) * PER_POINT_B;
+    return [{ lineId: "corporate", amountB: -0.15 * staticDelta, citationId: "jct_corporate", leverId: "corpRate" }];
+  },
 };

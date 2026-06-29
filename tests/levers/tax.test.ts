@@ -45,6 +45,22 @@ describe("tax lever golden numbers (conventional / static)", () => {
     expect(d).toBeLessThan(40);
   });
 
+  it("dynamic scoring shows less revenue than static for a tax hike", () => {
+    const staticGain = rev(applyLevers(BASELINE_2025, [corporateLever], { corpRate: 28 }, false).lines) - base;
+    const dynamicGain = rev(applyLevers(BASELINE_2025, [corporateLever], { corpRate: 28 }, true).lines) - base;
+    expect(dynamicGain).toBeLessThan(staticGain);
+    expect(dynamicGain).toBeGreaterThan(staticGain * 0.5); // a haircut, not a collapse
+  });
+
+  it("top-rate behavioral offset is larger than the corporate one (more elastic)", () => {
+    const corpStatic = rev(applyLevers(BASELINE_2025, [corporateLever], { corpRate: 28 }, false).lines) - base;
+    const corpDyn = rev(applyLevers(BASELINE_2025, [corporateLever], { corpRate: 28 }, true).lines) - base;
+    const topStatic = rev(applyLevers(BASELINE_2025, [topRateLever], { topRate: 45 }, false).lines) - base;
+    const topDyn = rev(applyLevers(BASELINE_2025, [topRateLever], { topRate: 45 }, true).lines) - base;
+    expect(1 - corpDyn / corpStatic).toBeCloseTo(0.15, 2);
+    expect(1 - topDyn / topStatic).toBeCloseTo(0.25, 2);
+  });
+
   it("levers at baseline values produce no change", () => {
     expect(revWith(topRateLever, { topRate: 37 })).toBeCloseTo(base, 6);
     expect(revWith(corporateLever, { corpRate: 21 })).toBeCloseTo(base, 6);

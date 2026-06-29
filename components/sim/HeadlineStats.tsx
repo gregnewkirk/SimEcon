@@ -26,7 +26,7 @@ export function HeadlineStats({ year }: { year: YearData }) {
           className={surplus ? "text-emerald-400" : "text-rose-400"}
         />
       </Stat>
-      <Stat label={`Debt / GDP ${pct(year.debtToGdp)}`}>
+      <Stat label={`Gross debt / GDP ${pct(year.debtToGdp)}`}>
         <AnimatedNumber value={year.debtT * 1000} format={trillions} className="text-amber-400" />
       </Stat>
     </div>

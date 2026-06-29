@@ -79,7 +79,7 @@ export function SimDashboard() {
 
             <section className="rounded-xl border border-border/60 bg-card/30 p-4">
               <h2 className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Debt as a share of GDP, through 2050
+                Gross federal debt as a share of GDP, through 2050
               </h2>
               <TrajectoryChart mode="fix" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
             </section>
