@@ -71,7 +71,7 @@ function ToggleRow({ lever, cfg, setLever }: { lever: Lever; cfg: LeverConfig; s
   const widthPct = Math.max(0.4, (Math.abs(impact) / GLOBAL_MAX) * 100);
   return (
     <div className="flex items-center gap-2.5 py-1.5">
-      <span className={`w-14 shrink-0 text-right font-mono text-xs font-medium tabular-nums ${positive ? "text-emerald-400" : "text-rose-400"}`}>
+      <span className={`w-16 shrink-0 text-right font-mono text-xs font-medium tabular-nums ${positive ? "text-emerald-400" : "text-rose-400"}`}>
         {signedMoney(impact)}
       </span>
       <div className="min-w-0 flex-1">
