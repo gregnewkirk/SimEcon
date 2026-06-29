@@ -7,6 +7,7 @@ import { PROGRAM_LEVERS } from "@/lib/levers/programs";
 import { REVENUE_LEVERS } from "@/lib/levers/revenue-options";
 import type { Lever, LeverConfig } from "@/lib/levers/types";
 import { getCitation } from "@/lib/citations";
+import { LeverDetail } from "./LeverDetail";
 
 function TierBadge({ lever }: { lever: Lever }) {
   if (lever.contested) {
@@ -46,6 +47,7 @@ function LeverRow({
           <span className="flex items-center gap-1.5 text-xs" title={sourceTitle}>
             {lever.label}
             <TierBadge lever={lever} />
+            <LeverDetail lever={lever} cfg={cfg} />
           </span>
           <span className={`font-mono text-xs tabular-nums ${changed ? "text-foreground" : "text-muted-foreground"}`}>
             {value}%

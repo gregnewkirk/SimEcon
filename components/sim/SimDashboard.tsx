@@ -93,7 +93,7 @@ export function SimDashboard() {
 
             <section className="rounded-xl border border-border/60 bg-card/30 p-4">
               <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Who pays, who gains (per year)
+                Who pays, who gains (group total and per person, per year)
               </h2>
               <BracketCharacters incidence={sim.incidence} />
             </section>
