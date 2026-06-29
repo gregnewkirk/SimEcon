@@ -1,5 +1,5 @@
-import { SinglePageLayout } from "@/components/layout/SinglePageLayout";
+import { SimDashboard } from "@/components/sim/SimDashboard";
 
 export default function Home() {
-  return <SinglePageLayout />;
+  return <SimDashboard />;
 }
