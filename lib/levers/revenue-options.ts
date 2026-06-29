@@ -64,30 +64,33 @@ interface RevenueDef {
   target: string; // line id
   sign: 1 | -1; // +1 raises that line, -1 cuts it; both improve the deficit
   tier: Tier;
+  group: string;
   contested?: boolean;
   citationId: string;
 }
 
 const OPTIONS: RevenueDef[] = [
-  { id: "irs_enforcement", label: "IRS Enforcement Funding", amountB: 75, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "cbo_budget_options" },
-  { id: "defense_cut", label: "Defense Budget Reduction", amountB: 100, target: "defense", sign: -1, tier: "calibrated", citationId: "cbo_budget_options" },
-  { id: "carbon_tax", label: "Carbon Tax", amountB: 120, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "cbo_budget_options" },
-  { id: "financial_tx_tax", label: "Financial Transaction Tax", amountB: 55, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "cbo_budget_options" },
-  { id: "medicare_negotiation", label: "Medicare Drug Negotiation", amountB: 100, target: "medicare", sign: -1, tier: "calibrated", citationId: "cbo_budget_options" },
-  { id: "wealth_tax", label: "Wealth Tax (2% on $50M+)", amountB: 250, target: "policy_revenue", sign: 1, tier: "estimate", contested: true, citationId: "saez_zucman_wealth" },
-  { id: "sports_betting_tax", label: "Federal Sports Betting Tax", amountB: 18, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
-  { id: "robot_tax", label: "Automation / Robot Tax", amountB: 50, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
-  { id: "sugar_tax", label: "Sugar / Junk Food Tax", amountB: 30, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
-  { id: "land_value_tax", label: "Federal Land Value Tax", amountB: 100, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "cbo_budget_options" },
-  // The giants people underestimate
-  { id: "vat5", label: "Value-Added Tax (5%)", amountB: 1400, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "tpc_vat" },
-  { id: "cap_employer_health", label: "Cap Employer Health Exclusion", amountB: 300, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
-  { id: "billionaire_min_tax", label: "Billionaire Minimum Tax (unrealized gains)", amountB: 40, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "treasury_greenbook" },
-  { id: "buyback_tax", label: "Stock Buyback Tax (1% to 4%)", amountB: 25, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
-  // The reveals people overestimate
-  { id: "carried_interest", label: "Close Carried-Interest Loophole", amountB: 1.5, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "jct_tax_expenditures" },
-  { id: "end_fossil_subsidies", label: "End Fossil-Fuel Subsidies", amountB: 15, target: "policy_revenue", sign: 1, tier: "calibrated", citationId: "treasury_greenbook" },
-  { id: "cannabis_tax", label: "Federal Cannabis Tax", amountB: 10, target: "policy_revenue", sign: 1, tier: "estimate", citationId: "crs_cannabis" },
+  // Tax wealth & Wall Street
+  { id: "wealth_tax", label: "Wealth Tax (2% on $50M+)", amountB: 250, target: "policy_revenue", sign: 1, tier: "estimate", group: "Tax wealth & Wall Street", contested: true, citationId: "saez_zucman_wealth" },
+  { id: "billionaire_min_tax", label: "Billionaire Minimum Tax (unrealized gains)", amountB: 40, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "treasury_greenbook" },
+  { id: "buyback_tax", label: "Stock Buyback Tax (1% to 4%)", amountB: 25, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "jct_tax_expenditures" },
+  { id: "financial_tx_tax", label: "Financial Transaction Tax", amountB: 55, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "cbo_budget_options" },
+  { id: "carried_interest", label: "Close Carried-Interest Loophole", amountB: 1.5, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "jct_tax_expenditures" },
+  // Broad-based taxes
+  { id: "vat5", label: "Value-Added Tax (5%)", amountB: 1400, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "tpc_vat" },
+  { id: "cap_employer_health", label: "Cap Employer Health Exclusion", amountB: 300, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "jct_tax_expenditures" },
+  { id: "carbon_tax", label: "Carbon Tax", amountB: 120, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "cbo_budget_options" },
+  { id: "land_value_tax", label: "Federal Land Value Tax", amountB: 100, target: "policy_revenue", sign: 1, tier: "estimate", group: "Broad-based taxes", citationId: "cbo_budget_options" },
+  // Sin & niche taxes
+  { id: "sugar_tax", label: "Sugar / Junk Food Tax", amountB: 30, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "cbo_budget_options" },
+  { id: "cannabis_tax", label: "Federal Cannabis Tax", amountB: 10, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "crs_cannabis" },
+  { id: "sports_betting_tax", label: "Federal Sports Betting Tax", amountB: 18, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "cbo_budget_options" },
+  { id: "robot_tax", label: "Automation / Robot Tax", amountB: 50, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "cbo_budget_options" },
+  // Cuts & savings
+  { id: "defense_cut", label: "Defense Budget Reduction", amountB: 100, target: "defense", sign: -1, tier: "calibrated", group: "Cuts & savings", citationId: "cbo_budget_options" },
+  { id: "medicare_negotiation", label: "Medicare Drug Negotiation", amountB: 100, target: "medicare", sign: -1, tier: "calibrated", group: "Cuts & savings", citationId: "cbo_budget_options" },
+  { id: "irs_enforcement", label: "IRS Enforcement Funding", amountB: 75, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Cuts & savings", citationId: "cbo_budget_options" },
+  { id: "end_fossil_subsidies", label: "End Fossil-Fuel Subsidies", amountB: 15, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Cuts & savings", citationId: "treasury_greenbook" },
 ];
 
 export const REVENUE_LEVERS: Lever[] = OPTIONS.map((o) => ({
@@ -95,6 +98,7 @@ export const REVENUE_LEVERS: Lever[] = OPTIONS.map((o) => ({
   label: o.label,
   category: "revenue",
   tier: o.tier,
+  group: o.group,
   targets: [o.target],
   citationIds: [o.citationId],
   contested: o.contested,

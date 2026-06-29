@@ -35,3 +35,19 @@ export function leverProjection(lever: Lever, cfg: LeverConfig): LeverProjection
     kind,
   };
 }
+
+/**
+ * Signed deficit impact (2025 dollars) of a toggle lever if enabled: positive improves the
+ * deficit (raises revenue or cuts spending), negative worsens it (new spending). Used for
+ * the inline amount, color, and the size bar in the sidebar.
+ */
+export function leverDeficitImpact(lever: Lever): number {
+  const deltas = lever.conventional({ [lever.id]: true });
+  let impact = 0;
+  for (const d of deltas) {
+    const line = BASELINE_2025.find((l) => l.id === d.lineId);
+    if (!line) continue;
+    impact += line.side === "revenue" ? d.amountB : -d.amountB;
+  }
+  return impact;
+}

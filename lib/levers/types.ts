@@ -19,6 +19,8 @@ export interface Lever {
   /** Optional behavioral/dynamic adjustment, applied only when the Dynamic toggle is on. */
   dynamic?(cfg: LeverConfig): LineDelta[];
   citationIds: string[];
+  /** Themed sub-group for the sidebar (e.g. "Health & care"). */
+  group?: string;
   /** True for genuinely disputed levers (e.g. wealth tax); UI shows a range + caveat. */
   contested?: boolean;
   /** Default slider/toggle value when inactive (0 or false = no effect). */

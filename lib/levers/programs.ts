@@ -62,27 +62,27 @@ interface ProgramDef {
   label: string;
   netCostB: number;
   tier: Tier;
+  group: string;
   citationId?: string;
 }
 
 const PROGRAMS: ProgramDef[] = [
-  { id: "healthcare", label: "Universal Healthcare (M4A)", netCostB: 450, tier: "calibrated" },
-  { id: "ubi", label: "Universal Basic Income", netCostB: 2800, tier: "calibrated" },
-  { id: "college", label: "Free Public College", netCostB: 80, tier: "calibrated" },
-  { id: "prek", label: "Universal Pre-K", netCostB: 40, tier: "calibrated" },
-  { id: "housing", label: "Affordable Housing", netCostB: 75, tier: "calibrated" },
-  { id: "infrastructure", label: "Infrastructure Modernization", netCostB: 370, tier: "calibrated" },
-  { id: "rd_moonshot", label: "R&D Moonshot Fund", netCostB: 200, tier: "calibrated" },
-  { id: "mental_health", label: "Federal Mental Health Corps", netCostB: 50, tier: "estimate" },
-  { id: "public_internet", label: "Federal Public Internet", netCostB: 40, tier: "estimate" },
-  { id: "green_jobs", label: "Green Jobs Corps", netCostB: 60, tier: "estimate" },
-  { id: "baby_bonds", label: "Baby Bonds", netCostB: 4, tier: "estimate" },
-  // Next-gen moonshots
-  { id: "child_tax_credit", label: "Permanent Child Tax Credit ($300/mo)", netCostB: 110, tier: "calibrated", citationId: "cbpp_ctc" },
-  { id: "child_care", label: "Universal Child Care (0-5)", netCostB: 200, tier: "estimate", citationId: "treasury_childcare" },
-  { id: "paid_leave", label: "Paid Family & Medical Leave", netCostB: 250, tier: "estimate", citationId: "cbo_paid_leave" },
-  { id: "job_guarantee", label: "Federal Job Guarantee", netCostB: 500, tier: "estimate", citationId: "levy_job_guarantee" },
-  { id: "school_meals", label: "Universal Free School Meals", netCostB: 25, tier: "calibrated", citationId: "usda_school_meals" },
+  { id: "healthcare", label: "Universal Healthcare (M4A)", netCostB: 450, tier: "calibrated", group: "Health & care" },
+  { id: "child_care", label: "Universal Child Care (0-5)", netCostB: 200, tier: "estimate", group: "Health & care", citationId: "treasury_childcare" },
+  { id: "paid_leave", label: "Paid Family & Medical Leave", netCostB: 250, tier: "estimate", group: "Health & care", citationId: "cbo_paid_leave" },
+  { id: "mental_health", label: "Federal Mental Health Corps", netCostB: 50, tier: "estimate", group: "Health & care" },
+  { id: "child_tax_credit", label: "Permanent Child Tax Credit ($300/mo)", netCostB: 110, tier: "calibrated", group: "Kids & education", citationId: "cbpp_ctc" },
+  { id: "prek", label: "Universal Pre-K", netCostB: 40, tier: "calibrated", group: "Kids & education" },
+  { id: "college", label: "Free Public College", netCostB: 80, tier: "calibrated", group: "Kids & education" },
+  { id: "school_meals", label: "Universal Free School Meals", netCostB: 25, tier: "calibrated", group: "Kids & education", citationId: "usda_school_meals" },
+  { id: "baby_bonds", label: "Baby Bonds", netCostB: 4, tier: "estimate", group: "Kids & education" },
+  { id: "job_guarantee", label: "Federal Job Guarantee", netCostB: 500, tier: "estimate", group: "Jobs & growth", citationId: "levy_job_guarantee" },
+  { id: "infrastructure", label: "Infrastructure Modernization", netCostB: 370, tier: "calibrated", group: "Jobs & growth" },
+  { id: "rd_moonshot", label: "R&D Moonshot Fund", netCostB: 200, tier: "calibrated", group: "Jobs & growth" },
+  { id: "green_jobs", label: "Green Jobs Corps", netCostB: 60, tier: "estimate", group: "Jobs & growth" },
+  { id: "ubi", label: "Universal Basic Income", netCostB: 2800, tier: "calibrated", group: "Income & basics" },
+  { id: "housing", label: "Affordable Housing", netCostB: 75, tier: "calibrated", group: "Income & basics" },
+  { id: "public_internet", label: "Federal Public Internet", netCostB: 40, tier: "estimate", group: "Income & basics" },
 ];
 
 export const PROGRAM_LEVERS: Lever[] = PROGRAMS.map((p) => {
@@ -92,6 +92,7 @@ export const PROGRAM_LEVERS: Lever[] = PROGRAMS.map((p) => {
     label: p.label,
     category: "program",
     tier: p.tier,
+    group: p.group,
     targets: ["policy_programs"],
     citationIds: [citationId],
     defaultValue: false,

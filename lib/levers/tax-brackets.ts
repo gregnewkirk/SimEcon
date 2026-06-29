@@ -57,7 +57,7 @@ export const bracketLevers: Lever[] = SOI_TAXABLE_BY_BRACKET.slice(0, 6).map((b)
   tier: "calibrated",
   targets: ["individual_income"],
   citationIds: ["irs_soi_2022", "jct_rates"],
-  range: { min: 0, max: 60, step: 1, baseline: b.baseRate },
+  range: { min: 0, max: 100, step: 1, baseline: b.baseRate },
   defaultValue: b.baseRate,
   conventional: (cfg) => bracketDelta(b.key, b.baseRate, b.stackedB, cfg),
   dynamic: (cfg) => bracketDynamic(b.key, b.baseRate, b.stackedB, 0.1, cfg),
@@ -73,7 +73,7 @@ export const topRateLever: Lever = (() => {
     tier: "calibrated",
     targets: ["individual_income"],
     citationIds: ["irs_soi_2022", "jct_rates"],
-    range: { min: 0, max: 60, step: 0.1, baseline: 37 },
+    range: { min: 0, max: 100, step: 0.1, baseline: 37 },
     defaultValue: 37,
     conventional: (cfg) => bracketDelta("topRate", top.baseRate, top.stackedB, cfg),
     // Top earners are the most elastic: ~25% of a static increase shifts away.

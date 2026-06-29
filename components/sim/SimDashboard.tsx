@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useSimEngine, type SimMode } from "@/hooks/useSimEngine";
 import { LeverSidebar } from "./LeverSidebar";
+import { ScenarioPresets } from "./ScenarioPresets";
 import { EventControls } from "./EventControls";
 import { HeadlineStats } from "./HeadlineStats";
 import { TrajectoryChart } from "./TrajectoryChart";
@@ -55,8 +56,16 @@ export function SimDashboard() {
       </Tabs>
 
       {sim.mode === "fix" ? (
-        <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-xl border border-border/60 bg-card/30 p-4">
+        <div className="grid gap-5 lg:grid-cols-[340px_1fr]">
+          <aside className="space-y-4 rounded-xl border border-border/60 bg-card/30 p-4">
+            <ScenarioPresets
+              activePreset={sim.activePreset}
+              onApply={(id, config) => {
+                sim.applyPreset(config);
+                sim.setActivePreset(id);
+              }}
+              onReset={sim.reset}
+            />
             <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
           </aside>
 

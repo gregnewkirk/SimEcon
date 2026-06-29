@@ -27,7 +27,7 @@ export const corporateLever: Lever = {
   tier: "calibrated",
   targets: ["corporate"],
   citationIds: ["jct_corporate"],
-  range: { min: 0, max: 40, step: 0.5, baseline: BASE_RATE },
+  range: { min: 0, max: 60, step: 0.5, baseline: BASE_RATE },
   defaultValue: BASE_RATE,
   conventional: (cfg) => {
     const rate = (cfg.corpRate as number) ?? BASE_RATE;

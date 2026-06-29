@@ -17,6 +17,9 @@ export interface SimEngine {
   setMode: (m: SimMode) => void;
   cfg: LeverConfig;
   setLever: (id: string, value: number | boolean) => void;
+  applyPreset: (partial: LeverConfig) => void;
+  activePreset: string | null;
+  setActivePreset: (id: string | null) => void;
   reset: () => void;
   useDynamic: boolean;
   setUseDynamic: (v: boolean) => void;
@@ -38,13 +41,19 @@ export function useSimEngine(): SimEngine {
   const [cfg, setCfg] = useState<LeverConfig>(() => defaultConfig());
   const [useDynamic, setUseDynamic] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const setLever = useCallback((id: string, value: number | boolean) => {
     setCfg((c) => ({ ...c, [id]: value }));
+    setActivePreset(null); // hand-editing leaves the preset
+  }, []);
+  const applyPreset = useCallback((partial: LeverConfig) => {
+    setCfg({ ...defaultConfig(), ...partial });
   }, []);
   const reset = useCallback(() => {
     setCfg(defaultConfig());
     setEvents([]);
+    setActivePreset(null);
   }, []);
   const toggleEvent = useCallback((id: string) => {
     setEvents((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
@@ -72,6 +81,9 @@ export function useSimEngine(): SimEngine {
     setMode,
     cfg,
     setLever,
+    applyPreset,
+    activePreset,
+    setActivePreset,
     reset,
     useDynamic,
     setUseDynamic,
