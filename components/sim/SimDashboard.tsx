@@ -107,16 +107,16 @@ export function SimDashboard() {
 
               {fixYear && <HeadlineStats year={fixYear} />}
 
+              <SectionCard title="Gross federal debt as a share of GDP, through 2050">
+                <TrajectoryChart mode="fix" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
+              </SectionCard>
+
               <SectionCard title={`Where the money flows (${fixYear?.year})`}>
                 {fixYear && <MoneyFlowSankey year={fixYear} />}
               </SectionCard>
 
               <SectionCard title="Who pays, who gains (group total and per person, per year)">
                 <BracketCharacters incidence={sim.incidence} />
-              </SectionCard>
-
-              <SectionCard title="Gross federal debt as a share of GDP, through 2050">
-                <TrajectoryChart mode="fix" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
               </SectionCard>
             </main>
           </div>

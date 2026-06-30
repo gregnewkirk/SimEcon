@@ -41,15 +41,15 @@ export function MoneyFlowSankey({ year }: { year: YearData }) {
   ];
 
   return (
-    <div className="h-[26rem] w-full">
+    <div className="h-[30rem] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <Sankey
           data={{ nodes, links }}
-          nodePadding={18}
-          nodeWidth={12}
+          nodePadding={26}
+          nodeWidth={11}
           linkCurvature={0.5}
           iterations={64}
-          margin={{ top: 8, right: 150, bottom: 8, left: 130 }}
+          margin={{ top: 14, right: 168, bottom: 14, left: 150 }}
           node={<SankeyNode />}
           link={<SankeyLink />}
         >
@@ -81,13 +81,17 @@ function SankeyNode(props: any) {
 }
 
 function SankeyLink(props: any) {
-  const { sourceX, sourceY, sourceControlX, targetControlX, targetX, targetY, linkWidth, index } = props;
+  const { sourceX, sourceY, sourceControlX, targetControlX, targetX, targetY, linkWidth, index, payload } = props;
   const d = `M${sourceX},${sourceY} C${sourceControlX},${sourceY} ${targetControlX},${targetY} ${targetX},${targetY}`;
   const w = Math.max(1, linkWidth);
+  // Tint each band by where the money is going: from revenue (green), borrowing (amber),
+  // or out to spending (red). Static and soft so it reads as a calm flow, not a pulse.
+  const srcKind: Kind | undefined = payload?.source?.kind;
+  const tgtKind: Kind | undefined = payload?.target?.kind;
+  const color = srcKind === "revenue" ? C.greenFill : srcKind === "borrow" ? C.amberFill : tgtKind === "spending" ? C.redFill : "#C7CCD6";
   return (
     <Layer key={`link-${index}`}>
-      <path d={d} fill="none" stroke="#CDD2DC" strokeWidth={w} strokeOpacity={0.55} />
-      <path d={d} fill="none" stroke="#9AA3B5" strokeWidth={w} strokeOpacity={0.7} strokeDasharray="3 16" strokeLinecap="round" className="belt-flow" />
+      <path d={d} fill="none" stroke={color} strokeWidth={w} strokeOpacity={0.22} />
     </Layer>
   );
 }

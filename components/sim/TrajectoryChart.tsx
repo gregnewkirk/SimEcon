@@ -89,7 +89,7 @@ const tooltipStyle = {
 
 function ChartShell({ children }: { children: React.ReactElement }) {
   return (
-    <div className="h-64 w-full">
+    <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
         {children}
       </ResponsiveContainer>
