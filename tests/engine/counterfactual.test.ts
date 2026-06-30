@@ -24,7 +24,7 @@ describe("replayCounterfactual", () => {
   });
 
   it("COVID removal sharply lowers 2021 debt", () => {
-    const { actual, counterfactual } = replayCounterfactual(["covid"], A);
+    const { actual, counterfactual } = replayCounterfactual(["covid_cares", "covid_arp"], A);
     expect(debtAt(actual, 2021) - debtAt(counterfactual, 2021)).toBeGreaterThan(4);
   });
 });

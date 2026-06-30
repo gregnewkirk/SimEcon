@@ -77,17 +77,19 @@ export function TrajectoryChart({
 }
 
 const round = (n: number) => Math.round(n * 10) / 10;
-const tick = { fontSize: 11, fill: "var(--muted-foreground)" };
+const tick = { fontSize: 11, fill: "#8A8A8E" };
 const tooltipStyle = {
-  background: "var(--popover)",
-  border: "1px solid var(--border)",
-  borderRadius: 8,
+  background: "#FFFFFF",
+  border: "1px solid #E5E5EA",
+  borderRadius: 12,
   fontSize: 12,
+  color: "#1C1C1E",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
 };
 
 function ChartShell({ children }: { children: React.ReactElement }) {
   return (
-    <div className="h-64 w-full">
+    <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
         {children}
       </ResponsiveContainer>

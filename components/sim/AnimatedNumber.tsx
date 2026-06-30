@@ -1,51 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSpring, useMotionValueEvent } from "framer-motion";
 
 /**
- * Tweens to its target value so fiscal readouts roll like an instrument rather than
- * snapping. Respects prefers-reduced-motion (jumps straight to the value).
+ * Spring-physics number: the value rolls and settles with a slight bounce, like an iOS
+ * widget. Respects prefers-reduced-motion by snapping.
  */
 export function AnimatedNumber({
   value,
   format,
   className,
-  durationMs = 450,
 }: {
   value: number;
   format: (n: number) => string;
   className?: string;
-  durationMs?: number;
 }) {
+  const reduce =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const spring = useSpring(value, { stiffness: 140, damping: 20 });
   const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
-  const startRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setDisplay(value);
-      return;
-    }
-    fromRef.current = display;
-    startRef.current = null;
-    const from = fromRef.current;
-    const tick = (t: number) => {
-      if (startRef.current === null) startRef.current = t;
-      const p = Math.min(1, (t - startRef.current) / durationMs);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setDisplay(from + (value - from) * eased);
-      if (p < 1) rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, durationMs]);
+    if (reduce) setDisplay(value);
+    else spring.set(value);
+  }, [value, spring, reduce]);
+
+  useMotionValueEvent(spring, "change", (v) => {
+    if (!reduce) setDisplay(v);
+  });
 
   return <span className={className}>{format(display)}</span>;
 }

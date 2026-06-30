@@ -1,12 +1,11 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { SCENARIOS } from "@/lib/scenarios";
 import type { LeverConfig } from "@/lib/levers/types";
+import { C, SHADOW_SM } from "./theme";
 
-/**
- * One-click preset plans. Selecting one loads that configuration so you can see what a
- * familiar plan does, then keep tweaking from there.
- */
+/** One-click preset plans as friendly pill chips. */
 export function ScenarioPresets({
   activePreset,
   onApply,
@@ -18,19 +17,13 @@ export function ScenarioPresets({
 }) {
   return (
     <div>
-      <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>
         Load a plan, then compare
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         <Chip active={activePreset === null} onClick={onReset} label="Current law" />
         {SCENARIOS.map((s) => (
-          <Chip
-            key={s.id}
-            active={activePreset === s.id}
-            onClick={() => onApply(s.id, s.config)}
-            label={s.label}
-            title={s.blurb}
-          />
+          <Chip key={s.id} active={activePreset === s.id} onClick={() => onApply(s.id, s.config)} label={s.label} title={s.blurb} />
         ))}
       </div>
     </div>
@@ -39,17 +32,19 @@ export function ScenarioPresets({
 
 function Chip({ active, onClick, label, title }: { active: boolean; onClick: () => void; label: string; title?: string }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       title={title}
-      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+      whileTap={{ scale: 0.94 }}
+      className="rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors"
+      style={
         active
-          ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
-          : "border-border/60 bg-card/40 text-muted-foreground hover:bg-card/80 hover:text-foreground"
-      }`}
+          ? { background: C.accent, color: "#fff", boxShadow: SHADOW_SM }
+          : { background: C.card, color: C.ink, boxShadow: SHADOW_SM }
+      }
     >
       {label}
-    </button>
+    </motion.button>
   );
 }
