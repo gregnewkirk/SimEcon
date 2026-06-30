@@ -36,19 +36,6 @@ function TierBadge({ lever }: { lever: Lever }) {
   );
 }
 
-/** A rounded white iOS-settings card wrapping a group of rows. */
-function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="overflow-hidden rounded-2xl" style={{ background: C.card, boxShadow: SHADOW_SM }}>
-      {children}
-    </div>
-  );
-}
-
-function GroupHeader({ title }: { title: string }) {
-  return <h4 className="mb-1.5 ml-1 mt-4 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>{title}</h4>;
-}
-
 function SliderRow({ lever, cfg, setLever, last }: { lever: Lever; cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void; last?: boolean }) {
   if (!lever.range) return null;
   const value = (cfg[lever.id] as number) ?? lever.range.baseline;
@@ -96,6 +83,49 @@ function ToggleRow({ lever, cfg, setLever, last }: { lever: Lever; cfg: LeverCon
   );
 }
 
+/** A collapsible iOS-style section card with a summary chip in its header. */
+function Section({
+  title,
+  summary,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  summary?: React.ReactNode;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="mb-2.5 overflow-hidden rounded-2xl" style={{ background: C.card, boxShadow: SHADOW_SM }}>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 px-3.5 py-3 text-left">
+          <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: C.ink }}>
+            <ChevronRight className={`size-4 transition-transform ${open ? "rotate-90" : ""}`} style={{ color: C.inkMute }} />
+            {title}
+          </span>
+          {summary}
+        </CollapsibleTrigger>
+        <CollapsibleContent style={{ borderTop: `1px solid ${C.hair}` }}>{children}</CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+}
+
+/** Summary pill for a toggle group: how many are on and their net deficit impact. */
+function ToggleSummary({ levers, cfg }: { levers: Lever[]; cfg: LeverConfig }) {
+  const active = levers.filter((l) => cfg[l.id] === true);
+  if (active.length === 0) return <span className="text-xs" style={{ color: C.inkMute }}>{levers.length}</span>;
+  const net = active.reduce((s, l) => s + leverDeficitImpact(l), 0);
+  const positive = net > 0;
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: C.accent, color: "#fff" }}>{active.length} on</span>
+      <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: positive ? C.green : C.red }}>{signedMoney(net)}</span>
+    </span>
+  );
+}
+
 const maxMag = (levers: Lever[]) => Math.max(...levers.map((l) => Math.abs(leverDeficitImpact(l))));
 
 function groupedBySize(levers: Lever[]): [string, Lever[]][] {
@@ -109,55 +139,44 @@ function groupedBySize(levers: Lever[]): [string, Lever[]][] {
   return [...m.entries()].sort((a, b) => maxMag(b[1]) - maxMag(a[1]));
 }
 
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return <div className="mb-1.5 ml-1 mt-4 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>{children}</div>;
+}
+
 export function LeverSidebar({ cfg, setLever }: { cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void }) {
-  const [taxOpen, setTaxOpen] = useState(false);
   const topRate = (cfg.topRate as number) ?? 37;
+  const changedOther = otherTaxLevers.filter((l) => l.range && cfg[l.id] !== l.range.baseline).length;
 
   return (
     <div>
-      <GroupHeader title="Taxes" />
-      <Card>
-        <Collapsible open={taxOpen} onOpenChange={setTaxOpen}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between px-3.5 py-3 text-[13px]" style={{ color: C.ink, borderBottom: `1px solid ${C.hair}` }}>
-            <span className="flex items-center gap-1.5">
-              <ChevronRight className={`size-4 transition-transform ${taxOpen ? "rotate-90" : ""}`} style={{ color: C.inkMute }} />
-              Income tax rates
-            </span>
-            <span className="font-mono" style={{ color: C.inkMute }}>top {topRate}%</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            {incomeLevers.map((l, i) => (
-              <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === incomeLevers.length - 1 && otherTaxLevers.length === 0} />
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
+      <GroupLabel>Taxes</GroupLabel>
+      <Section title="Income tax rates" summary={<span className="font-mono text-xs" style={{ color: C.inkMute }}>top {topRate}%</span>}>
+        {incomeLevers.map((l, i) => (
+          <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === incomeLevers.length - 1} />
+        ))}
+      </Section>
+      <Section title="Other taxes" summary={changedOther > 0 ? <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: C.accent, color: "#fff" }}>{changedOther} changed</span> : <span className="text-xs" style={{ color: C.inkMute }}>{otherTaxLevers.length}</span>}>
         {otherTaxLevers.map((l, i) => (
           <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === otherTaxLevers.length - 1} />
         ))}
-      </Card>
+      </Section>
 
-      <div className="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>Programs (spending)</div>
+      <GroupLabel>Programs (spending)</GroupLabel>
       {groupedBySize(PROGRAM_LEVERS).map(([group, levers]) => (
-        <div key={group}>
-          <GroupHeader title={group} />
-          <Card>
-            {levers.map((l, i) => (
-              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
-            ))}
-          </Card>
-        </div>
+        <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />}>
+          {levers.map((l, i) => (
+            <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
+          ))}
+        </Section>
       ))}
 
-      <div className="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>Revenue &amp; savings</div>
+      <GroupLabel>Revenue &amp; savings</GroupLabel>
       {groupedBySize(REVENUE_LEVERS).map(([group, levers]) => (
-        <div key={group}>
-          <GroupHeader title={group} />
-          <Card>
-            {levers.map((l, i) => (
-              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
-            ))}
-          </Card>
-        </div>
+        <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />}>
+          {levers.map((l, i) => (
+            <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
+          ))}
+        </Section>
       ))}
     </div>
   );

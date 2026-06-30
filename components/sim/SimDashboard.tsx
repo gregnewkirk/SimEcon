@@ -91,12 +91,12 @@ export function SimDashboard() {
             />
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
+          <div className="grid gap-5 lg:grid-cols-[360px_1fr] lg:items-start">
             <aside>
               <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
             </aside>
 
-            <main className="space-y-5">
+            <main className="space-y-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
               <div className="flex items-center gap-3 rounded-3xl px-4 py-3" style={{ background: C.card, boxShadow: SHADOW_SM }}>
                 <motion.span key={fixYear?.year} initial={{ scale: 0.8, opacity: 0.5 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING} className="rounded-full px-3 py-1 font-mono text-sm font-bold tabular-nums" style={{ background: C.accent, color: "#fff" }}>
                   {fixYear?.year}
