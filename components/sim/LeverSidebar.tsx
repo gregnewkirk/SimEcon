@@ -21,6 +21,7 @@ import { C, SHADOW_SM } from "./theme";
 
 const incomeLevers = [...bracketLevers, topRateLever];
 const otherTaxLevers = [corporateLever, payrollCapLever, capGainsLever, estateLever];
+const SAVINGS_GROUP = "Cuts & savings";
 const GLOBAL_MAX = Math.max(...[...PROGRAM_LEVERS, ...REVENUE_LEVERS].map((l) => Math.abs(leverDeficitImpact(l))));
 
 const isDial = (l: Lever) => l.category !== "tax" && !!l.range;
@@ -209,6 +210,15 @@ export function LeverSidebar({ cfg, setLever, setLevers }: { cfg: LeverConfig; s
         {otherTaxLevers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === otherTaxLevers.length - 1} />)}
       </Section>
 
+      {/* Other tax instruments (everything that is a tax with a rate), grouped */}
+      {groupedBySize(REVENUE_LEVERS)
+        .filter(([group]) => group !== SAVINGS_GROUP)
+        .map(([group, levers]) => (
+          <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />} action={<SelectAllButton levers={levers} cfg={cfg} setLevers={setLevers} />}>
+            {levers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />)}
+          </Section>
+        ))}
+
       <GroupLabel>Programs (spending)</GroupLabel>
       {groupedBySize(PROGRAM_LEVERS).map(([group, levers]) => (
         <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />} action={<SelectAllButton levers={levers} cfg={cfg} setLevers={setLevers} />}>
@@ -216,12 +226,14 @@ export function LeverSidebar({ cfg, setLever, setLevers }: { cfg: LeverConfig; s
         </Section>
       ))}
 
-      <GroupLabel>Revenue &amp; savings</GroupLabel>
-      {groupedBySize(REVENUE_LEVERS).map(([group, levers]) => (
-        <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />} action={<SelectAllButton levers={levers} cfg={cfg} setLevers={setLevers} />}>
-          {levers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />)}
-        </Section>
-      ))}
+      <GroupLabel>Cuts &amp; savings</GroupLabel>
+      {groupedBySize(REVENUE_LEVERS)
+        .filter(([group]) => group === SAVINGS_GROUP)
+        .map(([group, levers]) => (
+          <Section key={group} title={group} summary={<ToggleSummary levers={levers} cfg={cfg} />} action={<SelectAllButton levers={levers} cfg={cfg} setLevers={setLevers} />}>
+            {levers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />)}
+          </Section>
+        ))}
     </div>
   );
 }

@@ -58,6 +58,14 @@ registerSources([
     url: "https://www.finance.senate.gov/",
     accessed: "2026-06-28",
   },
+  {
+    id: "tax_foundation_tariffs",
+    agency: "Tax Foundation",
+    dataset: "Revenue and economic effects of broad-based import tariffs",
+    year: 2024,
+    url: "https://taxfoundation.org/",
+    accessed: "2026-06-28",
+  },
 ]);
 
 /**
@@ -92,6 +100,7 @@ const OPTIONS: RevenueDef[] = [
   { id: "cap_employer_health", label: "Cap Employer Health Exclusion", amountB: 300, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "jct_tax_expenditures", dial: { min: 0, max: 100, step: 5, onValue: 100, unit: "% capped", perUnitB: 3 } },
   { id: "carbon_tax", label: "Carbon Tax", amountB: 120, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "cbo_budget_options" },
   { id: "land_value_tax", label: "Federal Land Value Tax", amountB: 100, target: "policy_revenue", sign: 1, tier: "estimate", group: "Broad-based taxes", citationId: "cbo_budget_options" },
+  { id: "tariffs", label: "Tariffs (avg import tax)", amountB: 180, target: "policy_revenue", sign: 1, tier: "estimate", group: "Broad-based taxes", contested: true, citationId: "tax_foundation_tariffs", dial: { min: 0, max: 25, step: 1, onValue: 10, unit: "%", perUnitB: 18 } },
   // Sin & niche taxes
   { id: "sugar_tax", label: "Sugar / Junk Food Tax", amountB: 30, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "cbo_budget_options" },
   { id: "cannabis_tax", label: "Federal Cannabis Tax", amountB: 10, target: "policy_revenue", sign: 1, tier: "estimate", group: "Sin & niche taxes", citationId: "crs_cannabis" },

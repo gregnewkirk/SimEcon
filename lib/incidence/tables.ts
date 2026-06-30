@@ -47,6 +47,7 @@ export const INCIDENCE: Record<string, IncidenceShares> = {
 
   // New revenue levers
   vat5: { top1: 0.1, next9: 0.2, middle40: 0.35, bottom50: 0.35 }, // regressive consumption tax
+  tariffs: { top1: 0.1, next9: 0.2, middle40: 0.35, bottom50: 0.35 }, // regressive: passed to consumers
   cannabis_tax: { top1: 0.1, next9: 0.2, middle40: 0.35, bottom50: 0.35 },
   cap_employer_health: { top1: 0.15, next9: 0.3, middle40: 0.45, bottom50: 0.1 },
   billionaire_min_tax: { top1: 0.97, next9: 0.03, middle40: 0, bottom50: 0 },
