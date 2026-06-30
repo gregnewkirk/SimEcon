@@ -36,18 +36,26 @@ export function leverProjection(lever: Lever, cfg: LeverConfig): LeverProjection
   };
 }
 
-/**
- * Signed deficit impact (2025 dollars) of a toggle lever if enabled: positive improves the
- * deficit (raises revenue or cuts spending), negative worsens it (new spending). Used for
- * the inline amount, color, and the size bar in the sidebar.
- */
-export function leverDeficitImpact(lever: Lever): number {
-  const deltas = lever.conventional({ [lever.id]: true });
+function impactFromCfg(lever: Lever, cfgForLever: LeverConfig): number {
   let impact = 0;
-  for (const d of deltas) {
+  for (const d of lever.conventional(cfgForLever)) {
     const line = BASELINE_2025.find((l) => l.id === d.lineId);
     if (!line) continue;
     impact += line.side === "revenue" ? d.amountB : -d.amountB;
   }
   return impact;
+}
+
+/**
+ * Signed deficit impact (2025 dollars) of a lever at its "on" setting: positive improves the
+ * deficit (raises revenue or cuts spending), negative worsens it (new spending). Used for
+ * sizing the bars and sorting. For dials this is the impact at their headline onValue.
+ */
+export function leverDeficitImpact(lever: Lever): number {
+  return impactFromCfg(lever, { [lever.id]: lever.onValue ?? true });
+}
+
+/** Signed deficit impact at the current config value (live, for dial readouts). */
+export function leverImpactAt(lever: Lever, cfg: LeverConfig): number {
+  return impactFromCfg(lever, cfg);
 }

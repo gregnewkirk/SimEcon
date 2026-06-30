@@ -9,7 +9,7 @@ describe("incidence", () => {
   });
 
   it("UBI nets positive for the bottom 50%", () => {
-    const inc = computeIncidence({ ubi: true });
+    const inc = computeIncidence({ ubi: 1000 });
     expect(inc.bottom50).toBeGreaterThan(0);
     expect(inc.bottom50).toBeGreaterThan(inc.top1);
   });
@@ -21,7 +21,7 @@ describe("incidence", () => {
   });
 
   it("VAT is regressive: bottom50 bears more than top1", () => {
-    const inc = computeIncidence({ vat5: true });
+    const inc = computeIncidence({ vat5: 5 });
     expect(inc.bottom50).toBeLessThan(0);
     expect(inc.bottom50).toBeLessThan(inc.top1);
   });

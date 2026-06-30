@@ -93,7 +93,7 @@ export function SimDashboard() {
 
           <div className="grid gap-5 lg:grid-cols-[360px_1fr] lg:items-start">
             <aside>
-              <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
+              <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} setLevers={sim.setLevers} />
             </aside>
 
             <main className="space-y-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
@@ -124,7 +124,7 @@ export function SimDashboard() {
       ) : (
         <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
           <aside>
-            <EventControls events={sim.events} toggleEvent={sim.toggleEvent} />
+            <EventControls events={sim.events} toggleEvent={sim.toggleEvent} setEventsBulk={sim.setEventsBulk} />
           </aside>
           <main className="space-y-5">
             <div className="grid grid-cols-3 gap-3">

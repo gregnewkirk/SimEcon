@@ -23,9 +23,11 @@ const CAT_ICON: Record<EventCategory, string> = {
 export function EventControls({
   events,
   toggleEvent,
+  setEventsBulk,
 }: {
   events: string[];
   toggleEvent: (id: string) => void;
+  setEventsBulk: (ids: string[], on: boolean) => void;
 }) {
   return (
     <div>
@@ -33,7 +35,7 @@ export function EventControls({
         Remove decisions the country actually made
       </div>
       {EVENT_CATEGORIES.map((cat) => (
-        <CategorySection key={cat} category={cat} events={events} toggleEvent={toggleEvent} />
+        <CategorySection key={cat} category={cat} events={events} toggleEvent={toggleEvent} setEventsBulk={setEventsBulk} />
       ))}
     </div>
   );
@@ -43,34 +45,48 @@ function CategorySection({
   category,
   events,
   toggleEvent,
+  setEventsBulk,
 }: {
   category: EventCategory;
   events: string[];
   toggleEvent: (id: string) => void;
+  setEventsBulk: (ids: string[], on: boolean) => void;
 }) {
   const [open, setOpen] = useState(category === "Wars & military");
   const items = COUNTER_EVENTS.filter((e) => e.category === category);
   const selected = items.filter((e) => events.includes(e.id));
   const removedPerYear = selected.reduce((s, e) => s + e.annualCostB, 0);
+  const allOn = selected.length === items.length;
 
   return (
     <div className="mb-2.5 overflow-hidden rounded-2xl" style={{ background: C.card, boxShadow: SHADOW_SM }}>
       <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 px-3.5 py-3 text-left">
-          <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: C.ink }}>
-            <ChevronRight className={`size-4 transition-transform ${open ? "rotate-90" : ""}`} style={{ color: C.inkMute }} />
-            <span aria-hidden>{CAT_ICON[category]}</span>
-            {category}
-          </span>
-          {selected.length > 0 ? (
-            <span className="flex items-center gap-1.5">
-              <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: C.accent, color: "#fff" }}>{selected.length} on</span>
-              <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: C.green }}>-${removedPerYear}B/yr</span>
+        <div className="flex items-center gap-2 pr-2.5">
+          <CollapsibleTrigger className="flex flex-1 items-center justify-between gap-2 px-3.5 py-3 text-left">
+            <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: C.ink }}>
+              <ChevronRight className={`size-4 transition-transform ${open ? "rotate-90" : ""}`} style={{ color: C.inkMute }} />
+              <span aria-hidden>{CAT_ICON[category]}</span>
+              {category}
             </span>
-          ) : (
-            <span className="text-xs" style={{ color: C.inkMute }}>{items.length}</span>
-          )}
-        </CollapsibleTrigger>
+            {selected.length > 0 ? (
+              <span className="flex items-center gap-1.5">
+                <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: C.accent, color: "#fff" }}>{selected.length} on</span>
+                <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: C.green }}>-${removedPerYear}B/yr</span>
+              </span>
+            ) : (
+              <span className="text-xs" style={{ color: C.inkMute }}>{items.length}</span>
+            )}
+          </CollapsibleTrigger>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={(e) => { e.stopPropagation(); setEventsBulk(items.map((it) => it.id), !allOn); }}
+            className="rounded-full px-2.5 py-1 text-[11px] font-semibold"
+            style={allOn ? { background: "#F0F0F3", color: C.inkMute } : { background: C.accent, color: "#fff" }}
+          >
+            {allOn ? "Clear" : "All"}
+          </motion.button>
+        </div>
         <CollapsibleContent style={{ borderTop: `1px solid ${C.hair}` }}>
           {items.map((e, i) => {
             const cite = getCitation(e.citationId);
