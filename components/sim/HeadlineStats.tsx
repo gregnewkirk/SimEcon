@@ -1,33 +1,28 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { YearData } from "@/lib/ledger/types";
 import { AnimatedNumber } from "./AnimatedNumber";
 import { ShowYourWork } from "./ShowYourWork";
 import { money, trillions, pct } from "./format";
+import { C, SHADOW_SM, SPRING } from "./theme";
 
-/**
- * The instrument cluster: revenue in, spending out, the gap, and the debt it piles up.
- * Color is functional - green is money in, red is money out and debt.
- */
+/** The instrument cluster as iOS widget cards. Color is functional: green in, red out. */
 export function HeadlineStats({ year }: { year: YearData }) {
   const surplus = year.deficitB < 0;
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <Stat label="Revenue" hint={<ShowYourWork year={year} side="revenue" label="Revenue" />}>
-        <AnimatedNumber value={year.revenueB} format={money} className="text-emerald-400" />
+      <Stat label="Revenue" color={C.green} hint={<ShowYourWork year={year} side="revenue" label="Revenue" />}>
+        <AnimatedNumber value={year.revenueB} format={money} />
       </Stat>
-      <Stat label="Spending" hint={<ShowYourWork year={year} side="spending" label="Spending" />}>
-        <AnimatedNumber value={year.spendingB} format={money} className="text-rose-400" />
+      <Stat label="Spending" color={C.red} hint={<ShowYourWork year={year} side="spending" label="Spending" />}>
+        <AnimatedNumber value={year.spendingB} format={money} />
       </Stat>
-      <Stat label={surplus ? "Surplus" : "Deficit"}>
-        <AnimatedNumber
-          value={Math.abs(year.deficitB)}
-          format={money}
-          className={surplus ? "text-emerald-400" : "text-rose-400"}
-        />
+      <Stat label={surplus ? "Surplus" : "Deficit"} color={surplus ? C.green : C.red}>
+        <AnimatedNumber value={Math.abs(year.deficitB)} format={money} />
       </Stat>
-      <Stat label={`Gross debt / GDP ${pct(year.debtToGdp)}`}>
-        <AnimatedNumber value={year.debtT * 1000} format={trillions} className="text-amber-400" />
+      <Stat label={`Gross debt / GDP ${pct(year.debtToGdp)}`} color={C.amber}>
+        <AnimatedNumber value={year.debtT * 1000} format={trillions} />
       </Stat>
     </div>
   );
@@ -35,20 +30,30 @@ export function HeadlineStats({ year }: { year: YearData }) {
 
 function Stat({
   label,
+  color,
   hint,
   children,
 }: {
   label: string;
+  color: string;
   hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-card/60 px-3 py-2.5">
-      <div className="mb-0.5 flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={SPRING}
+      style={{ background: C.card, boxShadow: SHADOW_SM }}
+      className="rounded-2xl px-4 py-3"
+    >
+      <div className="mb-0.5 flex items-center gap-1 text-xs font-medium" style={{ color: C.inkMute }}>
         {label}
         {hint}
       </div>
-      <div className="font-mono text-2xl font-semibold tabular-nums">{children}</div>
-    </div>
+      <div className="font-mono text-2xl font-semibold tabular-nums" style={{ color }}>
+        {children}
+      </div>
+    </motion.div>
   );
 }

@@ -173,3 +173,13 @@
 .animate-playback-pulse {
   animation: playback-pulse 2s ease-in-out infinite;
 }
+/* Factorio-style flowing belt motion for the money-flow Sankey links */
+@keyframes belt-move {
+  to { stroke-dashoffset: -32; }
+}
+.belt-flow {
+  animation: belt-move 1.1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .belt-flow { animation: none; }
+}

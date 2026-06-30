@@ -1,13 +1,12 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import { COUNTER_EVENTS } from "@/lib/events/catalog";
 import { getCitation } from "@/lib/citations";
+import { C, SHADOW_SM } from "./theme";
 
-/**
- * The "What if we had..." event list. Toggling an event removes its cost from the
- * counterfactual timeline. Each is a real, dated, cited fiscal event.
- */
+/** The "What if we had..." event list. Toggling an event removes its cost from history. */
 export function EventControls({
   events,
   toggleEvent,
@@ -17,22 +16,26 @@ export function EventControls({
 }) {
   return (
     <div>
-      <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-        Remove a decision history actually made
-      </h3>
-      <div className="divide-y divide-border/40">
-        {COUNTER_EVENTS.map((e) => {
+      <div className="mb-2 ml-1 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>
+        Remove a decision history made
+      </div>
+      <div className="overflow-hidden rounded-2xl" style={{ background: C.card, boxShadow: SHADOW_SM }}>
+        {COUNTER_EVENTS.map((e, i) => {
           const cite = getCitation(e.citationId);
           return (
-            <label key={e.id} className="flex items-center justify-between gap-3 py-2 text-xs" title={cite ? `${cite.agency} - ${cite.dataset}` : undefined}>
+            <motion.label
+              whileTap={{ scale: 0.985 }}
+              key={e.id}
+              className="flex items-center justify-between gap-3 px-3.5 py-3 text-[13px]"
+              style={i === COUNTER_EVENTS.length - 1 ? {} : { borderBottom: `1px solid ${C.hair}` }}
+              title={cite ? `${cite.agency} - ${cite.dataset}` : undefined}
+            >
               <span>
-                <span className="block">{e.label}</span>
-                <span className="text-[10px] text-muted-foreground">
-                  ~${e.annualCostB}B/yr, {e.startYear}-{e.endYear}
-                </span>
+                <span className="block" style={{ color: C.ink }}>{e.label}</span>
+                <span className="text-[11px]" style={{ color: C.inkMute }}>~${e.annualCostB}B/yr, {e.startYear}-{e.endYear}</span>
               </span>
               <Switch checked={events.includes(e.id)} onCheckedChange={() => toggleEvent(e.id)} />
-            </label>
+            </motion.label>
           );
         })}
       </div>

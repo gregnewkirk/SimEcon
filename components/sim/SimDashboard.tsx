@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { useSimEngine, type SimMode } from "@/hooks/useSimEngine";
+import { useSimEngine } from "@/hooks/useSimEngine";
+import { SegmentedControl } from "./SegmentedControl";
 import { LeverSidebar } from "./LeverSidebar";
 import { ScenarioPresets } from "./ScenarioPresets";
 import { EventControls } from "./EventControls";
@@ -13,51 +13,74 @@ import { HeadlineStats } from "./HeadlineStats";
 import { TrajectoryChart } from "./TrajectoryChart";
 import { MoneyFlowSankey } from "./MoneyFlowSankey";
 import { BracketCharacters } from "./BracketCharacters";
+import { Confetti } from "./Confetti";
 import { trillions } from "./format";
+import { C, SHADOW, SHADOW_SM, SPRING } from "./theme";
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={SPRING} className="rounded-3xl p-4 sm:p-5" style={{ background: C.card, boxShadow: SHADOW }}>
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>{title}</h2>
+      {children}
+    </motion.section>
+  );
+}
 
 export function SimDashboard() {
   const sim = useSimEngine();
-  const [yearIdx, setYearIdx] = useState(0); // index into fix-mode years (0 = 2026)
+  const [yearIdx, setYearIdx] = useState(0);
   const fixYear = sim.years[Math.min(yearIdx, sim.years.length - 1)] ?? sim.years[0];
+
+  const [confetti, setConfetti] = useState(0);
+  const wasSurplus = useRef(false);
+  useEffect(() => {
+    const surplus = (fixYear?.deficitB ?? 1) < 0;
+    if (surplus && !wasSurplus.current) setConfetti((n) => n + 1);
+    wasSurplus.current = surplus;
+  }, [fixYear?.deficitB]);
 
   const cf2025 = sim.counterfactual[sim.counterfactual.length - 1];
   const ac2025 = sim.actual[sim.actual.length - 1];
   const debtSaved = ac2025 && cf2025 ? ac2025.debtT - cf2025.debtT : 0;
 
   return (
-    <div className="mx-auto min-h-screen max-w-6xl px-4 py-6 text-foreground">
-      {/* Header */}
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mx-auto min-h-screen max-w-6xl px-4 py-7" style={{ color: C.ink }}>
+      <Confetti trigger={confetti} />
+
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-mono text-2xl font-bold tracking-tight">
-            Sim<span className="text-emerald-400">Econ</span>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Sim<span style={{ color: C.accent }}>Econ</span>
           </h1>
-          <p className="text-xs text-muted-foreground">
-            A sandbox of the U.S. federal budget. Pull the levers, watch it flow. Every number is sourced.
+          <p className="text-sm" style={{ color: C.inkMute }}>
+            Tune the U.S. federal budget. Pull a lever, watch it flow. Every number is sourced.
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          <label className="flex items-center gap-2 text-sm" style={{ color: C.inkMute }}>
             Dynamic effects
             <Switch checked={sim.useDynamic} onCheckedChange={sim.setUseDynamic} />
           </label>
-          <Button variant="outline" size="sm" onClick={sim.reset}>
+          <motion.button whileTap={{ scale: 0.95 }} onClick={sim.reset} className="rounded-full px-4 py-1.5 text-sm font-medium" style={{ background: C.card, color: C.ink, boxShadow: SHADOW_SM }}>
             Reset
-          </Button>
+          </motion.button>
         </div>
       </header>
 
-      {/* Mode tabs */}
-      <Tabs value={sim.mode} onValueChange={(v) => sim.setMode(v as SimMode)} className="mb-4">
-        <TabsList>
-          <TabsTrigger value="whatif">What if we had...</TabsTrigger>
-          <TabsTrigger value="fix">Fix this mess</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="mb-6 flex justify-center">
+        <SegmentedControl
+          value={sim.mode}
+          onChange={sim.setMode}
+          options={[
+            { value: "whatif", label: "What if we had..." },
+            { value: "fix", label: "Fix this mess" },
+          ]}
+        />
+      </div>
 
       {sim.mode === "fix" ? (
-        <div className="grid gap-5 lg:grid-cols-[340px_1fr]">
-          <aside className="space-y-4 rounded-xl border border-border/60 bg-card/30 p-4">
+        <div className="space-y-5">
+          <div className="rounded-3xl p-4 sm:p-5" style={{ background: C.card, boxShadow: SHADOW }}>
             <ScenarioPresets
               activePreset={sim.activePreset}
               onApply={(id, config) => {
@@ -66,82 +89,68 @@ export function SimDashboard() {
               }}
               onReset={sim.reset}
             />
-            <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
-          </aside>
+          </div>
 
-          <main className="space-y-5">
-            {/* Year scrubber */}
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-sm font-semibold tabular-nums">{fixYear?.year}</span>
-              <Slider
-                value={[yearIdx]}
-                min={0}
-                max={sim.years.length - 1}
-                step={1}
-                onValueChange={(v) => setYearIdx(Array.isArray(v) ? v[0] : v)}
-                className="flex-1"
-              />
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">scrub to 2050</span>
-            </div>
+          <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
+            <aside>
+              <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
+            </aside>
 
-            {fixYear && <HeadlineStats year={fixYear} />}
+            <main className="space-y-5">
+              <div className="flex items-center gap-3 rounded-3xl px-4 py-3" style={{ background: C.card, boxShadow: SHADOW_SM }}>
+                <motion.span key={fixYear?.year} initial={{ scale: 0.8, opacity: 0.5 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING} className="rounded-full px-3 py-1 font-mono text-sm font-bold tabular-nums" style={{ background: C.accent, color: "#fff" }}>
+                  {fixYear?.year}
+                </motion.span>
+                <Slider value={[yearIdx]} min={0} max={sim.years.length - 1} step={1} onValueChange={(v) => setYearIdx(Array.isArray(v) ? v[0] : v)} className="flex-1" />
+                <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: C.inkMute }}>to 2050</span>
+              </div>
 
-            <section className="rounded-xl border border-border/60 bg-card/30 p-4">
-              <h2 className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Gross federal debt as a share of GDP, through 2050
-              </h2>
-              <TrajectoryChart mode="fix" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
-            </section>
+              {fixYear && <HeadlineStats year={fixYear} />}
 
-            <section className="rounded-xl border border-border/60 bg-card/30 p-4">
-              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Where the money flows ({fixYear?.year})
-              </h2>
-              {fixYear && <MoneyFlowSankey year={fixYear} />}
-            </section>
+              <SectionCard title={`Where the money flows (${fixYear?.year})`}>
+                {fixYear && <MoneyFlowSankey year={fixYear} />}
+              </SectionCard>
 
-            <section className="rounded-xl border border-border/60 bg-card/30 p-4">
-              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Who pays, who gains (group total and per person, per year)
-              </h2>
-              <BracketCharacters incidence={sim.incidence} />
-            </section>
-          </main>
+              <SectionCard title="Who pays, who gains (group total and per person, per year)">
+                <BracketCharacters incidence={sim.incidence} />
+              </SectionCard>
+
+              <SectionCard title="Gross federal debt as a share of GDP, through 2050">
+                <TrajectoryChart mode="fix" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
+              </SectionCard>
+            </main>
+          </div>
         </div>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-xl border border-border/60 bg-card/30 p-4">
+        <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
+          <aside>
             <EventControls events={sim.events} toggleEvent={sim.toggleEvent} />
           </aside>
           <main className="space-y-5">
             <div className="grid grid-cols-3 gap-3">
-              <MiniStat label="Actual debt, 2025" value={ac2025 ? trillions(ac2025.debtT * 1000) : "-"} tone="rose" />
-              <MiniStat label="Counterfactual debt, 2025" value={cf2025 ? trillions(cf2025.debtT * 1000) : "-"} tone="emerald" />
-              <MiniStat label="Debt avoided" value={`$${debtSaved.toFixed(1)}T`} tone="amber" />
+              <MiniStat label="Actual debt, 2025" value={ac2025 ? trillions(ac2025.debtT * 1000) : "-"} color={C.red} />
+              <MiniStat label="Counterfactual, 2025" value={cf2025 ? trillions(cf2025.debtT * 1000) : "-"} color={C.green} />
+              <MiniStat label="Debt avoided" value={`$${debtSaved.toFixed(1)}T`} color={C.amber} />
             </div>
-            <section className="rounded-xl border border-border/60 bg-card/30 p-4">
-              <h2 className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                The road from the last balanced budget (2000)
-              </h2>
+            <SectionCard title="The road from the last balanced budget (2000)">
               <TrajectoryChart mode="whatif" years={sim.years} actual={sim.actual} counterfactual={sim.counterfactual} />
-            </section>
+            </SectionCard>
           </main>
         </div>
       )}
 
-      <footer className="mt-8 text-center text-[10px] text-muted-foreground">
+      <footer className="mt-10 text-center text-[11px]" style={{ color: C.inkMute }}>
         Illustrative model calibrated to CBO, JCT, OMB, and Treasury figures. Not a forecast.
       </footer>
     </div>
   );
 }
 
-function MiniStat({ label, value, tone }: { label: string; value: string; tone: "rose" | "emerald" | "amber" }) {
-  const color = tone === "rose" ? "text-rose-400" : tone === "emerald" ? "text-emerald-400" : "text-amber-400";
+function MiniStat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-card/60 px-3 py-2.5">
-      <div className="mb-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className={`font-mono text-xl font-semibold tabular-nums ${color}`}>{value}</div>
-    </div>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={SPRING} className="rounded-2xl px-4 py-3" style={{ background: C.card, boxShadow: SHADOW_SM }}>
+      <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider" style={{ color: C.inkMute }}>{label}</div>
+      <div className="font-mono text-xl font-semibold tabular-nums" style={{ color }}>{value}</div>
+    </motion.div>
   );
 }

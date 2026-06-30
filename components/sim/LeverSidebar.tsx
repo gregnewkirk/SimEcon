@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -13,87 +14,90 @@ import { estateLever } from "@/lib/levers/estate";
 import { PROGRAM_LEVERS } from "@/lib/levers/programs";
 import { REVENUE_LEVERS } from "@/lib/levers/revenue-options";
 import type { Lever, LeverConfig } from "@/lib/levers/types";
-import { getCitation } from "@/lib/citations";
 import { LeverDetail } from "./LeverDetail";
 import { leverDeficitImpact } from "./leverProjection";
 import { signedMoney } from "./format";
+import { C, SHADOW_SM } from "./theme";
 
 const incomeLevers = [...bracketLevers, topRateLever];
 const otherTaxLevers = [corporateLever, payrollCapLever, capGainsLever, estateLever];
-
-// Largest single toggle magnitude (VAT) sets the size-bar scale, so the bars show true
-// relative scale: the carbon-tax sliver next to the VAT giant.
-const GLOBAL_MAX = Math.max(
-  ...[...PROGRAM_LEVERS, ...REVENUE_LEVERS].map((l) => Math.abs(leverDeficitImpact(l)))
-);
+const GLOBAL_MAX = Math.max(...[...PROGRAM_LEVERS, ...REVENUE_LEVERS].map((l) => Math.abs(leverDeficitImpact(l))));
 
 function TierBadge({ lever }: { lever: Lever }) {
-  if (lever.contested) {
-    return <span className="rounded bg-amber-500/15 px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-400">contested</span>;
-  }
-  const calibrated = lever.tier === "calibrated";
+  const [bg, fg, text] = lever.contested
+    ? ["#FFF4E5", C.amber, "contested"]
+    : lever.tier === "calibrated"
+      ? ["#E7F9EE", C.green, "calibrated"]
+      : ["#E9F2FF", C.accent, "est"];
   return (
-    <span
-      className={`rounded px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide ${calibrated ? "bg-emerald-500/15 text-emerald-400" : "bg-sky-500/15 text-sky-400"}`}
-      title={calibrated ? "Scored to CBO/JCT within a few percent" : "Rougher cited estimate"}
-    >
-      {calibrated ? "calibrated" : "est"}
+    <span className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide" style={{ background: bg, color: fg }}>
+      {text}
     </span>
   );
 }
 
-/** Tax-rate slider row. */
-function SliderRow({ lever, cfg, setLever }: { lever: Lever; cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void }) {
+/** A rounded white iOS-settings card wrapping a group of rows. */
+function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="overflow-hidden rounded-2xl" style={{ background: C.card, boxShadow: SHADOW_SM }}>
+      {children}
+    </div>
+  );
+}
+
+function GroupHeader({ title }: { title: string }) {
+  return <h4 className="mb-1.5 ml-1 mt-4 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>{title}</h4>;
+}
+
+function SliderRow({ lever, cfg, setLever, last }: { lever: Lever; cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void; last?: boolean }) {
   if (!lever.range) return null;
   const value = (cfg[lever.id] as number) ?? lever.range.baseline;
   const changed = value !== lever.range.baseline;
-  const cite = getCitation(lever.citationIds[0]);
   return (
-    <div className="py-2">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-xs" title={cite ? `${cite.agency} - ${cite.dataset}` : undefined}>
+    <div className="px-3.5 py-2.5" style={last ? {} : { borderBottom: `1px solid ${C.hair}` }}>
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="flex items-center gap-1.5 text-[13px]" style={{ color: C.ink }}>
           {lever.label}
           <TierBadge lever={lever} />
           <LeverDetail lever={lever} cfg={cfg} />
         </span>
-        <span className={`font-mono text-xs tabular-nums ${changed ? "text-foreground" : "text-muted-foreground"}`}>{value}%</span>
+        <span className="font-mono text-[13px] font-semibold tabular-nums" style={{ color: changed ? C.accent : C.inkMute }}>{value}%</span>
       </div>
       <Slider value={[value]} min={lever.range.min} max={lever.range.max} step={lever.range.step} onValueChange={(v) => setLever(lever.id, Array.isArray(v) ? v[0] : v)} />
     </div>
   );
 }
 
-/** Program / revenue toggle row with inline signed amount and size bar. */
-function ToggleRow({ lever, cfg, setLever }: { lever: Lever; cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void }) {
+function ToggleRow({ lever, cfg, setLever, last }: { lever: Lever; cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void; last?: boolean }) {
   const impact = leverDeficitImpact(lever);
   const on = cfg[lever.id] === true;
   const positive = impact > 0;
   const widthPct = Math.max(0.4, (Math.abs(impact) / GLOBAL_MAX) * 100);
+  const color = positive ? C.green : C.red;
   return (
-    <div className="flex items-center gap-2.5 py-1.5">
-      <span className={`w-16 shrink-0 text-right font-mono text-xs font-medium tabular-nums ${positive ? "text-emerald-400" : "text-rose-400"}`}>
+    <motion.div whileTap={{ scale: 0.985 }} className="flex items-center gap-3 px-3.5 py-2.5" style={last ? {} : { borderBottom: `1px solid ${C.hair}` }}>
+      <span className="w-16 shrink-0 text-right font-mono text-[13px] font-semibold tabular-nums" style={{ color }}>
         {signedMoney(impact)}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="flex items-center gap-1.5 truncate text-xs">
+          <span className="flex min-w-0 items-center gap-1.5 text-[13px]" style={{ color: C.ink }}>
             <span className="truncate">{lever.label}</span>
             <TierBadge lever={lever} />
             <LeverDetail lever={lever} cfg={cfg} />
           </span>
           <Switch checked={on} onCheckedChange={(v) => setLever(lever.id, v)} />
         </div>
-        <div className="mt-1 h-1 overflow-hidden rounded-full bg-border/40">
-          <div className={`h-full rounded-full ${positive ? "bg-emerald-400/60" : "bg-rose-400/60"}`} style={{ width: `${widthPct}%` }} />
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full" style={{ background: C.hair }}>
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${widthPct}%`, background: positive ? C.greenFill : C.redFill }} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 const maxMag = (levers: Lever[]) => Math.max(...levers.map((l) => Math.abs(leverDeficitImpact(l))));
 
-/** Group toggles by lever.group, sort within group by size, order groups by their biggest item. */
 function groupedBySize(levers: Lever[]): [string, Lever[]][] {
   const m = new Map<string, Lever[]>();
   for (const l of levers) {
@@ -101,14 +105,8 @@ function groupedBySize(levers: Lever[]): [string, Lever[]][] {
     if (!m.has(g)) m.set(g, []);
     m.get(g)!.push(l);
   }
-  for (const arr of m.values()) {
-    arr.sort((a, b) => Math.abs(leverDeficitImpact(b)) - Math.abs(leverDeficitImpact(a)));
-  }
+  for (const arr of m.values()) arr.sort((a, b) => Math.abs(leverDeficitImpact(b)) - Math.abs(leverDeficitImpact(a)));
   return [...m.entries()].sort((a, b) => maxMag(b[1]) - maxMag(a[1]));
-}
-
-function GroupHeader({ title }: { title: string }) {
-  return <h4 className="mb-1 mt-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/80">{title}</h4>;
 }
 
 export function LeverSidebar({ cfg, setLever }: { cfg: LeverConfig; setLever: (id: string, v: number | boolean) => void }) {
@@ -116,56 +114,51 @@ export function LeverSidebar({ cfg, setLever }: { cfg: LeverConfig; setLever: (i
   const topRate = (cfg.topRate as number) ?? 37;
 
   return (
-    <div className="space-y-5">
-      {/* Taxes */}
-      <section>
-        <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Taxes</h3>
+    <div>
+      <GroupHeader title="Taxes" />
+      <Card>
         <Collapsible open={taxOpen} onOpenChange={setTaxOpen}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md border border-border/50 bg-card/40 px-2.5 py-2 text-xs hover:bg-card/70">
+          <CollapsibleTrigger className="flex w-full items-center justify-between px-3.5 py-3 text-[13px]" style={{ color: C.ink, borderBottom: `1px solid ${C.hair}` }}>
             <span className="flex items-center gap-1.5">
-              <ChevronRight className={`size-3.5 transition-transform ${taxOpen ? "rotate-90" : ""}`} />
+              <ChevronRight className={`size-4 transition-transform ${taxOpen ? "rotate-90" : ""}`} style={{ color: C.inkMute }} />
               Income tax rates
             </span>
-            <span className="font-mono text-muted-foreground">top {topRate}%</span>
+            <span className="font-mono" style={{ color: C.inkMute }}>top {topRate}%</span>
           </CollapsibleTrigger>
-          <CollapsibleContent className="px-1">
-            {incomeLevers.map((l) => (
-              <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} />
+          <CollapsibleContent>
+            {incomeLevers.map((l, i) => (
+              <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === incomeLevers.length - 1 && otherTaxLevers.length === 0} />
             ))}
           </CollapsibleContent>
         </Collapsible>
-        <div className="mt-1 divide-y divide-border/40">
-          {otherTaxLevers.map((l) => (
-            <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} />
-          ))}
+        {otherTaxLevers.map((l, i) => (
+          <SliderRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === otherTaxLevers.length - 1} />
+        ))}
+      </Card>
+
+      <div className="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>Programs (spending)</div>
+      {groupedBySize(PROGRAM_LEVERS).map(([group, levers]) => (
+        <div key={group}>
+          <GroupHeader title={group} />
+          <Card>
+            {levers.map((l, i) => (
+              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
+            ))}
+          </Card>
         </div>
-      </section>
+      ))}
 
-      {/* Programs */}
-      <section>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Programs (spending)</h3>
-        {groupedBySize(PROGRAM_LEVERS).map(([group, levers]) => (
-          <div key={group}>
-            <GroupHeader title={group} />
-            {levers.map((l) => (
-              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} />
+      <div className="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.inkMute }}>Revenue &amp; savings</div>
+      {groupedBySize(REVENUE_LEVERS).map(([group, levers]) => (
+        <div key={group}>
+          <GroupHeader title={group} />
+          <Card>
+            {levers.map((l, i) => (
+              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />
             ))}
-          </div>
-        ))}
-      </section>
-
-      {/* Revenue */}
-      <section>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Revenue & savings</h3>
-        {groupedBySize(REVENUE_LEVERS).map(([group, levers]) => (
-          <div key={group}>
-            <GroupHeader title={group} />
-            {levers.map((l) => (
-              <ToggleRow key={l.id} lever={l} cfg={cfg} setLever={setLever} />
-            ))}
-          </div>
-        ))}
-      </section>
+          </Card>
+        </div>
+      ))}
     </div>
   );
 }

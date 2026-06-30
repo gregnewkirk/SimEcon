@@ -3,19 +3,20 @@
 import { Sankey, Tooltip, ResponsiveContainer, Layer, Rectangle } from "recharts";
 import type { YearData } from "@/lib/ledger/types";
 import { money } from "./format";
+import { C } from "./theme";
 
 type Kind = "revenue" | "borrow" | "hub" | "spending";
 const COLOR: Record<Kind, string> = {
-  revenue: "#34d399",
-  borrow: "#f59e0b",
-  hub: "#94a3b8",
-  spending: "#f43f5e",
+  revenue: C.greenFill,
+  borrow: C.amberFill,
+  hub: "#AEAEB2",
+  spending: C.redFill,
 };
 
 /**
- * Money flow for the current year: revenue sources and borrowing on the left flow through
- * the federal budget hub out to spending categories on the right. The belt re-flows as
- * levers move, so you watch borrowing fill (or shrink) the gap between revenue and spending.
+ * Money flow for the current year: revenue and borrowing on the left flow through the
+ * federal budget out to spending on the right. The links carry a moving dashed "belt" so
+ * you can see the money traveling, Factorio-style, and it re-flows as levers move.
  */
 export function MoneyFlowSankey({ year }: { year: YearData }) {
   const revenue = year.lines.filter((l) => l.side === "revenue" && l.valueB > 1);
@@ -50,10 +51,10 @@ export function MoneyFlowSankey({ year }: { year: YearData }) {
           iterations={64}
           margin={{ top: 8, right: 150, bottom: 8, left: 130 }}
           node={<SankeyNode />}
-          link={{ stroke: "#475569", strokeOpacity: 0.28 }}
+          link={<SankeyLink />}
         >
           <Tooltip
-            contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
+            contentStyle={{ background: C.card, border: `1px solid ${C.hair}`, borderRadius: 12, fontSize: 12, color: C.ink, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
             formatter={(v) => money(Number(v))}
           />
         </Sankey>
@@ -68,27 +69,25 @@ function SankeyNode(props: any) {
   const isLeft = x + width / 2 < (containerWidth ?? 800) / 2;
   return (
     <Layer key={`node-${index}`}>
-      <Rectangle x={x} y={y} width={width} height={height} fill={COLOR[kind]} fillOpacity={0.9} radius={2} />
-      <text
-        x={isLeft ? x + width + 6 : x - 6}
-        y={y + height / 2}
-        textAnchor={isLeft ? "start" : "end"}
-        dominantBaseline="middle"
-        fontSize={11}
-        fill="var(--foreground)"
-      >
+      <Rectangle x={x} y={y} width={width} height={height} fill={COLOR[kind]} fillOpacity={0.95} radius={3} />
+      <text x={isLeft ? x + width + 7 : x - 7} y={y + height / 2} textAnchor={isLeft ? "start" : "end"} dominantBaseline="middle" fontSize={11.5} fontWeight={500} fill={C.ink}>
         {payload.name}
       </text>
-      <text
-        x={isLeft ? x + width + 6 : x - 6}
-        y={y + height / 2 + 12}
-        textAnchor={isLeft ? "start" : "end"}
-        dominantBaseline="middle"
-        fontSize={10}
-        fill="var(--muted-foreground)"
-      >
+      <text x={isLeft ? x + width + 7 : x - 7} y={y + height / 2 + 13} textAnchor={isLeft ? "start" : "end"} dominantBaseline="middle" fontSize={10.5} fill={C.inkMute}>
         {money(payload.value)}
       </text>
+    </Layer>
+  );
+}
+
+function SankeyLink(props: any) {
+  const { sourceX, sourceY, sourceControlX, targetControlX, targetX, targetY, linkWidth, index } = props;
+  const d = `M${sourceX},${sourceY} C${sourceControlX},${sourceY} ${targetControlX},${targetY} ${targetX},${targetY}`;
+  const w = Math.max(1, linkWidth);
+  return (
+    <Layer key={`link-${index}`}>
+      <path d={d} fill="none" stroke="#CDD2DC" strokeWidth={w} strokeOpacity={0.55} />
+      <path d={d} fill="none" stroke="#9AA3B5" strokeWidth={w} strokeOpacity={0.7} strokeDasharray="3 16" strokeLinecap="round" className="belt-flow" />
     </Layer>
   );
 }
