@@ -9,7 +9,7 @@ describe("incidence", () => {
   });
 
   it("UBI nets positive for the bottom 50%", () => {
-    const inc = computeIncidence({ ubi: true });
+    const inc = computeIncidence({ ubi: 1000 });
     expect(inc.bottom50).toBeGreaterThan(0);
     expect(inc.bottom50).toBeGreaterThan(inc.top1);
   });
@@ -21,7 +21,7 @@ describe("incidence", () => {
   });
 
   it("VAT is regressive: bottom50 bears more than top1", () => {
-    const inc = computeIncidence({ vat5: true });
+    const inc = computeIncidence({ vat5: 5 });
     expect(inc.bottom50).toBeLessThan(0);
     expect(inc.bottom50).toBeLessThan(inc.top1);
   });
@@ -35,6 +35,12 @@ describe("incidence", () => {
   it("Child Tax Credit nets positive for the bottom half", () => {
     const inc = computeIncidence({ child_tax_credit: true });
     expect(inc.bottom50).toBeGreaterThan(0);
+  });
+
+  it("buy-borrow-die collateral tax lands on the top 1%", () => {
+    const inc = computeIncidence({ collateral_tax: 20 });
+    expect(inc.top1).toBeLessThan(0);
+    expect(inc.bottom50).toBe(0);
   });
 
   it("no active levers means no incidence", () => {

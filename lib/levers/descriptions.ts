@@ -56,6 +56,8 @@ export const LEVER_DESCRIPTIONS: Record<string, string> = {
 
   // The reveals people overestimate
   carried_interest: "Lets private-equity and hedge-fund managers pay the lower capital-gains rate on fees that are really wages. Famous and hated, but closing it raises only ~$1.5B/yr. Mostly symbolic.",
+  collateral_tax: "The 'buy, borrow, die' move: the ultra-wealthy never sell appreciated stock (so they owe no income tax), they borrow against it tax-free to fund their lives, and pass it on at death with the gains wiped out. This treats large loans secured by unrealized gains as a taxable realization. An alternate tax base to income tax; run it alongside or instead of the billionaire minimum tax to compare. Revenue is genuinely uncertain.",
   end_fossil_subsidies: "Repeals explicit federal tax preferences for oil, gas, and coal (intangible drilling costs, percentage depletion). Only ~$15B/yr: the 'trillions' figure people cite is the IMF's implicit, unpriced-pollution number, not a federal line item.",
   cannabis_tax: "Legalize cannabis federally and tax it like alcohol or tobacco. A growing legal market; ~$10B/yr in federal excise.",
+  tariffs: "A federal tax on imports. Importers pass most of it on, so it works like a hidden, regressive sales tax, and it invites retaliation that shrinks U.S. exports. Revenue erodes as trade falls, so the real take is well below the headline rate times imports.",
 };

@@ -17,6 +17,7 @@ export interface SimEngine {
   setMode: (m: SimMode) => void;
   cfg: LeverConfig;
   setLever: (id: string, value: number | boolean) => void;
+  setLevers: (updates: LeverConfig) => void;
   applyPreset: (partial: LeverConfig) => void;
   activePreset: string | null;
   setActivePreset: (id: string | null) => void;
@@ -26,6 +27,7 @@ export interface SimEngine {
   /** Selected counterfactual event ids (whatif mode). */
   events: string[];
   toggleEvent: (id: string) => void;
+  setEventsBulk: (ids: string[], on: boolean) => void;
   /** Forward projection (fix mode). */
   years: YearData[];
   /** Counterfactual pair (whatif mode). */
@@ -47,6 +49,10 @@ export function useSimEngine(): SimEngine {
     setCfg((c) => ({ ...c, [id]: value }));
     setActivePreset(null); // hand-editing leaves the preset
   }, []);
+  const setLevers = useCallback((updates: LeverConfig) => {
+    setCfg((c) => ({ ...c, ...updates }));
+    setActivePreset(null);
+  }, []);
   const applyPreset = useCallback((partial: LeverConfig) => {
     setCfg({ ...defaultConfig(), ...partial });
   }, []);
@@ -57,6 +63,16 @@ export function useSimEngine(): SimEngine {
   }, []);
   const toggleEvent = useCallback((id: string) => {
     setEvents((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  }, []);
+  const setEventsBulk = useCallback((ids: string[], on: boolean) => {
+    setEvents((e) => {
+      const set = new Set(e);
+      for (const id of ids) {
+        if (on) set.add(id);
+        else set.delete(id);
+      }
+      return [...set];
+    });
   }, []);
 
   const years = useMemo(
@@ -81,6 +97,7 @@ export function useSimEngine(): SimEngine {
     setMode,
     cfg,
     setLever,
+    setLevers,
     applyPreset,
     activePreset,
     setActivePreset,
@@ -89,6 +106,7 @@ export function useSimEngine(): SimEngine {
     setUseDynamic,
     events,
     toggleEvent,
+    setEventsBulk,
     years,
     actual,
     counterfactual,

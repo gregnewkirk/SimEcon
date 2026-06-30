@@ -64,10 +64,12 @@ interface ProgramDef {
   tier: Tier;
   group: string;
   citationId?: string;
+  /** If present, this program is a dial (slider) instead of a yes/no toggle. */
+  dial?: { min: number; max: number; step: number; onValue: number; unit: string; perUnitB: number };
 }
 
 const PROGRAMS: ProgramDef[] = [
-  { id: "healthcare", label: "Universal Healthcare (M4A)", netCostB: 450, tier: "calibrated", group: "Health & care" },
+  { id: "healthcare", label: "Universal Healthcare (M4A)", netCostB: 450, tier: "calibrated", group: "Health & care", dial: { min: 0, max: 100, step: 5, onValue: 100, unit: "% phased in", perUnitB: 4.5 } },
   { id: "child_care", label: "Universal Child Care (0-5)", netCostB: 200, tier: "estimate", group: "Health & care", citationId: "treasury_childcare" },
   { id: "paid_leave", label: "Paid Family & Medical Leave", netCostB: 250, tier: "estimate", group: "Health & care", citationId: "cbo_paid_leave" },
   { id: "mental_health", label: "Federal Mental Health Corps", netCostB: 50, tier: "estimate", group: "Health & care" },
@@ -80,13 +82,32 @@ const PROGRAMS: ProgramDef[] = [
   { id: "infrastructure", label: "Infrastructure Modernization", netCostB: 370, tier: "calibrated", group: "Jobs & growth" },
   { id: "rd_moonshot", label: "R&D Moonshot Fund", netCostB: 200, tier: "calibrated", group: "Jobs & growth" },
   { id: "green_jobs", label: "Green Jobs Corps", netCostB: 60, tier: "estimate", group: "Jobs & growth" },
-  { id: "ubi", label: "Universal Basic Income", netCostB: 2800, tier: "calibrated", group: "Income & basics" },
+  { id: "ubi", label: "Universal Basic Income", netCostB: 2800, tier: "calibrated", group: "Income & basics", dial: { min: 0, max: 2000, step: 50, onValue: 1000, unit: "$/mo", perUnitB: 2.8 } },
   { id: "housing", label: "Affordable Housing", netCostB: 75, tier: "calibrated", group: "Income & basics" },
   { id: "public_internet", label: "Federal Public Internet", netCostB: 40, tier: "estimate", group: "Income & basics" },
 ];
 
 export const PROGRAM_LEVERS: Lever[] = PROGRAMS.map((p) => {
   const citationId = p.citationId ?? "cbo_programs";
+  if (p.dial) {
+    const d = p.dial;
+    return {
+      id: p.id,
+      label: p.label,
+      category: "program",
+      tier: p.tier,
+      group: p.group,
+      targets: ["policy_programs"],
+      citationIds: [citationId],
+      defaultValue: 0,
+      onValue: d.onValue,
+      unit: d.unit,
+      range: { min: d.min, max: d.max, step: d.step, baseline: 0 },
+      conventional: (cfg) => [
+        { lineId: "policy_programs", amountB: ((cfg[p.id] as number) ?? 0) * d.perUnitB, citationId, leverId: p.id },
+      ],
+    };
+  }
   return {
     id: p.id,
     label: p.label,
@@ -96,6 +117,7 @@ export const PROGRAM_LEVERS: Lever[] = PROGRAMS.map((p) => {
     targets: ["policy_programs"],
     citationIds: [citationId],
     defaultValue: false,
+    onValue: true,
     conventional: (cfg) => [
       { lineId: "policy_programs", amountB: cfg[p.id] === true ? p.netCostB : 0, citationId, leverId: p.id },
     ],

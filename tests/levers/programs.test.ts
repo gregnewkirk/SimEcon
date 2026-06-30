@@ -35,16 +35,16 @@ describe("lever registry", () => {
     expect(sumDeficit(lines)).toBeCloseTo(1900, 0);
   });
 
-  it("enabling M4A adds its net cost to spending", () => {
-    const { lines } = applyLevers(BASELINE_2025, ALL_LEVERS, { ...defaultConfig(), healthcare: true }, false);
+  it("M4A fully phased in adds its net cost to spending", () => {
+    const { lines } = applyLevers(BASELINE_2025, ALL_LEVERS, { ...defaultConfig(), healthcare: 100 }, false);
     const programs = lines.find((l) => l.id === "policy_programs")!;
     expect(programs.valueB).toBeCloseTo(450, 6);
   });
 
-  it("VAT is the giant: ~$1.4T of new revenue", () => {
+  it("VAT is the giant: ~$1.4T of new revenue at 5%", () => {
     const rev = (lines: { side: string; valueB: number }[]) => lines.filter((l) => l.side === "revenue").reduce((s, l) => s + l.valueB, 0);
     const base = rev(applyLevers(BASELINE_2025, ALL_LEVERS, defaultConfig(), false).lines);
-    const withVat = rev(applyLevers(BASELINE_2025, ALL_LEVERS, { ...defaultConfig(), vat5: true }, false).lines);
+    const withVat = rev(applyLevers(BASELINE_2025, ALL_LEVERS, { ...defaultConfig(), vat5: 5 }, false).lines);
     expect(withVat - base).toBeCloseTo(1400, 0);
   });
 

@@ -14,6 +14,7 @@ import { TrajectoryChart } from "./TrajectoryChart";
 import { MoneyFlowSankey } from "./MoneyFlowSankey";
 import { BracketCharacters } from "./BracketCharacters";
 import { Confetti } from "./Confetti";
+import { InfoPopover } from "./InfoPopover";
 import { trillions } from "./format";
 import { C, SHADOW, SHADOW_SM, SPRING } from "./theme";
 
@@ -57,10 +58,13 @@ export function SimDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-sm" style={{ color: C.inkMute }}>
+          <span className="flex items-center gap-1.5 text-sm" style={{ color: C.inkMute }}>
             Dynamic effects
+            <InfoPopover title="Dynamic effects">
+              Off (default), levers show their conventional score: the dollars they raise or cost on paper, the way CBO and JCT officially publish them. Turn it on to layer in behavioral effects: people respond to taxes, so a hike raises somewhat less (corporate about -15%, the top rate about -25% as income shifts away). More realistic, but more contestable. Capital-gains realization is always included either way.
+            </InfoPopover>
             <Switch checked={sim.useDynamic} onCheckedChange={sim.setUseDynamic} />
-          </label>
+          </span>
           <motion.button whileTap={{ scale: 0.95 }} onClick={sim.reset} className="rounded-full px-4 py-1.5 text-sm font-medium" style={{ background: C.card, color: C.ink, boxShadow: SHADOW_SM }}>
             Reset
           </motion.button>
@@ -93,7 +97,7 @@ export function SimDashboard() {
 
           <div className="grid gap-5 lg:grid-cols-[360px_1fr] lg:items-start">
             <aside>
-              <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} />
+              <LeverSidebar cfg={sim.cfg} setLever={sim.setLever} setLevers={sim.setLevers} />
             </aside>
 
             <main className="space-y-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
@@ -124,7 +128,7 @@ export function SimDashboard() {
       ) : (
         <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
           <aside>
-            <EventControls events={sim.events} toggleEvent={sim.toggleEvent} />
+            <EventControls events={sim.events} toggleEvent={sim.toggleEvent} setEventsBulk={sim.setEventsBulk} />
           </aside>
           <main className="space-y-5">
             <div className="grid grid-cols-3 gap-3">

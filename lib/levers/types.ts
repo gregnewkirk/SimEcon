@@ -25,6 +25,10 @@ export interface Lever {
   contested?: boolean;
   /** Default slider/toggle value when inactive (0 or false = no effect). */
   defaultValue?: number | boolean;
+  /** Value representing "on" for select-all (true for toggles, the headline rate/amount for dials). */
+  onValue?: number | boolean;
+  /** Unit label for dial readouts, e.g. "%" or "$/mo". */
+  unit?: string;
   /** For slider levers: min, max, step, and the baseline (current-law) value. */
   range?: { min: number; max: number; step: number; baseline: number };
 }
