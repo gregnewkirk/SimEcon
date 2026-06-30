@@ -52,6 +52,7 @@ export const INCIDENCE: Record<string, IncidenceShares> = {
   billionaire_min_tax: { top1: 0.97, next9: 0.03, middle40: 0, bottom50: 0 },
   buyback_tax: { top1: 0.6, next9: 0.25, middle40: 0.13, bottom50: 0.02 },
   carried_interest: { top1: 0.95, next9: 0.05, middle40: 0, bottom50: 0 },
+  collateral_tax: { top1: 0.97, next9: 0.03, middle40: 0, bottom50: 0 },
   end_fossil_subsidies: { top1: 0.5, next9: 0.25, middle40: 0.2, bottom50: 0.05 },
 };
 

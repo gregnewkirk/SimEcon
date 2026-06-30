@@ -50,6 +50,14 @@ registerSources([
     url: "https://crsreports.congress.gov/",
     accessed: "2026-06-28",
   },
+  {
+    id: "wyden_bit",
+    agency: "Senate Finance Committee (Wyden) / Treasury",
+    dataset: "Billionaires Income Tax: mark-to-market and taxing borrowing against unrealized gains",
+    year: 2023,
+    url: "https://www.finance.senate.gov/",
+    accessed: "2026-06-28",
+  },
 ]);
 
 /**
@@ -78,6 +86,7 @@ const OPTIONS: RevenueDef[] = [
   { id: "buyback_tax", label: "Stock Buyback Tax (1% to 4%)", amountB: 25, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "jct_tax_expenditures" },
   { id: "financial_tx_tax", label: "Financial Transaction Tax", amountB: 55, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "cbo_budget_options" },
   { id: "carried_interest", label: "Close Carried-Interest Loophole", amountB: 1.5, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Tax wealth & Wall Street", citationId: "jct_tax_expenditures" },
+  { id: "collateral_tax", label: "Tax gains borrowed against (buy-borrow-die)", amountB: 60, target: "policy_revenue", sign: 1, tier: "estimate", group: "Tax wealth & Wall Street", contested: true, citationId: "wyden_bit", dial: { min: 0, max: 37, step: 1, onValue: 20, unit: "%", perUnitB: 3 } },
   // Broad-based taxes
   { id: "vat5", label: "Value-Added Tax", amountB: 1400, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "tpc_vat", dial: { min: 0, max: 10, step: 0.5, onValue: 5, unit: "%", perUnitB: 280 } },
   { id: "cap_employer_health", label: "Cap Employer Health Exclusion", amountB: 300, target: "policy_revenue", sign: 1, tier: "calibrated", group: "Broad-based taxes", citationId: "jct_tax_expenditures", dial: { min: 0, max: 100, step: 5, onValue: 100, unit: "% capped", perUnitB: 3 } },

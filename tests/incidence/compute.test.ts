@@ -37,6 +37,12 @@ describe("incidence", () => {
     expect(inc.bottom50).toBeGreaterThan(0);
   });
 
+  it("buy-borrow-die collateral tax lands on the top 1%", () => {
+    const inc = computeIncidence({ collateral_tax: 20 });
+    expect(inc.top1).toBeLessThan(0);
+    expect(inc.bottom50).toBe(0);
+  });
+
   it("no active levers means no incidence", () => {
     const inc = computeIncidence({});
     expect(inc.top1).toBe(0);
