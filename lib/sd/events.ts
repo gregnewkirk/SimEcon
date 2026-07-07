@@ -129,6 +129,30 @@ registerSources([
     url: "https://timesofsandiego.com/politics/2014/12/16/council-approves-32m-settlement-in-mobile-home-park-dispute/",
     accessed: "2026-07-07",
   },
+  {
+    id: "sd_prop_d_2010",
+    agency: "Ballotpedia / Voice of San Diego",
+    dataset: "Prop D (Nov 2010): half-cent sales tax + 10 audited reforms, ~$102M/yr for 5 years; failed ~62%-38%",
+    year: 2010,
+    url: "https://ballotpedia.org/San_Diego_Sales_Tax_and_Financial_Reform_Package,_Proposition_D_(November_2010)",
+    accessed: "2026-07-07",
+  },
+  {
+    id: "sd_tot_2004",
+    agency: "Voice of San Diego / City Clerk",
+    dataset: "Props C & J (2004): TOT 10.5%->13%; Prop C got ~61% (needed 2/3), Prop J defeated; ~$25-35M/yr forgone (estimate)",
+    year: 2004,
+    url: "https://voiceofsandiego.org/2011/05/27/king-of-the-hoteliers/",
+    accessed: "2026-07-07",
+  },
+  {
+    id: "sd_measure_c_2020",
+    agency: "KPBS / Court of Appeal (4th District)",
+    dataset: "Measure C (Mar 2020): TOT increase passed 65.24% but sat in court until 2025; ~$82M/yr once collected; ~$200-300M forgone in limbo (estimate)",
+    year: 2025,
+    url: "https://www.kpbs.org/news/politics/2025/10/06/court-sides-with-san-diego-in-hotel-tax-dispute-validates-measure-c-5-years-after-vote",
+    accessed: "2026-07-07",
+  },
 ]);
 
 export type SdEventCategory =
@@ -325,6 +349,43 @@ export const SD_COUNTER_EVENTS: SdCounterEvent[] = [
     blurb:
       "SDG&E was the only bidder - twice - and bid exactly the $80M minimum for a franchise worth ~$130M/yr in fees and surcharges. City-commissioned studies say public power could save ratepayers billions; SDG&E's study says the grid costs $9.3B to buy. Modeled here as a modest $20M/yr of unclaimed leverage - the honest range is huge and disputed.",
     citationId: "sd_sdge_franchise",
+  },
+
+  {
+    id: "prop_d_2010",
+    label: "Passed Prop D (2010, half-cent + reforms)",
+    category: "Revenue left on the table",
+    startYear: 2011,
+    endYear: 2016,
+    annualCostM: 102,
+    sign: 1,
+    blurb:
+      "A temporary half-cent sales tax (~$102M/yr for 5 years) that couldn't take effect until the City Auditor certified 10 fiscal reforms - pensions, outsourcing, retiree health. Voters said no, ~62-38, mid-pension-crisis. The era of fire-engine 'brownouts' and slashed library hours followed.",
+    citationId: "sd_prop_d_2010",
+  },
+  {
+    id: "tot_2004",
+    label: "Raised the hotel tax in 2004",
+    category: "Revenue left on the table",
+    startYear: 2005,
+    endYear: 2024,
+    annualCostM: 30,
+    sign: 1,
+    blurb:
+      "Twice in 2004, voters saw a 10.5%->13% hotel-tax hike. Prop C (hotelier-written, mostly funding tourism marketing) got ~61% but needed two-thirds; Prop J (same hike, into the General Fund for fire and libraries, post-Cedar Fire) was killed by the hotel industry's own campaign. The rate then froze for 20 years. ~$30M/yr forgone is an estimate.",
+    citationId: "sd_tot_2004",
+  },
+  {
+    id: "measure_c_2020",
+    label: "Skipped Measure C's five years in court",
+    category: "Revenue left on the table",
+    startYear: 2020,
+    endYear: 2024,
+    annualCostM: 50,
+    sign: 1,
+    blurb:
+      "Voters approved a hotel-tax increase 65.24% in March 2020 - then it sat in litigation over whether citizen initiatives need two-thirds, until courts validated it and collections finally began May 2025 (~$82M/yr). The limbo cost roughly $200-300M (COVID-adjusted estimate). Counterfactual: the legal question was settled before, not after, the vote.",
+    citationId: "sd_measure_c_2020",
   },
 
   // ————— Deferred maintenance & lawsuits —————

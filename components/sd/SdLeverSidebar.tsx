@@ -40,11 +40,16 @@ function rowBorder(last?: boolean) {
 }
 
 function LeverLabel({ lever, cfg }: { lever: SdLever; cfg: SdLeverConfig }) {
+  // SD labels are long ("Civilianize desk & dispatch roles"), so wrap instead of truncate.
   return (
-    <span className="flex min-w-0 items-center gap-1.5 text-[13px]" style={{ color: C.ink }}>
-      <span className="truncate">{lever.label}</span>
-      <TierBadge lever={lever} />
-      <SdLeverDetail lever={lever} cfg={cfg} />
+    <span className="flex min-w-0 items-start gap-1.5 text-[13px]" style={{ color: C.ink }}>
+      <span className="min-w-0 leading-snug">
+        {lever.label}{" "}
+        <span className="inline-flex translate-y-[1px] items-center gap-1 whitespace-nowrap align-baseline">
+          <TierBadge lever={lever} />
+          <SdLeverDetail lever={lever} cfg={cfg} />
+        </span>
+      </span>
     </span>
   );
 }
@@ -64,7 +69,7 @@ function DialRow({ lever, cfg, setLever, last }: { lever: SdLever; cfg: SdLeverC
         {!changed ? "—" : signedMoneyM(impact)}
       </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
           <LeverLabel lever={lever} cfg={cfg} />
           <span className="shrink-0 font-mono text-[13px] font-semibold tabular-nums" style={{ color: !changed ? C.inkMute : C.accent }}>{dialReadout(value, lever.unit)}</span>
         </div>
@@ -88,7 +93,7 @@ function ToggleRow({ lever, cfg, setLever, last }: { lever: SdLever; cfg: SdLeve
     <motion.div whileTap={{ scale: 0.985 }} className="flex items-center gap-3 px-3.5 py-2.5" style={rowBorder(last)}>
       <span className="w-16 shrink-0 text-right font-mono text-[13px] font-semibold tabular-nums" style={{ color: positive ? C.green : C.red }}>{signedMoneyM(impact)}</span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
           <LeverLabel lever={lever} cfg={cfg} />
           <Switch checked={on} onCheckedChange={(v) => setLever(lever.id, v)} />
         </div>
