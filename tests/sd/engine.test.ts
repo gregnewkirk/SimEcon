@@ -81,6 +81,33 @@ describe("San Diego projection engine", () => {
   });
 });
 
+describe("New ideas from other cities", () => {
+  it("the full slate roughly pays for its own programs", () => {
+    const base = run();
+    const slate = run({
+      ...sdDefaultConfig(),
+      mansion_tax: 4,
+      payroll_tax: 1.2,
+      pied_a_terre: true,
+      delivery_fee: true,
+      naming_rights: true,
+      muni_grocery: true,
+      guaranteed_income: 1000,
+      free_buses: true,
+    });
+    // Revenue ideas (~$148M) minus spending ideas (~$72M) should improve the gap.
+    const delta = base[0].gapM - slate[0].gapM;
+    expect(delta).toBeGreaterThan(50);
+    expect(delta).toBeLessThan(110);
+  });
+
+  it("every idea lever is cited", () => {
+    for (const l of SD_ALL_LEVERS.filter((x) => x.category === "idea")) {
+      expect(l.citationIds.length).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe("San Diego scenarios", () => {
   it("every preset key maps to a real lever", () => {
     const ids = new Set(SD_ALL_LEVERS.map((l) => l.id));

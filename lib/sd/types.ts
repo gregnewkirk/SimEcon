@@ -47,7 +47,7 @@ export interface SdProvenance {
 
 export type SdTier = "calibrated" | "estimate";
 
-export type SdLeverCategory = "police" | "department" | "revenue" | "pension";
+export type SdLeverCategory = "police" | "department" | "revenue" | "pension" | "idea";
 
 /** Slider values (numbers) and toggle states (booleans), keyed by lever id. */
 export type SdLeverConfig = Record<string, number | boolean>;
