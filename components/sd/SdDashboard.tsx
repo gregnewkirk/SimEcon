@@ -13,6 +13,7 @@ import { SdEventControls } from "./SdEventControls";
 import { SdHeadlineStats } from "./SdHeadlineStats";
 import { SdTrajectoryChart } from "./SdTrajectoryChart";
 import { SdMoneyFlowSankey } from "./SdMoneyFlowSankey";
+import { SdScaleCompare } from "./SdScaleCompare";
 import { moneyM, pct } from "./format";
 import { C, SHADOW, SHADOW_SM, SPRING } from "@/components/sim/theme";
 
@@ -116,6 +117,10 @@ export function SdDashboard() {
                   />
                 </div>
               )}
+
+              <SectionCard title="How big is each fight, really? (FY2026 dollars)">
+                <SdScaleCompare />
+              </SectionCard>
 
               <SectionCard title="Reserves vs. the 16.7% target, through 2040">
                 <SdTrajectoryChart mode="fix" years={sim.years} />
