@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { Slider } from "@/components/ui/slider";
 import { useSdEngine } from "@/hooks/useSdEngine";
 import { SegmentedControl } from "@/components/sim/SegmentedControl";
@@ -54,9 +53,10 @@ export function SdDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
+          {/* Absolute URL so it escapes sd.simecon.app, where "/" is this page. */}
+          <a href="https://simecon.app" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
             Federal budget →
-          </Link>
+          </a>
           <motion.button whileTap={{ scale: 0.95 }} onClick={sim.reset} className="rounded-full px-4 py-1.5 text-sm font-medium" style={{ background: C.card, color: C.ink, boxShadow: SHADOW_SM }}>
             Reset
           </motion.button>
