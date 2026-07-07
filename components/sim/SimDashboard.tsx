@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -58,6 +59,9 @@ export function SimDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/san-diego" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
+            San Diego edition →
+          </Link>
           <span className="flex items-center gap-1.5 text-sm" style={{ color: C.inkMute }}>
             Dynamic effects
             <InfoPopover title="Dynamic effects">
