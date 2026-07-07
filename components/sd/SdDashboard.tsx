@@ -13,6 +13,7 @@ import { SdHeadlineStats } from "./SdHeadlineStats";
 import { SdTrajectoryChart } from "./SdTrajectoryChart";
 import { SdMoneyFlowSankey } from "./SdMoneyFlowSankey";
 import { SdScaleCompare } from "./SdScaleCompare";
+import { SdShareBar } from "./SdShareBar";
 import { moneyM, pct } from "./format";
 import { C, SHADOW, SHADOW_SM, SPRING } from "@/components/sim/theme";
 
@@ -62,6 +63,14 @@ export function SdDashboard() {
           </motion.button>
         </div>
       </header>
+
+      <SdShareBar
+        cfg={sim.cfg}
+        mode={sim.mode}
+        events={sim.events}
+        gapM={sim.years[0]?.gapM ?? 0}
+        savedM={sim.whatIf.totalSavedM}
+      />
 
       <div className="mb-6 flex justify-center">
         <SegmentedControl
