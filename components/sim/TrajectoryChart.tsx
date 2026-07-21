@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
+  ReferenceLine,
 } from "recharts";
 import type { YearData } from "@/lib/ledger/types";
 
@@ -41,17 +42,66 @@ export function TrajectoryChart({
         band: beyond > 0 ? [round(y.debtToGdp - spread), round(y.debtToGdp + spread)] : undefined,
       };
     });
+    // The headline question: when are we debt-free? A zero-crossing inside the
+    // projection wins; otherwise extrapolate the final years' pace beyond 2050.
+    const crossed = years.find((y) => y.debtT <= 0);
+    let debtFree: { year: number; extrapolated: boolean } | null = null;
+    if (crossed) {
+      debtFree = { year: crossed.year, extrapolated: false };
+    } else if (years.length >= 4) {
+      const last = years[years.length - 1];
+      const pace = (last.debtT - years[years.length - 4].debtT) / 3; // $T per year
+      if (pace < -0.01) debtFree = { year: last.year + Math.ceil(last.debtT / -pace), extrapolated: true };
+    }
+    const endRising = !debtFree && years.length >= 2 && years[years.length - 1].debtT >= years[0].debtT;
+
     return (
-      <ChartShell>
-        <ComposedChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.4} />
-          <XAxis dataKey="year" tick={tick} stroke="var(--border)" />
-          <YAxis tick={tick} stroke="var(--border)" unit="%" width={44} />
-          <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${Number(v)}%`} />
-          <Area dataKey="band" stroke="none" fill="#f59e0b" fillOpacity={0.12} name="Uncertainty" />
-          <Line dataKey="debtToGdp" stroke="#f59e0b" strokeWidth={2.5} dot={false} name="Debt / GDP" />
-        </ComposedChart>
-      </ChartShell>
+      <div>
+        {debtFree && !debtFree.extrapolated && (
+          <div className="mb-3 rounded-2xl px-4 py-3 text-center" style={{ background: "#ecfdf5", border: "1px solid #34d399" }}>
+            <div className="text-xl font-bold tabular-nums" style={{ color: "#047857" }}>
+              🎉 Debt-free by {debtFree.year}
+            </div>
+            <div className="text-xs" style={{ color: "#059669" }}>
+              {debtFree.year - start} years from now, on your current settings
+            </div>
+          </div>
+        )}
+        {debtFree && debtFree.extrapolated && (
+          <div className="mb-3 rounded-2xl px-4 py-3 text-center" style={{ background: "#fffbeb", border: "1px solid #f59e0b" }}>
+            <div className="text-lg font-bold tabular-nums" style={{ color: "#b45309" }}>
+              On track: debt-free around {debtFree.year}
+            </div>
+            <div className="text-xs" style={{ color: "#b45309" }}>
+              {debtFree.year - start} years from now, extrapolating today&apos;s pace beyond 2050
+            </div>
+          </div>
+        )}
+        {!debtFree && (
+          <div className="mb-3 rounded-2xl px-4 py-3 text-center" style={{ background: "#fff1f2", border: "1px solid #f43f5e" }}>
+            <div className="text-lg font-bold" style={{ color: "#be123c" }}>
+              Debt-free: never on this path
+            </div>
+            <div className="text-xs" style={{ color: "#be123c" }}>
+              {endRising ? "The debt keeps growing. Pull harder on the levers." : "The debt shrinks but never hits zero — close, keep pushing."}
+            </div>
+          </div>
+        )}
+        <ChartShell>
+          <ComposedChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.4} />
+            <XAxis dataKey="year" tick={tick} stroke="var(--border)" />
+            <YAxis tick={tick} stroke="var(--border)" unit="%" width={44} />
+            <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${Number(v)}%`} />
+            <Area dataKey="band" stroke="none" fill="#f59e0b" fillOpacity={0.12} name="Uncertainty" />
+            <Line dataKey="debtToGdp" stroke="#f59e0b" strokeWidth={2.5} dot={false} name="Debt / GDP" />
+            {debtFree && !debtFree.extrapolated && (
+              <ReferenceLine x={debtFree.year} stroke="#34d399" strokeWidth={2} strokeDasharray="4 3" label={{ value: "$0 debt", fontSize: 11, fill: "#047857", position: "top" }} />
+            )}
+            {debtFree && !debtFree.extrapolated && <ReferenceLine y={0} stroke="#34d399" strokeOpacity={0.5} />}
+          </ComposedChart>
+        </ChartShell>
+      </div>
     );
   }
 
