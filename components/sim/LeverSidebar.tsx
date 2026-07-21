@@ -46,11 +46,15 @@ function rowBorder(last?: boolean) {
 }
 
 function LeverLabel({ lever, cfg }: { lever: Lever; cfg: LeverConfig }) {
+  // Labels wrap to a second line instead of truncating — every lever name
+  // must be readable. Badge and info icon stay pinned beside the first line.
   return (
-    <span className="flex min-w-0 items-center gap-1.5 text-[13px]" style={{ color: C.ink }}>
-      <span className="truncate">{lever.label}</span>
-      <TierBadge lever={lever} />
-      <LeverDetail lever={lever} cfg={cfg} />
+    <span className="flex min-w-0 items-start gap-1.5 text-[13px]" style={{ color: C.ink }}>
+      <span className="min-w-0 leading-snug">{lever.label}</span>
+      <span className="flex shrink-0 items-center gap-1.5 pt-px">
+        <TierBadge lever={lever} />
+        <LeverDetail lever={lever} cfg={cfg} />
+      </span>
     </span>
   );
 }
