@@ -32,27 +32,17 @@ function dialReadout(value: number, unit?: string) {
   return `${value}${unit ?? ""}`;
 }
 
-function TierBadge({ lever }: { lever: Lever }) {
-  const [bg, fg, text] = lever.contested
-    ? ["#FFF4E5", C.amber, "contested"]
-    : lever.tier === "calibrated"
-      ? ["#E7F9EE", C.green, "calibrated"]
-      : ["#E9F2FF", C.accent, "est"];
-  return <span className="rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide" style={{ background: bg, color: fg }}>{text}</span>;
-}
-
 function rowBorder(last?: boolean) {
   return last ? {} : { borderBottom: `1px solid ${C.hair}` };
 }
 
 function LeverLabel({ lever, cfg }: { lever: Lever; cfg: LeverConfig }) {
-  // Labels wrap to a second line instead of truncating — every lever name
-  // must be readable. Badge and info icon stay pinned beside the first line.
+  // Labels wrap instead of truncating, and get the full row width — the
+  // calibrated/contested tier badge lives inside the ⓘ popover (LeverDetail).
   return (
     <span className="flex min-w-0 items-start gap-1.5 text-[13px]" style={{ color: C.ink }}>
       <span className="min-w-0 leading-snug">{lever.label}</span>
-      <span className="flex shrink-0 items-center gap-1.5 pt-px">
-        <TierBadge lever={lever} />
+      <span className="shrink-0 pt-px">
         <LeverDetail lever={lever} cfg={cfg} />
       </span>
     </span>
