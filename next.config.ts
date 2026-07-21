@@ -12,8 +12,16 @@ const nextConfig: NextConfig = {
           destination: "/san-diego",
           has: [{ type: "host" as const, value: "sd.simecon.app" }],
         },
+        {
+          source: "/",
+          destination: "/gap/index.html",
+          has: [{ type: "host" as const, value: "gap.simecon.app" }],
+        },
       ],
-      afterFiles: [],
+      afterFiles: [
+        // public/ files don't auto-serve index.html, so give THE GAP a clean path
+        { source: "/gap", destination: "/gap/index.html" },
+      ],
       fallback: [],
     };
   },

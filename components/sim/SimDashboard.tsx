@@ -59,6 +59,9 @@ export function SimDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <a href="/gap" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
+            THE GAP →
+          </a>
           <Link href="/san-diego" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
             San Diego edition →
           </Link>

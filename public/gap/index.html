@@ -1,0 +1,1707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>THE GAP — a game about numbers you can't feel</title>
+<style>
+/* ============================================================
+   THE GAP — single-file wealth inequality game
+   No fonts, no CDNs, no fetch. Works offline.
+   ============================================================ */
+:root{
+  --bg:#0a0e14; --bg2:#101623; --panel:#141c2b; --line:#223047;
+  --txt:#e8eef7; --dim:#8fa0b8; --faint:#57657d;
+  --c1:#38e1ff; --c2:#43e97b; --c3:#ff5c47; --gold:#ffd166;
+  --accent:var(--c1);
+  --maxw:720px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  line-height:1.45; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body[data-act="1"]{--accent:var(--c1)}
+body[data-act="2"]{--accent:var(--c2)}
+body[data-act="3"]{--accent:var(--c3)}
+
+/* ---------- header ---------- */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px calc(10px);
+  background:linear-gradient(to bottom, rgba(10,14,20,.96), rgba(10,14,20,.82) 70%, transparent);
+  pointer-events:none;
+}
+header > *{pointer-events:auto}
+.brand{font-weight:900; letter-spacing:.06em; font-size:14px; color:var(--txt); white-space:nowrap}
+.brand em{font-style:normal;color:var(--accent)}
+.dots{display:flex; gap:4px; flex:1; min-width:0; justify-content:center}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s, transform .3s}
+.dot.done{background:var(--dim)}
+.dot.now{background:var(--accent); transform:scale(1.5)}
+.regionToggle{
+  display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden;
+  font-size:12px; font-weight:700; cursor:pointer; user-select:none; flex:none;
+}
+.regionToggle span{padding:4px 10px; color:var(--dim)}
+.regionToggle span.on{background:var(--accent); color:#04121a}
+.regionToggle.pinned{opacity:.55}
+.ticker{
+  position:fixed; bottom:10px; right:12px; z-index:50;
+  font-variant-numeric:tabular-nums; font-size:11px; color:var(--faint);
+  background:rgba(10,14,20,.7); border:1px solid var(--line);
+  padding:3px 9px; border-radius:999px; letter-spacing:.03em;
+}
+
+/* ---------- stage / screens ---------- */
+main{min-height:100svh; display:flex; flex-direction:column}
+.screen{
+  flex:1; width:100%; max-width:var(--maxw); margin:0 auto;
+  padding:74px 20px 90px; display:flex; flex-direction:column; justify-content:center;
+  animation:enter .5s ease both;
+}
+@keyframes enter{from{opacity:0; transform:translateY(14px)}to{opacity:1;transform:none}}
+.kicker{
+  color:var(--accent); font-weight:800; letter-spacing:.18em; font-size:12px;
+  text-transform:uppercase; margin-bottom:10px;
+}
+h1{font-size:clamp(34px,7vw,64px); font-weight:900; line-height:1.05; letter-spacing:-.01em}
+h2{font-size:clamp(24px,5vw,40px); font-weight:900; line-height:1.1}
+.lead{color:var(--dim); font-size:clamp(15px,2.4vw,18px); margin-top:12px; max-width:56ch}
+.hero-num{
+  font-size:clamp(46px,11vw,120px); font-weight:900; line-height:1;
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em; color:var(--accent);
+  margin:8px 0; overflow-wrap:anywhere;
+}
+.sub-num{font-size:clamp(20px,4vw,30px); font-weight:800; font-variant-numeric:tabular-nums}
+.note{color:var(--faint); font-size:13px; margin-top:10px}
+.punch{
+  margin-top:18px; padding:14px 16px; border-left:3px solid var(--accent);
+  background:var(--bg2); border-radius:0 10px 10px 0;
+  font-size:clamp(15px,2.6vw,18px);
+}
+.punch b{color:var(--accent)}
+
+/* ---------- controls ---------- */
+.btn{
+  appearance:none; border:0; cursor:pointer; font:inherit; font-weight:900;
+  background:var(--accent); color:#06131b; padding:14px 26px; border-radius:12px;
+  font-size:17px; letter-spacing:.02em; margin-top:22px; align-self:flex-start;
+  transition:transform .1s, filter .15s;
+}
+.btn:active{transform:scale(.97)}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent; color:var(--accent); border:1.5px solid var(--accent)}
+.btn.small{padding:9px 16px; font-size:14px; margin-top:12px}
+.btnrow{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+.choices{display:flex; flex-direction:column; gap:10px; margin-top:20px}
+.choice{
+  border:1.5px solid var(--line); background:var(--panel); color:var(--txt);
+  padding:14px 18px; border-radius:12px; font:inherit; font-size:16px; font-weight:700;
+  cursor:pointer; text-align:left; transition:border-color .15s, background .15s;
+}
+.choice:hover{border-color:var(--accent)}
+.choice.picked{border-color:var(--accent); background:var(--bg2)}
+input[type=range]{
+  width:100%; margin:26px 0 6px; accent-color:var(--accent); height:34px; cursor:pointer;
+}
+.slider-read{
+  font-size:clamp(26px,6vw,44px); font-weight:900; color:var(--accent);
+  font-variant-numeric:tabular-nums; min-height:1.2em;
+}
+input[type=text],input[type=number]{
+  font:inherit; font-size:18px; font-weight:700; color:var(--txt);
+  background:var(--panel); border:1.5px solid var(--line); border-radius:10px;
+  padding:12px 14px; width:100%; max-width:280px;
+}
+input:focus{outline:2px solid var(--accent); border-color:transparent}
+.presets{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.preset{
+  font-size:13px; font-weight:700; color:var(--dim); background:var(--panel);
+  border:1px solid var(--line); border-radius:999px; padding:6px 12px; cursor:pointer;
+}
+.preset.on,.preset:hover{color:var(--accent); border-color:var(--accent)}
+
+/* ---------- guess / reveal ---------- */
+.reveal{animation:pop .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{opacity:0; transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.guess-pin{
+  display:inline-block; font-size:13px; font-weight:800; color:var(--bg);
+  background:var(--dim); padding:3px 10px; border-radius:999px; margin-bottom:6px;
+}
+.vs-row{display:flex; gap:22px; margin-top:16px; flex-wrap:wrap}
+.vs-row > div{flex:1; min-width:180px}
+.vs-label{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:800}
+
+/* ---------- source chips ---------- */
+.chip{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:700; color:var(--dim);
+  border:1px solid var(--line); border-radius:999px; padding:3px 10px;
+  cursor:pointer; margin:14px 8px 0 0; user-select:none; background:rgba(20,28,43,.6);
+}
+.chip:hover{color:var(--accent); border-color:var(--accent)}
+.chip::before{content:"ⓘ"; font-size:12px}
+.chippop{
+  position:fixed; z-index:90; max-width:320px; background:var(--panel);
+  border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:13px;
+  color:var(--txt); box-shadow:0 12px 40px rgba(0,0,0,.5);
+}
+.chippop .cs{color:var(--faint); font-size:11px; margin-top:6px; display:block}
+.chiprow{display:flex; flex-wrap:wrap}
+
+/* ---------- box fields (unit-square engine) ---------- */
+.boxfield{
+  display:grid; gap:2px; margin-top:16px;
+  grid-template-columns:repeat(var(--cols,10),1fr);
+  width:min(100%, 520px);
+}
+.boxfield .bx{
+  aspect-ratio:1; background:var(--accent); border-radius:2px;
+  animation:bxin .3s ease both;
+}
+.boxfield .bx.gold{background:var(--gold)}
+.boxfield .bx.dim{background:var(--line)}
+.boxfield .bx.out{outline:1.5px solid var(--accent); outline-offset:-1.5px; background:transparent}
+@keyframes bxin{from{opacity:0; transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.megawrap{
+  position:relative; margin-top:16px; max-height:440px; overflow-y:auto;
+  border-radius:8px; border:1px solid var(--line); overscroll-behavior:contain;
+}
+.megafield{
+  width:100%;
+  background-image:
+    linear-gradient(to right, var(--bg) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bg) 1px, transparent 1px),
+    linear-gradient(var(--accent), var(--accent));
+  background-size:var(--cell,6px) var(--cell,6px), var(--cell,6px) var(--cell,6px), 100% 100%;
+}
+.megawrap .cap{
+  position:sticky; bottom:8px; margin:0 8px 8px auto; width:max-content; max-width:90%;
+  display:block; font-size:12px; font-weight:800;
+  background:rgba(10,14,20,.9); padding:4px 12px; border-radius:999px; color:var(--txt);
+  border:1px solid var(--line);
+}
+.fieldlabel{margin-top:8px; font-size:14px; color:var(--dim); font-weight:700}
+.fieldlabel b{color:var(--accent)}
+
+/* ---------- odometers / race ---------- */
+.race{display:flex; gap:14px; margin-top:20px; flex-wrap:wrap}
+.race .lane{
+  flex:1; min-width:230px; background:var(--panel); border:1px solid var(--line);
+  border-radius:14px; padding:16px;
+}
+.race .lane h4{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim)}
+.odo{
+  font-size:clamp(26px,5.4vw,42px); font-weight:900; font-variant-numeric:tabular-nums;
+  margin-top:8px; letter-spacing:-.01em;
+}
+.lane.you .odo{color:var(--txt)}
+.lane.him .odo{color:var(--c2)}
+.lane .per{font-size:12px; color:var(--faint); margin-top:4px}
+.lane.overdrive{box-shadow:0 0 0 1.5px var(--c3) inset}
+.lane.overdrive .odo{color:var(--c3)}
+
+/* ---------- banquet ---------- */
+.icons{display:flex; flex-wrap:wrap; gap:3px; margin-top:14px}
+.person{width:14px; height:22px; position:relative; opacity:.9}
+.person::before{content:""; position:absolute; top:0; left:4px; width:6px; height:6px; border-radius:50%; background:currentColor}
+.person::after{content:""; position:absolute; top:7px; left:2.5px; width:9px; height:14px; border-radius:4px 4px 2px 2px; background:currentColor}
+.wealthbar{display:flex; height:34px; border-radius:8px; overflow:hidden; margin-top:16px; width:100%}
+.wealthbar > div{transition:width 1s cubic-bezier(.2,.9,.3,1); position:relative; min-width:0}
+.seglabel{font-size:11px; font-weight:800; color:var(--dim); display:flex; justify-content:space-between; margin-top:6px; gap:6px; flex-wrap:wrap}
+
+/* ---------- outline (wealth vs income) ---------- */
+.outlinewrap{display:flex; gap:26px; margin-top:20px; flex-wrap:wrap; align-items:flex-end}
+.owbox{position:relative; border:2px solid var(--accent); border-radius:6px; flex:none}
+.owfill{position:absolute; bottom:0; left:0; right:0; background:var(--accent); opacity:.85; border-radius:0 0 4px 4px; transition:height .5s ease}
+.owlab{font-size:12px; color:var(--dim); font-weight:700; margin-top:8px; max-width:180px}
+
+/* ---------- spend it ---------- */
+.spendgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:18px}
+.buy{
+  background:var(--panel); border:1.5px solid var(--line); border-radius:12px;
+  padding:12px; cursor:pointer; font:inherit; color:var(--txt); text-align:left;
+  transition:border-color .15s, transform .1s;
+}
+.buy:hover{border-color:var(--c2)}
+.buy:active{transform:scale(.96)}
+.buy .bi{font-size:22px}
+.buy .bn{font-weight:800; font-size:14px; margin-top:4px}
+.buy .bp{color:var(--c2); font-weight:900; font-size:13px; font-variant-numeric:tabular-nums}
+.buy .bought{color:var(--faint); font-size:11px; font-weight:700}
+.spendbar{height:26px; border-radius:8px; background:var(--line); overflow:hidden; margin-top:18px; position:relative}
+.spendbar .left{height:100%; background:var(--c2); transition:width .3s ease}
+.spendstats{display:flex; justify-content:space-between; font-size:13px; font-weight:800; margin-top:8px; font-variant-numeric:tabular-nums; flex-wrap:wrap; gap:8px}
+.gain{color:var(--c2)} .spent{color:var(--c3)}
+
+/* ---------- tax drain ---------- */
+.drainrow{display:flex; gap:26px; margin-top:20px; flex-wrap:wrap}
+.draincol{flex:1; min-width:230px}
+.drainfield{display:grid; grid-template-columns:repeat(10,1fr); gap:2px; width:min(100%,300px)}
+.drainfield .bx{aspect-ratio:1; background:var(--accent); border-radius:2px; transition:transform .7s ease, opacity .7s ease}
+.drainfield .bx.gone{transform:translateY(46px) rotate(12deg); opacity:0}
+.rate-big{font-size:clamp(30px,6vw,52px); font-weight:900; font-variant-numeric:tabular-nums}
+
+/* ---------- comic / cards ---------- */
+.panelcard{
+  background:var(--panel); border:1px solid var(--line); border-radius:16px;
+  padding:20px; margin-top:16px;
+}
+.panelcard h3{font-size:20px; font-weight:900; margin-bottom:6px}
+.panelcard h3 .step{color:var(--accent)}
+.panelcard p{color:var(--dim); font-size:15px}
+.diagram{margin:14px 0 4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight:800; font-size:14px}
+.diagram .dbox{border:2px solid var(--accent); border-radius:6px; padding:8px 12px}
+.diagram .dfill{background:var(--accent); color:#06131b; border-radius:6px; padding:8px 12px}
+.diagram .arrow{color:var(--faint); font-size:18px}
+
+/* ---------- levers ---------- */
+.lever{margin-top:22px}
+.lever .lhead{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap}
+.lever .lname{font-weight:800; font-size:15px}
+.lever .lval{font-weight:900; color:var(--accent); font-variant-numeric:tabular-nums; font-size:18px}
+.tradeoffs{display:flex; flex-direction:column; gap:10px; margin-top:18px}
+.tcard{
+  background:var(--bg2); border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:0 12px 12px 0; padding:12px 14px; font-size:15px;
+}
+.tcard b{color:var(--accent); font-variant-numeric:tabular-nums}
+
+/* ---------- finale / misc ---------- */
+.replay{display:flex; flex-direction:column; gap:8px; margin-top:18px}
+.rrow{
+  display:flex; justify-content:space-between; gap:10px; background:var(--panel);
+  border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px;
+  font-weight:700; flex-wrap:wrap;
+}
+.rrow .g{color:var(--dim)} .rrow .a{color:var(--accent); font-variant-numeric:tabular-nums}
+.bigwrap{text-align:center; margin:10px 0}
+.timeline{position:relative; height:70px; margin-top:24px; border-bottom:2px solid var(--line)}
+.tmark{position:absolute; bottom:0; transform:translateX(-50%); text-align:center; font-size:11px; color:var(--faint); font-weight:700; white-space:nowrap}
+.tmark::after{content:""; display:block; width:2px; height:10px; background:var(--faint); margin:4px auto 0}
+.tmark.hot{color:var(--accent)} .tmark.hot::after{background:var(--accent)}
+.sandnav{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px}
+.sandsec{margin-top:26px; border-top:1px solid var(--line); padding-top:18px}
+select{
+  font:inherit; font-weight:700; font-size:16px; color:var(--txt);
+  background:var(--panel); border:1.5px solid var(--line); border-radius:10px; padding:10px 14px;
+}
+.statgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:16px}
+.stat{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px}
+.stat .sv{font-size:clamp(20px,4vw,30px); font-weight:900; color:var(--accent); font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+.stat .sl{font-size:12px; color:var(--dim); font-weight:700; margin-top:4px}
+.asof{margin-top:26px; font-size:12px; color:var(--faint)}
+.skipline{margin-top:16px}
+.skipline a{color:var(--faint); font-size:13px; cursor:pointer; text-decoration:underline}
+
+/* ---------- present mode / responsive / motion ---------- */
+body.present .chip{font-size:0; padding:6px}
+body.present .chip::before{font-size:14px}
+body.present{--maxw:980px}
+body.present h1{font-size:clamp(44px,8vw,96px)}
+body.present .hero-num{font-size:clamp(60px,13vw,170px)}
+@media (max-width:480px){
+  .screen{padding:64px 16px 80px}
+  .btn{width:100%; text-align:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s !important; transition-duration:.001s !important}
+}
+</style>
+</head>
+<body data-act="0">
+<header>
+  <div class="brand">THE <em>GAP</em></div>
+  <div class="dots" id="dots"></div>
+  <div class="regionToggle" id="regionToggle" title="Switch dataset">
+    <span data-r="us" class="on">🇺🇸 US</span><span data-r="global">🌍 World</span>
+  </div>
+</header>
+<div class="ticker" id="ticker" title="Elapsed session time">0:00</div>
+<main id="stage"></main>
+<script>
+"use strict";
+/* ================================================================
+   DATA — every number carries a source. Frozen July 17, 2026.
+   ================================================================ */
+const DATA = {
+  asOf: "July 2026",
+  sources: {
+    bls:   {name:"BLS — Usual Weekly Earnings of Wage and Salary Workers, Q1 2026", url:"https://www.bls.gov/news.release/wkyeng.nr0.htm", asOf:"Q1 2026"},
+    scf:   {name:"Federal Reserve — Survey of Consumer Finances 2022 (latest release)", url:"https://www.federalreserve.gov/econres/scfindex.htm", asOf:"2022"},
+    z1:    {name:"Federal Reserve — Z.1 Financial Accounts of the United States", url:"https://www.federalreserve.gov/releases/z1/", asOf:"Q4 2025"},
+    dfa:   {name:"Federal Reserve — Distributional Financial Accounts", url:"https://www.federalreserve.gov/releases/efa/efa-distributional-financial-accounts.htm", asOf:"Q1 2026"},
+    forbes:{name:"Forbes — World's Billionaires / Real-Time Billionaires", url:"https://www.forbes.com/real-time-billionaires/", asOf:"July 1, 2026"},
+    oecd:  {name:"OECD — Taxing Wages 2025 (average single worker, income tax + employee social security)", url:"https://www.oecd.org/en/publications/taxing-wages-2025_b3a95829-en.html", asOf:"2024 data"},
+    propublica:{name:"ProPublica — “The Secret IRS Files” (true tax rate = tax paid ÷ wealth growth, 2014–2018)", url:"https://www.propublica.org/article/the-secret-irs-files-trove-of-never-before-seen-records-reveal-how-the-wealthiest-avoid-income-tax", asOf:"June 2021"},
+    sp500: {name:"S&P 500 long-run annualized total return since 1957 (~10.4% nominal)", url:"https://www.officialdata.org/us/stocks/s-p-500/1957", asOf:"through 2025"},
+    ubs:   {name:"UBS — Global Wealth Report 2026", url:"https://www.ubs.com/global/en/family-office-uhnw/reports/global-wealth-report-2026.html", asOf:"June 2026"},
+    wid:   {name:"World Inequality Database / World Inequality Report", url:"https://wid.world/", asOf:"2025 update"},
+    na:    {name:"Norton & Ariely 2011 — “Building a Better America: One Wealth Quintile at a Time,” Perspectives on Psychological Science", url:"https://doi.org/10.1177/1745691610393524", asOf:"2011"},
+    est:   {name:"Ballpark program-cost estimates (USDA school-meal outlays, CBO tables, agency budgets) — rounded, first-order", url:"https://www.cbo.gov/", asOf:"2025–2026"},
+    div:   {name:"High-dividend index funds historically yield ~3.5–4.5% (e.g. SCHD-class); 4% sustainable-withdrawal rule (Trinity study)", url:"https://www.schwabassetmanagement.com/products/schd", asOf:"2026"}
+  },
+  us: {
+    medianWage: 64220,          // $/yr, BLS Q1 2026 ($1,235/wk)
+    medianWageSrc: "bls",
+    medianNetWorth: 192700,     // SCF 2022
+    meanNetWorth: 1063700,      // SCF 2022
+    totalWealth: 184.1e12,      // Z.1 Q4 2025
+    top01Share: .144, top1Share: .316, top10Share: .67, bottom50Share: .025, // DFA Q1 2026
+    top01Households: 132000, bottom50Households: 66.2e6,
+    bottom50People: 165e6,
+    workerTaxRate: .244,        // OECD net average tax rate, single worker
+    top1Entry: 13.7e6           // approx net worth to enter top 1% (SCF/DFA-derived)
+  },
+  global: {
+    medianNetWorth: 8650,       // global median adult wealth (UBS/CS series)
+    totalWealth: 500e12,        // UBS GWR 2026: >$500T
+    apexShare: .45, apexPct: .016, apexAdults: 60e6,   // 1.6% of adults own ~45% ($226T)
+    bottom41Share: .01,         // 41% of adults hold <1%
+    top1Share: .37, bottom50Share: .02,                // WID
+    adults: 3.8e9,
+    billionaires: 3428, billionaireWealth: 20.1e12     // Forbes 2026: ≈4% of global wealth
+  },
+  billionaires: [ // Forbes, July 1 2026
+    {name:"Elon Musk",        worth:1.053e12, note:"first trillionaire in history — +$218B in 30 days (June 2026)"},
+    {name:"Larry Page",       worth:291e9},
+    {name:"Sergey Brin",      worth:269e9},
+    {name:"Jeff Bezos",       worth:249e9},
+    {name:"Mark Zuckerberg",  worth:241e9},
+    {name:"Michael Dell",     worth:220e9},
+    {name:"Larry Ellison",    worth:190e9},
+    {name:"Warren Buffett",   worth:147.8e9}
+  ],
+  muskJuneGainPerSec: 218e9/(30*86400),     // ≈ $84,100/sec, actual June 2026
+  marketReturn: .104,                        // S&P nominal, long run
+  trueTaxRates: [                            // ProPublica 2014–2018; Musk first — he's the archetype
+    {name:"Elon Musk",      rate:.0327, extra:"wealth grew $13.9B; paid $455M — and $0 federal income tax in 2018"},
+    {name:"Michael Bloomberg", rate:.013},
+    {name:"Jeff Bezos",     rate:.0098, extra:"paid $0 federal income tax in 2007 and 2011"},
+    {name:"Warren Buffett", rate:.001,  extra:"wealth grew $24.3B; paid $23.7M — the record: 244× less than the nurse"},
+    {name:"Top 25 wealthiest combined", rate:.034, extra:"wealth grew $401B; paid $13.6B"}
+  ],
+  nortonAriely: {guessedTop20:.59, idealTop20:.32, actualTop20:.84},
+  dfaHistory: [ // top-1% share of US household wealth, approx DFA keyframes
+    [1989,.228],[1994,.240],[1999,.255],[2004,.259],[2009,.265],[2014,.290],[2019,.299],[2023,.305],[2026,.316]
+  ],
+  enoughBox: 100e6, // $100M = "dynastic: never work again, forever"
+  wealthPerRicheLife: 3e6,   // $3M in dividend funds ≈ $120k/yr forever, principal intact
+  divIncome: 120000,
+  purchases: [
+    {icon:"🛥️", name:"Gigayacht",              price:500e6},
+    {icon:"🏈", name:"NFL team",                price:7e9},
+    {icon:"🏝️", name:"Private island",          price:150e6},
+    {icon:"🏎️", name:"Bugatti",                 price:4e6},
+    {icon:"🏙️", name:"Manhattan skyscraper",    price:2e9},
+    {icon:"✈️", name:"Boeing 747 (private)",     price:400e6},
+    {icon:"🎨", name:"Da Vinci painting",        price:450e6},
+    {icon:"⚽", name:"Premier League club",      price:3e9},
+    {icon:"🚀", name:"Your own rocket launch",   price:100e6},
+    {icon:"🍾", name:"$10M party, every night for a year", price:3.65e9}
+  ],
+  tradeoffPrograms: [ // ballpark annual costs, source: est
+    {name:"free school meals for every US child", cost:25e9},
+    {name:"tuition-free public college", cost:80e9},
+    {name:"ending US homelessness (housing-first estimates)", cost:20e9},
+    {name:"NASA’s entire annual budget", cost:25e9}
+  ],
+  // approx US household net-worth percentiles (SCF 2022, interpolated)
+  nwPercentiles: [[0,.08],[1000,.13],[10000,.22],[50000,.33],[122000,.43],[192700,.50],[400000,.64],[659000,.75],[1.06e6,.82],[1.56e6,.90],[3.2e6,.95],[13.7e6,.99],[50e6,.9995],[1e9,.999999]]
+};
+
+/* ================================================================
+   fmt — number formatting
+   ================================================================ */
+const fmt = {
+  money(n){ return "$" + Math.round(n).toLocaleString("en-US"); },
+  money2(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2}); },
+  big(n){
+    const a = Math.abs(n);
+    if (a >= 1e12) return "$" + trim(n/1e12) + "T";
+    if (a >= 1e9)  return "$" + trim(n/1e9)  + "B";
+    if (a >= 1e6)  return "$" + trim(n/1e6)  + "M";
+    if (a >= 1e3)  return "$" + trim(n/1e3)  + "k";
+    return fmt.money(n);
+    function trim(x){ return (Math.round(x*100)/100).toLocaleString("en-US",{maximumFractionDigits: x<10?2: x<100?1:0}); }
+  },
+  years(y){
+    if (y >= 1e6) return (Math.round(y/1e5)/10).toLocaleString() + " million years";
+    if (y >= 1e3) return Math.round(y/100)*100 >= 10000 ? Math.round(y/1000).toLocaleString()+",000 years" : Math.round(y).toLocaleString()+" years";
+    return Math.round(y).toLocaleString() + " years";
+  },
+  pct(p, d=1){ return (p*100).toFixed(d).replace(/\.0+$/,"") + "%"; },
+  clock(sec){
+    const m = Math.floor(sec/60), s = Math.floor(sec%60);
+    return m + ":" + String(s).padStart(2,"0");
+  }
+};
+
+/* ================================================================
+   state + persistence
+   ================================================================ */
+const state = {
+  screen: 0,
+  region: "us",             // 'us' | 'global'
+  playerIncome: DATA.us.medianWage,
+  playerIncomeCustom: false,
+  playerNetWorth: null,
+  guesses: {},              // beatId -> {guess, actual, label}
+  sessionStart: performance.now(),
+  sandboxUnlocked: false
+};
+const persist = {
+  KEY: "thegap.v1",
+  load(){
+    try{
+      const raw = localStorage.getItem(this.KEY);
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      // validate persisted values — treat storage as untrusted input
+      state.sandboxUnlocked = d.sandboxUnlocked === true;
+      if (d.region === "us" || d.region === "global") state.region = d.region;
+      const inc = Number(d.playerIncome);
+      if (Number.isFinite(inc) && inc >= 1000 && inc <= 1e9){
+        state.playerIncome = inc; state.playerIncomeCustom = d.playerIncomeCustom === true;
+      }
+    }catch(e){/* storage blocked (artifact iframe) — in-memory only */}
+  },
+  save(){
+    try{
+      localStorage.setItem(this.KEY, JSON.stringify({
+        sandboxUnlocked: state.sandboxUnlocked,
+        region: state.region,
+        playerIncome: state.playerIncome,
+        playerIncomeCustom: state.playerIncomeCustom
+      }));
+    }catch(e){}
+  }
+};
+
+/* ================================================================
+   anim — one rAF manager
+   ================================================================ */
+const anim = {
+  handles: new Set(),
+  reduced: matchMedia("(prefers-reduced-motion: reduce)").matches,
+  raf(fn){
+    let id, live = true;
+    const step = (t)=>{ if(!live) return; if (fn(t) !== false) id = requestAnimationFrame(step); };
+    id = requestAnimationFrame(step);
+    const h = {stop(){ live=false; cancelAnimationFrame(id); anim.handles.delete(h); }};
+    this.handles.add(h);
+    return h;
+  },
+  stopAll(){ [...this.handles].forEach(h=>h.stop()); },
+  tween(from, to, ms, onUpdate, ease = t=>1-Math.pow(1-t,3), onDone){
+    if (this.reduced) ms = 1;
+    const t0 = performance.now();
+    return this.raf(now=>{
+      const p = Math.min(1,(now-t0)/ms);
+      onUpdate(from + (to-from)*ease(p), p);
+      if (p >= 1){ onDone && onDone(); return false; }
+    });
+  },
+  odometer(el, valueFn, fmtFn = fmt.money){
+    return this.raf(()=>{ el.textContent = fmtFn(valueFn()); });
+  }
+};
+
+/* ================================================================
+   dom helpers
+   ================================================================ */
+function h(tag, attrs, ...kids){
+  const el = document.createElement(tag);
+  if (attrs) for (const [k,v] of Object.entries(attrs)){
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "style") el.style.cssText = v;
+    else el.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()){
+    if (kid == null) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(kid));
+  }
+  return el;
+}
+function chip(srcId, label){
+  const s = DATA.sources[srcId];
+  if (!s) return null;
+  const c = h("span", {class:"chip", role:"button", tabindex:"0"}, label || s.name.split("—")[0].trim());
+  const open = (ev)=>{
+    document.querySelectorAll(".chippop").forEach(p=>p.remove());
+    const pop = h("div",{class:"chippop"},
+      h("div",{}, s.name),
+      h("span",{class:"cs"}, "As of " + s.asOf + " · " + s.url)
+    );
+    document.body.append(pop);
+    const r = c.getBoundingClientRect();
+    pop.style.left = Math.min(innerWidth - pop.offsetWidth - 10, Math.max(10, r.left)) + "px";
+    pop.style.top = (r.top > innerHeight/2 ? r.top - pop.offsetHeight - 8 : r.bottom + 8) + "px";
+    setTimeout(()=>addEventListener("click", function h2(e){ if(!pop.contains(e.target)){ pop.remove(); removeEventListener("click",h2);} }), 0);
+    ev.stopPropagation();
+  };
+  c.addEventListener("click", open);
+  c.addEventListener("keydown", e=>{ if(e.key==="Enter") open(e); });
+  return c;
+}
+function chips(...ids){ return h("div",{class:"chiprow"}, ids.map(id=>chip(id))); }
+
+/* Unit-square renderers */
+function boxGrid(n, opts = {}){
+  // literal DOM boxes — for counts the eye can actually read (≤ ~2500)
+  const cols = opts.cols || Math.min(50, Math.ceil(Math.sqrt(n*2)));
+  const g = h("div",{class:"boxfield", style:`--cols:${cols}`});
+  for (let i=0;i<n;i++){
+    const b = h("div",{class:"bx" + (opts.cls ? " "+opts.cls(i) : "")});
+    if (!anim.reduced && n <= 400) b.style.animationDelay = (i * Math.min(3, 600/n)) + "ms";
+    g.append(b);
+  }
+  return g;
+}
+function megaField(n, opts = {}){
+  // virtualized: CSS grid texture sized by count — for thousands to millions.
+  // The full field can be tens of thousands of px tall; it lives inside a
+  // scrollable viewport with a depth meter, so scrolling through it IS the beat.
+  const cell = opts.cell || 6;
+  const label = opts.label || n.toLocaleString() + " boxes";
+  const field = h("div",{class:"megafield", style:`--cell:${cell}px`});
+  const depth = h("div",{class:"cap"}, label);
+  const wrap = h("div",{class:"megawrap"}, field, depth);
+  requestAnimationFrame(()=>{
+    const cols = Math.max(1, Math.floor(field.clientWidth / cell));
+    const hpx = Math.max(cell, Math.ceil(n / cols) * cell);
+    field.style.height = hpx + "px";
+    if (hpx > wrap.clientHeight + 20){
+      const update = ()=>{
+        const p = Math.min(100, (wrap.scrollTop + wrap.clientHeight) / hpx * 100);
+        depth.textContent = p >= 99.9 ? label + " — that's all of it."
+          : label + " — you've seen " + p.toFixed(p < 10 ? 1 : 0) + "%. Keep scrolling.";
+      };
+      wrap.addEventListener("scroll", update);
+      update();
+    }
+  });
+  return wrap;
+}
+
+/* Guess storage */
+function recordGuess(beatId, label, guess, actual, fmtFn){
+  state.guesses[beatId] = {label, guess, actual, fmt: fmtFn};
+}
+
+/* Share cards — canvas PNG per beat */
+function shareCard(title, stat, sub){
+  const c = document.createElement("canvas");
+  c.width = 1080; c.height = 1080;
+  const x = c.getContext("2d");
+  x.fillStyle = "#0a0e14"; x.fillRect(0,0,1080,1080);
+  const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#38e1ff";
+  x.fillStyle = accent; x.fillRect(0,0,1080,14);
+  x.font = "900 44px system-ui"; x.fillStyle = "#8fa0b8";
+  x.fillText("THE GAP", 70, 130);
+  x.fillStyle = "#e8eef7"; x.font = "900 64px system-ui";
+  wrap(title, 70, 250, 940, 76);
+  x.fillStyle = accent; x.font = "900 130px system-ui";
+  wrap(stat, 70, 560, 940, 140);
+  x.fillStyle = "#8fa0b8"; x.font = "700 40px system-ui";
+  wrap(sub || "", 70, 840, 940, 54);
+  x.fillStyle = "#57657d"; x.font = "700 30px system-ui";
+  x.fillText("Real data · " + DATA.asOf + " · sources in game", 70, 1020);
+  function wrap(text, tx, ty, maxW, lh){
+    const words = String(text).split(" "); let line = "", y = ty;
+    for (const w of words){
+      if (x.measureText(line + w).width > maxW){ x.fillText(line, tx, y); line = w + " "; y += lh; }
+      else line += w + " ";
+    }
+    x.fillText(line, tx, y);
+  }
+  c.toBlob(async blob=>{
+    const file = new File([blob], "the-gap.png", {type:"image/png"});
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file], title:"THE GAP"}); return; }catch(e){}
+    }
+    const a = h("a",{href:URL.createObjectURL(blob), download:"the-gap.png"});
+    document.body.append(a); a.click(); a.remove();
+  });
+}
+function shareBtn(title, statFn, sub){
+  return h("button",{class:"btn ghost small", onclick:()=>shareCard(title, statFn(), sub)}, "📤 share this stat");
+}
+/* ================================================================
+   navigation — linear journey, then hub
+   ================================================================ */
+const stage = document.getElementById("stage");
+const SCREENS = []; // filled below; {id, act, render(el), noDot?}
+function S(id, act, render, noDot){ SCREENS.push({id, act, render, noDot}); }
+function idx(id){ return SCREENS.findIndex(s=>s.id===id); }
+
+function go(id){
+  anim.stopAll();
+  document.querySelectorAll(".chippop").forEach(p=>p.remove());
+  const i = typeof id === "number" ? id : idx(id);
+  const scr = SCREENS[i];
+  if (!scr) return;
+  state.screen = i;
+  document.body.dataset.act = scr.act;
+  stage.innerHTML = "";
+  const el = h("section",{class:"screen", "data-id":scr.id});
+  stage.append(el);
+  scr.render(el);
+  renderDots();
+  scrollTo(0,0);
+  persist.save();
+}
+function next(){ go(state.screen + 1); }
+function nextBtn(label){ return h("button",{class:"btn", onclick:next}, label || "Continue →"); }
+
+function renderDots(){
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+  SCREENS.forEach((s,i)=>{
+    if (s.noDot) return;
+    dots.append(h("div",{class:"dot" + (i<state.screen?" done": i===state.screen?" now":"")}));
+  });
+}
+
+/* region toggle */
+function R(){ return DATA[state.region]; }
+const regionToggle = document.getElementById("regionToggle");
+regionToggle.addEventListener("click", ()=>{
+  if (regionToggle.classList.contains("pinned")) return;
+  state.region = state.region === "us" ? "global" : "us";
+  regionToggle.querySelectorAll("span").forEach(s=>s.classList.toggle("on", s.dataset.r===state.region));
+  go(state.screen);
+});
+function syncRegionUI(pinned){
+  regionToggle.classList.toggle("pinned", !!pinned);
+  regionToggle.title = pinned ? "This screen uses US-only data (ProPublica leak covers US filers)" : "Switch dataset";
+  regionToggle.querySelectorAll("span").forEach(s=>s.classList.toggle("on", s.dataset.r===state.region));
+}
+
+/* session ticker */
+const tickerEl = document.getElementById("ticker");
+setInterval(()=>{ tickerEl.textContent = fmt.clock((performance.now()-state.sessionStart)/1000); }, 1000);
+function sessionSeconds(){ return (performance.now()-state.sessionStart)/1000; }
+
+/* derived values */
+const musk = DATA.billionaires[0];
+const D = {
+  muskYearsToEarn: ()=> musk.worth / state.playerIncome,
+  muskPerSecMarket: ()=> musk.worth * DATA.marketReturn / (365.25*86400),   // ≈$3,470/s at median... constant
+  youPerWorkSec: ()=> state.playerIncome / (2087*3600),                      // on the clock
+  youPerCalSec: ()=> state.playerIncome / (365.25*86400),
+  salaryEverySec: ()=> state.playerIncome / (musk.worth*DATA.marketReturn/(365.25*86400)),
+  enoughBoxes: ()=> Math.round(musk.worth / DATA.enoughBox),
+  percentile(nw){
+    const P = DATA.nwPercentiles;
+    if (nw <= P[0][0]) return P[0][1];
+    for (let i=1;i<P.length;i++){
+      if (nw <= P[i][0]){
+        const [x0,y0] = P[i-1], [x1,y1] = P[i];
+        return y0 + (y1-y0)*(nw-x0)/(x1-x0);
+      }
+    }
+    return .999999;
+  }
+};
+
+/* ================================================================
+   SCREENS
+   ================================================================ */
+
+/* ---------- INTRO ---------- */
+S("intro", 0, el=>{
+  syncRegionUI(false);
+  const presets = [
+    {label:"Minimum wage ($15,080)", v:15080},
+    {label:"US median ($64,220)", v:DATA.us.medianWage},
+    {label:"$100k", v:100000},
+    {label:"$250k", v:250000}
+  ];
+  const input = h("input",{type:"number", placeholder:"Your yearly income ($)", min:"1000",
+    oninput:e=>{ const v=+e.target.value; if(v>=1000){ state.playerIncome=v; state.playerIncomeCustom=true; presetRow.querySelectorAll(".preset").forEach(p=>p.classList.remove("on")); } }});
+  const presetRow = h("div",{class:"presets"}, presets.map(p=>
+    h("span",{class:"preset"+(p.v===state.playerIncome?" on":""), onclick:e=>{
+      state.playerIncome = p.v; state.playerIncomeCustom = p.v!==DATA.us.medianWage;
+      input.value = "";
+      presetRow.querySelectorAll(".preset").forEach(x=>x.classList.remove("on"));
+      e.target.classList.add("on");
+    }}, p.label)));
+  el.append(
+    h("div",{class:"kicker"}, "an interactive argument, made of real numbers"),
+    h("h1",{}, "THE GAP"),
+    h("p",{class:"lead"}, "You know the words — million, billion, trillion. This game exists because the words are hiding the numbers. In a 2011 study, Americans guessed the richest 20% held 59% of the country's wealth. The real number was 84%. Almost everyone is wrong about this — in the same direction."),
+    chips("na"),
+    h("p",{class:"lead", style:"margin-top:22px"}, h("b",{},"First: what do you make in a year?"), " Every number in this game will be translated into your life. (Stays on your device. Skip it and we'll use the US median.)"),
+    input, presetRow,
+    h("div",{class:"btnrow"},
+      h("button",{class:"btn", onclick:next}, "Show me the gap →"),
+      state.sandboxUnlocked ? h("button",{class:"btn ghost", onclick:()=>go("sandbox")}, "Sandbox") : null
+    ),
+    h("p",{class:"asof"}, "Every statistic here is real, sourced, and frozen as of " + DATA.asOf + ". Tap any ⓘ chip to see where a number comes from.")
+  );
+});
+
+/* ---------- ACT 1 TITLE ---------- */
+S("act1", 1, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "Act I"),
+    h("h1",{}, "The Scale"),
+    h("p",{class:"lead"}, "Before anyone argues about what's fair, you have to see how big the numbers actually are. Nobody can. That's not an insult — human brains don't do this scale. Let's fix that."),
+    nextBtn("Start →")
+  );
+}, true);
+
+/* ---------- 1.0 TIME PRIMER ---------- */
+S("b10", 1, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "a 15-second recalibration"),
+    h("h2",{}, "Count to a million. Then to a billion."),
+    h("p",{class:"lead"}, "One number per second, day and night:")
+  );
+  const rows = [
+    ["A million seconds", "12 days", "a vacation"],
+    ["A billion seconds", "32 years", "a career"],
+    ["A trillion seconds", "31,700 years", "six times all of recorded history"]
+  ];
+  const list = h("div",{class:"replay"});
+  el.append(list);
+  let delay = 0;
+  rows.forEach(([a,b,c],i)=>{
+    setTimeout(()=>{
+      list.append(h("div",{class:"rrow reveal"},
+        h("span",{class:"g"}, a),
+        h("span",{class:"a"}, b + " — " + c)));
+      if (i===rows.length-1){
+        setTimeout(()=>{
+          el.append(
+            h("div",{class:"punch reveal"}, h("b",{},"Million and billion are not neighbors."), " A billion is a thousand millions. A trillion is a thousand billions. Every headline treats them like siblings. They are different species."),
+            nextBtn()
+          );
+        }, anim.reduced?0:600);
+      }
+    }, anim.reduced ? 0 : delay);
+    delay += 900;
+  });
+});
+
+/* ---------- 1.1 HOW LONG ---------- */
+S("b11", 1, el=>{
+  syncRegionUI(false);
+  const years = D.muskYearsToEarn();
+  const q = h("div",{},
+    h("div",{class:"kicker"}, "guess before you see it"),
+    h("h2",{}, `Earning ${fmt.money(state.playerIncome)} a year and saving every single penny — how long would it take YOU to earn Elon Musk's fortune?`),
+    h("p",{class:"lead"}, "No rent, no food, no taxes. 100% savings rate. Drag your guess, then lock it in.")
+  );
+  const read = h("div",{class:"slider-read"}, "1,000 years");
+  // log slider: 10 years .. 100M years
+  const slider = h("input",{type:"range", min:"1", max:"7", step:"0.01", value:"3",
+    oninput:e=>{ read.textContent = fmt.years(Math.pow(10, +e.target.value)); }});
+  const lock = h("button",{class:"btn", onclick:()=>{
+    const guess = Math.pow(10, +slider.value);
+    recordGuess("b11", "Years to earn Musk's fortune", fmt.years(guess), fmt.years(years));
+    slider.disabled = true; lock.remove();
+    reveal(guess);
+  }}, "LOCK IT IN");
+  el.append(q, read, slider, lock);
+
+  function reveal(guess){
+    const wrap = h("div",{class:"reveal"});
+    el.append(wrap);
+    wrap.append(h("div",{class:"guess-pin"}, "your guess: " + fmt.years(guess)));
+    const big = h("div",{class:"hero-num"}, "0 years");
+    wrap.append(big);
+    anim.tween(0, years, 2600, v=>{ big.textContent = fmt.years(v); });
+    // timeline of what you'd have to work through
+    const tl = h("div",{class:"timeline"});
+    const marks = [
+      [2000, "Rome falls"],
+      [12000, "farming invented"],
+      [40000, "cave paintings"],
+      [300000, "Homo sapiens appears"],
+      [2.5e6, "first stone tools"],
+      [7e6, "split from chimpanzees"],
+      [years, "YOU FINALLY GET PAID"]
+    ];
+    marks.forEach(([y,label])=>{
+      const x = Math.log10(y) / Math.log10(years) * 100;
+      tl.append(h("div",{class:"tmark"+(y===years?" hot":""), style:`left:${Math.min(97,x)}%`}, label));
+    });
+    wrap.append(tl,
+      h("div",{class:"punch"}, h("b",{}, fmt.years(years) + "."), " You would need to have started working before humans existed — and kept the job through every ice age since. This is one person's current net worth."),
+      chips("forbes","bls"),
+      h("div",{class:"btnrow"},
+        shareBtn("Working my salary, saving 100%, Elon Musk's fortune takes…", ()=>fmt.years(years), "I guessed " + fmt.years(guess)),
+        nextBtn())
+    );
+  }
+});
+
+/* ---------- 1.2 BOX FIELD (million/billion/trillion) ---------- */
+S("b12", 1, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "one box = $1 million"),
+    h("h2",{}, "Let's draw the money."),
+    h("p",{class:"lead"}, "Each little square on this screen is one million dollars — more than most Americans earn in a decade of work.")
+  );
+  const stack = h("div");
+  el.append(stack);
+  const steps = [
+    {label:"$1,000,000 — one box. A life-changing amount of money."},
+    {label:"$1 BILLION — one thousand boxes. This is where 'billionaire' starts."}
+  ];
+  let i = 0;
+  const advance = ()=>{
+    if (i === 0){
+      stack.append(h("div",{},
+        boxGrid(1,{cols:1, }),
+        h("div",{class:"fieldlabel"}, steps[0].label)));
+      stack.lastChild.querySelector(".boxfield").style.width = "46px";
+      btn.textContent = "Now show me a billion →";
+    } else if (i === 1){
+      stack.append(h("div",{},
+        boxGrid(1000,{cols:40}),
+        h("div",{class:"fieldlabel"}, steps[1].label)));
+      const you = h("div",{class:"punch"},
+        "Your entire median-household net worth (", h("b",{},fmt.money(R().medianNetWorth)),
+        state.region==="us" ? ") is about a fifth of ONE of these boxes." : ") — the world median — is about 1% of one box's edge.");
+      stack.append(you);
+      btn.textContent = "Now show me Musk →";
+    } else {
+      btn.remove();
+      const mf = megaField(1053000, {cell:4, label:"1,053,000 boxes = Elon Musk, July 2026"});
+      stack.append(mf,
+        h("div",{class:"fieldlabel"}, "Every 4-pixel dot in this wall is ", h("b",{},"$1,000,000"), ". The wall is ", h("b",{},"one person"), "."),
+        h("div",{class:"punch"}, h("b",{},"A million dollars and a trillion dollars differ by a factor of a million."), " The words rhyme. The realities don't."),
+        chips("forbes","scf"),
+        h("div",{class:"btnrow"},
+          shareBtn("If $1M is one box, Elon Musk is…", ()=>"1,053,000 boxes", "a wall of a million squares"),
+          nextBtn()));
+      return;
+    }
+    i++;
+  };
+  const btn = h("button",{class:"btn", onclick:advance}, "Show me a million →");
+  el.append(btn);
+  advance();
+});
+
+/* ---------- 1.3 MEDIAN + YOU ARE HERE ---------- */
+S("b13", 1, el=>{
+  syncRegionUI(false);
+  const isUS = state.region === "us";
+  const actual = R().medianNetWorth;
+  const label = isUS ? "median US household net worth" : "median adult wealth on Earth";
+  el.append(
+    h("div",{class:"kicker"}, "guess before you see it"),
+    h("h2",{}, isUS
+      ? "What's the net worth of the typical American household?"
+      : "What's the net worth of the typical adult on Earth?"),
+    h("p",{class:"lead"}, "Everything they own minus everything they owe. The household exactly in the middle — half richer, half poorer.")
+  );
+  const read = h("div",{class:"slider-read"}, fmt.money(isUS?500000:50000));
+  const max = isUS ? 2e6 : 200000;
+  const slider = h("input",{type:"range", min:"0", max:String(max), step:String(max/400), value:String(max/4),
+    oninput:e=>{ read.textContent = fmt.money(+e.target.value); }});
+  const lock = h("button",{class:"btn", onclick:()=>{
+    const guess = +slider.value;
+    recordGuess("b13", "Median net worth ("+(isUS?"US":"world")+")", fmt.money(guess), fmt.money(actual));
+    slider.disabled = true; lock.remove(); reveal(guess);
+  }}, "LOCK IT IN");
+  el.append(read, slider, lock);
+
+  function reveal(guess){
+    const w = h("div",{class:"reveal"});
+    el.append(w);
+    w.append(
+      h("div",{class:"guess-pin"}, "your guess: " + fmt.money(guess)),
+      h("div",{class:"hero-num"}, fmt.money(actual)),
+      h("p",{class:"lead"}, "That's the real median — " + label + "."));
+    if (isUS){
+      w.append(
+        h("div",{class:"vs-row"},
+          h("div",{}, h("div",{class:"vs-label"},"median (the middle person)"), h("div",{class:"sub-num"}, fmt.money(DATA.us.medianNetWorth))),
+          h("div",{}, h("div",{class:"vs-label"},"“average” (mean)"), h("div",{class:"sub-num", style:"color:var(--c3)"}, fmt.money(DATA.us.meanNetWorth)))),
+        h("div",{class:"punch"}, "Why is the “average” 5.5× the middle? Because ", h("b",{},"averages let billionaires stand in for you."), " One Musk in a room of a million people raises the room's “average wealth” by a million dollars each. This game only trusts medians."));
+      // percentile finder
+      const pf = h("div",{style:"margin-top:24px"});
+      const inp = h("input",{type:"number", placeholder:"Your net worth ($) — optional"});
+      const out = h("div",{});
+      pf.append(
+        h("h2",{style:"font-size:22px"}, "Where are YOU on the wall?"),
+        h("p",{class:"lead"}, "Rough estimate, stays on your device."),
+        inp,
+        h("button",{class:"btn ghost small", onclick:()=>{
+          const nw = +inp.value || 0;
+          state.playerNetWorth = nw;
+          const pct = D.percentile(nw);
+          const shareOfMusk = nw / musk.worth;
+          out.innerHTML = "";
+          out.append(h("div",{class:"punch reveal"},
+            "You're richer than about ", h("b",{}, fmt.pct(pct,0)), " of American households… and you own ",
+            h("b",{}, (shareOfMusk*100).toFixed(Math.max(4, -Math.floor(Math.log10(shareOfMusk*100))+1)) + "%"),
+            " of what one man does. Even “doing well” is scraps at this scale."));
+        }}, "Place me"),
+        out);
+      w.append(pf);
+    } else {
+      w.append(h("div",{class:"punch"}, "Half the adults on Earth own less than ", h("b",{},fmt.money(actual)), " — total. Less than a used car. Keep that number; the rest of the game is about who holds the rest."));
+    }
+    w.append(chips(isUS?"scf":"ubs"),
+      h("div",{class:"btnrow"},
+        shareBtn("The " + label + " is…", ()=>fmt.money(actual), "I guessed " + fmt.money(guess)),
+        nextBtn()));
+  }
+});
+
+/* ---------- 1.3b THIS ISN'T NORMAL ---------- */
+S("b13b", 1, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "before you shrug"),
+    h("h2",{}, "“It was always like this.” No — it wasn't."),
+    h("p",{class:"lead"}, "Share of all US household wealth held by the richest 1%, from the Federal Reserve's own accounts:"));
+  const big = h("div",{class:"hero-num"}, "22.8%");
+  const yr = h("div",{class:"sub-num", style:"color:var(--dim)"}, "1989");
+  el.append(big, yr);
+  const hist = DATA.dfaHistory;
+  let started = false;
+  const play = ()=>{
+    if (started) return; started = true;
+    let k = 0;
+    const stepDur = anim.reduced ? 1 : 550;
+    const stepFn = ()=>{
+      if (k >= hist.length){
+        el.append(
+          h("div",{class:"punch reveal"}, "From under 23% to ", h("b",{},"31.6%"), " in one generation — the bottom 90% traded roughly ", h("b",{},"$16 trillion"), " of relative share upward. Concentration is now in the neighborhood of ", h("b",{},"1929"), ", the peak of the Gilded Age. This is a recent construction, not a law of nature."),
+          chips("dfa"), nextBtn());
+        return;
+      }
+      const [y, s] = hist[k];
+      anim.tween(parseFloat(big.textContent), s*100, stepDur*.9, v=>{ big.textContent = v.toFixed(1)+"%"; });
+      yr.textContent = String(y);
+      k++; setTimeout(stepFn, stepDur);
+    };
+    stepFn();
+  };
+  el.append(h("button",{class:"btn", onclick:e=>{e.target.remove(); play();}}, "Play 1989 → 2026 ▸"));
+});
+
+/* ---------- 1.4 THE BANQUET ---------- */
+S("b14", 1, el=>{
+  syncRegionUI(false);
+  const isUS = state.region==="us";
+  const actual = isUS ? R().bottom50Share*100 : R().bottom50Share*100;
+  el.append(
+    h("div",{class:"kicker"}, "guess before you see it"),
+    h("h2",{}, isUS
+      ? "Picture ALL of America's wealth as $100 on a table. How much goes to the entire bottom half of the country?"
+      : "All the world's wealth as $100 on a table. How much does the bottom half of humanity get?"),
+    h("p",{class:"lead"}, isUS
+      ? "That's 66 million households — about 165 million people. Nurses, truckers, teachers, your family, probably you."
+      : "That's roughly 1.9 billion adults."));
+  const read = h("div",{class:"slider-read"}, "$25.00");
+  const slider = h("input",{type:"range", min:"0", max:"50", step:"0.5", value:"25",
+    oninput:e=>{ read.textContent = fmt.money2(+e.target.value); }});
+  const lock = h("button",{class:"btn", onclick:()=>{
+    const guess = +slider.value;
+    recordGuess("b14", "Bottom 50%'s share of $100 of "+(isUS?"US":"world")+" wealth", fmt.money2(guess), fmt.money2(actual));
+    slider.disabled = true; lock.remove(); reveal(guess);
+  }}, "LOCK IT IN");
+  el.append(read, slider, lock);
+
+  function reveal(guess){
+    const w = h("div",{class:"reveal"});
+    el.append(w);
+    w.append(h("div",{class:"guess-pin"}, "your guess: " + fmt.money2(guess)),
+      h("div",{class:"hero-num"}, fmt.money2(actual)));
+    // 100 person icons
+    const icons = h("div",{class:"icons"});
+    const hot = isUS ? 1 : 2; // top 1% ≈ 1 icon; global apex 1.6% ≈ 2 icons
+    for (let i=0;i<100;i++){
+      const p = h("div",{class:"person"});
+      p.style.color = i < hot ? "var(--gold)" : i < 50 ? "var(--dim)" : "var(--c1)";
+      icons.append(p);
+    }
+    // wealth bar segments
+    const segs = isUS
+      ? [["top 1%", DATA.us.top1Share, "var(--gold)"],
+         ["next 9%", DATA.us.top10Share-DATA.us.top1Share, "#b9924d"],
+         ["middle 40%", 1-DATA.us.top10Share-DATA.us.bottom50Share, "var(--dim)"],
+         ["bottom 50%", DATA.us.bottom50Share, "var(--c1)"]]
+      : [["richest 1.6%", DATA.global.apexShare, "var(--gold)"],
+         ["everyone else above the middle", 1-DATA.global.apexShare-DATA.global.bottom50Share, "var(--dim)"],
+         ["bottom 50%", DATA.global.bottom50Share, "var(--c1)"]];
+    const bar = h("div",{class:"wealthbar"});
+    const labels = h("div",{class:"seglabel"});
+    segs.forEach(([name, share, color])=>{
+      const seg = h("div",{style:`background:${color};width:0%`, title:name});
+      bar.append(seg);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ seg.style.width = (share*100)+"%"; }));
+      labels.append(h("span",{style:`color:${color}`}, `${name}: ${fmt.money2(share*100)}`));
+    });
+    w.append(icons, bar, labels);
+    w.append(
+      h("div",{class:"punch"},
+        isUS
+          ? ["At the head of the table, the gold sliver — the top 0.1%, about 132,000 households — holds ", h("b",{},"$14.40"), " of every $100. The 50 people at the far end share ", h("b",{},fmt.money2(actual)), " between all of them. Ten named individuals hold about ", h("b",{},"69%"), " as much as the entire bottom half of the United States combined."]
+          : ["The richest 1.6% of adults — the gold figures — hold about ", h("b",{},"$45"), " of every $100 on Earth. The bottom half of humanity shares ", h("b",{},"$2"), ". And 3,428 billionaires alone hold roughly ", h("b",{},"2×"), " what the poorest half of our species owns."]),
+      chips(isUS?"dfa":"wid", "na"),
+      h("div",{class:"btnrow"},
+        shareBtn(isUS?"Of every $100 of US wealth, the bottom half of the country gets…":"Of every $100 of world wealth, the bottom half of humanity gets…", ()=>fmt.money2(actual), "I guessed " + fmt.money2(guess)),
+        nextBtn("Act II: how it grows →")));
+  }
+});
+/* ---------- ACT 2 TITLE ---------- */
+S("act2", 2, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "Act II"),
+    h("h1",{}, "Money That Makes Money"),
+    h("p",{class:"lead"}, "You've seen how big the piles are. Now the important part: your money comes from your time. Their money comes from their money. Those are two different machines — and only one of them sleeps."),
+    nextBtn("Start →")
+  );
+}, true);
+
+/* ---------- 2.1 THE RACE ---------- */
+S("b21", 2, el=>{
+  syncRegionUI(false);
+  const perSec = D.muskPerSecMarket();
+  const answer = D.salaryEverySec(); // seconds for his wealth to earn your salary
+  el.append(
+    h("div",{class:"kicker"}, "guess before you see it"),
+    h("h2",{}, "Suppose Musk's fortune just sat in a boring index fund. How long does it take his pile to passively earn YOUR entire annual salary?"));
+  const opts = [
+    {label:"About a month", v:30*86400},
+    {label:"About a day", v:86400},
+    {label:"About an hour", v:3600},
+    {label:"About " + Math.round(answer) + " seconds", v:answer}
+  ];
+  const ch = h("div",{class:"choices"});
+  opts.forEach(o=>{
+    ch.append(h("button",{class:"choice", onclick:e=>{
+      ch.querySelectorAll(".choice").forEach(c=>c.disabled=true);
+      e.target.classList.add("picked");
+      recordGuess("b21", "Time for Musk's pile to earn your salary", o.label, "~"+Math.round(answer)+" seconds");
+      reveal();
+    }}, o.label));
+  });
+  el.append(ch);
+
+  function reveal(){
+    const w = h("div",{class:"reveal"});
+    el.append(w);
+    w.append(h("div",{class:"hero-num"}, Math.round(answer) + " seconds"),
+      h("p",{class:"lead"}, "At ordinary long-run market returns (10.4%/yr), $1.053 trillion generates your entire year of work in the time it took you to read this paragraph. Watch it happen:"));
+    const t0 = performance.now();
+    const you = h("div",{class:"odo"}, "$0.00");
+    const him = h("div",{class:"odo"}, "$0.00");
+    const laneHim = h("div",{class:"lane him"},
+      h("h4",{}, "His pile, doing nothing"), him, h("div",{class:"per"}, fmt.money(perSec) + " per second, at boring index-fund returns"));
+    w.append(h("div",{class:"race"},
+      h("div",{class:"lane you"},
+        h("h4",{}, "You, on the clock"), you, h("div",{class:"per"}, "$" + D.youPerWorkSec().toFixed(4) + " per working second")),
+      laneHim));
+    anim.odometer(you, ()=> (performance.now()-t0)/1000 * D.youPerWorkSec(), fmt.money2);
+    anim.odometer(him, ()=> (performance.now()-t0)/1000 * perSec, fmt.money);
+    // overdrive kicker after 8s
+    setTimeout(()=>{
+      laneHim.classList.add("overdrive");
+      laneHim.querySelector("h4").textContent = "His pile, June 2026 — ACTUAL";
+      laneHim.querySelector(".per").textContent = fmt.money(DATA.muskJuneGainPerSec) + " per second — his real average gain, all June, awake or asleep";
+      const t1 = performance.now();
+      anim.odometer(him, ()=> (performance.now()-t0)/1000*perSec + (performance.now()-t1)/1000*(DATA.muskJuneGainPerSec-perSec), fmt.money);
+      w.append(h("div",{class:"punch reveal"},
+        "That's the index-fund fantasy. In the real June 2026 he gained ", h("b",{},"$218 billion in 30 days"), " — about ", h("b",{},"$84,000 every second"), ". Your annual salary, every ", h("b",{}, (state.playerIncome/DATA.muskJuneGainPerSec).toFixed(1) + " seconds"), ", around the clock."),
+        chips("forbes","sp500","bls"),
+        h("div",{class:"btnrow"},
+          shareBtn("A trillion-dollar pile passively earns my entire annual salary every…", ()=>Math.round(answer)+" seconds", "at boring index-fund returns"),
+          nextBtn()));
+    }, anim.reduced?10:8000);
+  }
+});
+
+/* ---------- 2.2 THE OUTLINE ---------- */
+S("b22", 2, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "wealth is the outline · income is the fill"),
+    h("h2",{}, "Why “tax their income” misses the point."),
+    h("p",{class:"lead"}, "Each hollow box is what someone OWNS (wealth). The fill inside is what arrives in a year (income). Watch what each machine does over 30 years."));
+  const yearRead = h("div",{class:"sub-num"}, "Year 0");
+  // worker: outline grows slowly with savings; billionaire: outline compounds
+  const wBox = h("div",{class:"owbox", style:"width:84px;height:84px"});
+  const wFill = h("div",{class:"owfill"}); wBox.append(wFill);
+  const bBox = h("div",{class:"owbox", style:"width:120px;height:120px"});
+  const bFill = h("div",{class:"owfill", style:"background:var(--c2)"}); bBox.append(bFill);
+  const wLab = h("div",{class:"owlab"});
+  const bLab = h("div",{class:"owlab"});
+  el.append(h("div",{class:"outlinewrap"},
+    h("div",{}, wBox, wLab), h("div",{}, bBox, bLab)), yearRead);
+  const slider = h("input",{type:"range", min:"0", max:"30", step:"1", value:"0", oninput:e=>render(+e.target.value)});
+  el.append(slider);
+
+  const wage = state.playerIncome, save = .10; // save 10% of income
+  const startNW = Math.max(1000, R().medianNetWorth);
+  function render(yr){
+    yearRead.textContent = "Year " + yr;
+    const wWealth = startNW + wage*save*yr;
+    const bWealth = 1e9 * Math.pow(1+DATA.marketReturn, yr);
+    const bIncome = 1.5e6; // generous CEO-style salary
+    // areas proportional to wealth; billionaire box scales, worker box near-static
+    const wSide = 84 * Math.sqrt(wWealth / startNW);
+    const bSide = Math.min(300, 120 * Math.sqrt(bWealth / 1e9));
+    wBox.style.width = wBox.style.height = wSide.toFixed(0)+"px";
+    bBox.style.width = bBox.style.height = bSide.toFixed(0)+"px";
+    wFill.style.height = Math.min(100, wage / wWealth * 100).toFixed(1) + "%";
+    bFill.style.height = Math.max(0.4, bIncome / bWealth * 100).toFixed(2) + "%";
+    wLab.innerHTML = `<b>You.</b> Own ${fmt.big(wWealth)} — your yearly income (${fmt.big(wage)}) fills <b>${Math.min(100, wage/wWealth*100).toFixed(0)}%</b> of your box. Your box only grows if you feed it your time.`;
+    bLab.innerHTML = `<b>Billionaire.</b> Started at $1B → now ${fmt.big(bWealth)}. A $1.5M salary fills <b>${(bIncome/bWealth*100).toFixed(2)}%</b> of the box. The OUTLINE grew ${fmt.big(bWealth*DATA.marketReturn)} this year on its own.`;
+  }
+  render(0);
+  el.append(
+    h("div",{class:"punch"}, "For you, income and wealth are the same thing — you ARE your paycheck. For them, income is a rounding error on the outline. ", h("b",{},"An income tax taxes the fill. The outline never notices."), " Remember that box for Act III."),
+    chips("scf","sp500"),
+    nextBtn());
+});
+
+/* ---------- 2.3 TRY TO SPEND IT ---------- */
+S("b23", 2, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "the gluttony test"),
+    h("h2",{}, "Fine — it's yours. $1.053 trillion. Try to spend it."),
+    h("p",{class:"lead"}, "Buy anything. Buy everything. The pile keeps earning ordinary market returns while you shop (", fmt.big(musk.worth*DATA.marketReturn/365.25), " per day). Good luck."));
+  let spent = 0;
+  const t0 = performance.now();
+  const gainNow = ()=> (performance.now()-t0)/1000 * D.muskPerSecMarket();
+  const balNow = ()=> musk.worth - spent + gainNow();
+  const bar = h("div",{class:"spendbar"}, h("div",{class:"left", style:"width:100%"}));
+  const stats = h("div",{class:"spendstats"},
+    h("span",{class:"spent"}, "spent: $0"),
+    h("span",{}, "pile: " + fmt.big(musk.worth)),
+    h("span",{class:"gain"}, "earned while shopping: $0"));
+  const [spentEl, pileEl, gainEl] = stats.children;
+  const grid = h("div",{class:"spendgrid"});
+  DATA.purchases.forEach(p=>{
+    let count = 0;
+    const bought = h("div",{class:"bought"}, "");
+    const b = h("button",{class:"buy"},
+      h("div",{class:"bi"}, p.icon),
+      h("div",{class:"bn"}, p.name),
+      h("div",{class:"bp"}, fmt.big(p.price)), bought);
+    b.addEventListener("click", ()=>{
+      spent += p.price; count++;
+      bought.textContent = "owned: " + count;
+    });
+    grid.append(b);
+  });
+  el.append(grid, bar, stats);
+  anim.raf(()=>{
+    const bal = balNow();
+    spentEl.textContent = "spent: " + fmt.big(spent);
+    pileEl.textContent = "pile: " + fmt.big(bal);
+    gainEl.textContent = "earned while shopping: " + fmt.big(gainNow());
+    bar.firstChild.style.width = Math.max(0, Math.min(100, bal/musk.worth*100)) + "%";
+  });
+  let punched = false;
+  const punch = ()=>{
+    if (punched) return; punched = true;
+    giveUp.remove();
+    el.append(h("div",{class:"punch reveal"},
+      "Notice the pile ", h("b",{},"refilling"), ". At ordinary returns it regenerates ", h("b",{},"~$300 million a day"), " — you cannot buy yachts fast enough to beat it. Past a certain point wealth is no longer money to spend. ", h("b",{},"It's a machine that cannot be emptied"), " — while ", (state.region==="us"?"66 million households split 2.5% of the country":"half of humanity splits 2% of the planet"), "."),
+      chips("forbes","sp500"),
+      h("div",{class:"btnrow"},
+        shareBtn("I tried to spend $1.053 trillion. It refills…", ()=>"$300M per day", "you literally cannot spend it"),
+        nextBtn()));
+  };
+  setTimeout(punch, anim.reduced?10:20000);
+  const giveUp = h("div",{class:"skipline"}, h("a",{onclick:punch}, "I give up →"));
+  el.append(giveUp);
+});
+
+/* ---------- 2.4 COULD YOU CATCH UP ---------- */
+S("b24", 2, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "“just work harder”"),
+    h("h2",{}, "Could you EVER catch up?"),
+    h("p",{class:"lead"}, "Pick any salary. Save any fraction. Invest it all at the same 10.4% they get. Here's the gap between you and Musk's $1.053T after 40 years."));
+  const wageRead = h("div",{class:"lever"},
+    h("div",{class:"lhead"}, h("span",{class:"lname"},"Your salary"), h("span",{class:"lval"})));
+  const wageSlider = h("input",{type:"range", min:"30000", max:"1000000", step:"5000", value:String(Math.min(1000000, state.playerIncome))});
+  const saveRead = h("div",{class:"lever"},
+    h("div",{class:"lhead"}, h("span",{class:"lname"},"Savings rate"), h("span",{class:"lval"})));
+  const saveSlider = h("input",{type:"range", min:"1", max:"100", step:"1", value:"50"});
+  const out = h("div",{});
+  el.append(wageRead, wageSlider, saveRead, saveSlider, out);
+  function calc(){
+    const wage = +wageSlider.value, sr = +saveSlider.value/100;
+    wageRead.querySelector(".lval").textContent = fmt.big(wage) + "/yr";
+    saveRead.querySelector(".lval").textContent = Math.round(sr*100) + "%";
+    const r = DATA.marketReturn, yrs = 40;
+    const yours = wage*sr * ((Math.pow(1+r,yrs)-1)/r);
+    const start = musk.worth;
+    const theirs = start * Math.pow(1+r,yrs);
+    out.innerHTML = "";
+    out.append(
+      h("div",{class:"vs-row"},
+        h("div",{}, h("div",{class:"vs-label"},"you, after 40 years of discipline"), h("div",{class:"sub-num"}, fmt.big(yours))),
+        h("div",{}, h("div",{class:"vs-label"},"his pile, after 40 years of nothing"), h("div",{class:"sub-num", style:"color:var(--c2)"}, fmt.big(theirs)))),
+      h("div",{class:"punch"}, "The gap didn't close. It grew by ", h("b",{}, fmt.big(theirs-start-yours)), ". Compounding rewards the size of the pile, not the effort of the saver — and even against the ", h("i",{},"smallest"), " top-10 pile ($147.8B), it still never closes. ", h("b",{},"The gap is structural — it cannot be worked away.")));
+  }
+  wageSlider.addEventListener("input", calc);
+  saveSlider.addEventListener("input", calc);
+  calc();
+  el.append(chips("forbes","sp500"), nextBtn());
+});
+
+/* ---------- 2.4b THE 351,000 (dividend lives — hoarding made literal) ---------- */
+S("b24b", 2, el=>{
+  syncRegionUI(false);
+  const isUS = state.region === "us";
+  const pile = isUS ? musk.worth : DATA.global.billionaireWealth;
+  const lives = Math.floor(pile / DATA.wealthPerRicheLife);
+  const city = isUS ? "roughly everyone in Honolulu" : "about the population of Rio de Janeiro";
+  el.append(
+    h("div",{class:"kicker"}, "guess before you see it"),
+    h("h2",{}, "Here's the secret the wealthy already know: money past a certain point IS an income."),
+    h("p",{class:"lead"}, "About $3 million in ordinary dividend funds pays roughly ", h("b",{style:"color:var(--accent)"},"$120,000 a year"), " — forever, without working, without ever touching the principal. It's heritable. It's permanent. So: ",
+      isUS
+        ? "how many people could live like that off Elon Musk's pile alone?"
+        : "how many people could live like that off the combined wealth of all 3,428 billionaires?"));
+  const read = h("div",{class:"slider-read"}, "10,000 people");
+  const slider = h("input",{type:"range", min:"3", max:"7", step:"0.01", value:"4",
+    oninput:e=>{ read.textContent = Math.round(Math.pow(10, +e.target.value)).toLocaleString() + " people"; }});
+  const lock = h("button",{class:"btn", onclick:()=>{
+    const guess = Math.round(Math.pow(10, +slider.value));
+    recordGuess("b24b", "People who could live on $120k/yr, forever, from " + (isUS?"Musk's pile":"billionaire wealth"), guess.toLocaleString(), lives.toLocaleString());
+    slider.disabled = true; lock.remove(); reveal(guess);
+  }}, "LOCK IT IN");
+  el.append(read, slider, lock);
+
+  function reveal(guess){
+    const YIELD = .04;
+    const tiers = [
+      {income:120000, name:"$120k/yr — the dream life",
+       city: isUS ? "roughly everyone in Honolulu" : "about the population of Rio de Janeiro",
+       line: isUS
+         ? ["This is what a trillion dollars ", h("b",{},"is"), ": hundreds of thousands of ", h("b",{},"permanently comfortable lives"), ", stacked in one place, held by one person. At this scale, hoarding isn't a metaphor — a fortune is made of ", h("b",{},"other people's never-lived ease"), "."]
+         : ["A whole Rio de Janeiro of ease, existing right now as ledger entries. Money makes money; they're holding everyone else's."]},
+      {income:DATA.us.medianWage, name:"$64,220/yr — the median US income",
+       city: isUS ? "about the population of Boston" : "about the population of São Paulo",
+       line: isUS
+         ? ["More than the entire city of Boston could draw ", h("b",{},"the median American income without working"), " — off one man's dividends, forever, and the pile never shrinks by a dollar."]
+         : ["A São Paulo's worth of median-American incomes, paid forever out of billionaire dividends alone."]},
+      {income:12000, name:"$12,000/yr — a $1,000/month UBI",
+       city: isUS ? "more than the entire city of Chicago" : "about the population of the United Kingdom",
+       line: isUS
+         ? [h("b",{},"“We can't afford UBI.”"), " One man's dividends could write a permanent $1,000/month check to ", h("b",{},"3.5 million Americans"), " — a fully funded basic-income program, forever, principal untouched."]
+         : [h("b",{},"“We can't afford UBI.”"), " Billionaire dividends alone could pay $1,000/month to ", h("b",{},"the entire United Kingdom"), " — every adult and child — forever."]}
+    ];
+    const w = h("div",{class:"reveal"});
+    el.append(w);
+    w.append(h("div",{class:"guess-pin"}, "your guess: " + guess.toLocaleString() + " people"));
+    const big = h("div",{class:"hero-num"}, "0 people");
+    const tierRow = h("div",{class:"presets", style:"margin-top:4px"});
+    const body = h("div",{});
+    w.append(big, tierRow, body);
+    let firstRender = true;
+    const show = (t)=>{
+      const n = Math.floor(pile * YIELD / t.income);
+      tierRow.querySelectorAll(".preset").forEach(p=>p.classList.toggle("on", p.dataset.k===t.name));
+      if (firstRender){ anim.tween(0, n, 2400, v=>{ big.textContent = Math.round(v).toLocaleString() + " people"; }); firstRender = false; }
+      else big.textContent = n.toLocaleString() + " people";
+      body.innerHTML = "";
+      body.append(
+        megaField(n, {cell:3, label: n.toLocaleString() + " people — " + t.city}),
+        h("p",{class:"lead", style:"margin-top:12px"}, "Each dot: one person receiving ", h("b",{}, fmt.money(t.income) + " a year"), ", permanent and heritable, principal untouched — ", h("b",{}, t.city), "."),
+        h("div",{class:"punch"}, t.line),
+        chips("div","forbes"),
+        h("div",{class:"btnrow"},
+          shareBtn((isUS ? "Elon Musk's dividends alone could pay " : "Billionaire dividends alone could pay ") + fmt.money(t.income) + "/yr — forever — to…",
+            ()=>n.toLocaleString() + " people", t.city + " · ~4% dividend yield, principal untouched"),
+          nextBtn()));
+    };
+    tiers.forEach(t=>{
+      tierRow.append(h("span",{class:"preset","data-k":t.name, onclick:()=>show(t)}, t.name));
+    });
+    show(tiers[0]);
+    w.insertBefore(h("p",{class:"lead", style:"margin-top:10px"}, "Now try it at other incomes — including the UBI everyone says is unaffordable:"), tierRow);
+  }
+});
+
+/* ---------- 2.5 ENOUGH ---------- */
+S("b25", 2, el=>{
+  syncRegionUI(false);
+  const boxes = D.enoughBoxes();
+  el.append(
+    h("div",{class:"kicker"}, "one gold box = $100,000,000"),
+    h("h2",{}, "Let's define “enough.”"),
+    h("p",{class:"lead"}, "One gold box: $100 million. Never work again. Private jets, a mansion on each coast, your grandchildren's grandchildren never work either. Dynastic, permanent, more-than-enough wealth."));
+  const one = boxGrid(1,{cols:1});
+  one.style.width = "56px";
+  one.querySelector(".bx").classList.add("gold");
+  el.append(one, h("div",{class:"fieldlabel"}, "That's the box. Almost nobody on Earth ever gets one."));
+  const btn = h("button",{class:"btn", onclick:()=>{
+    btn.remove();
+    const mf = megaField(boxes, {cell:8, label: boxes.toLocaleString() + " gold boxes"});
+    mf.style.setProperty("--accent","var(--gold)");
+    el.append(mf,
+      h("div",{class:"punch reveal"}, "Elon Musk holds ", h("b",{}, boxes.toLocaleString()), " of them. ", h("b",{},"Ten and a half thousand lifetimes of “more than enough,”"), " concentrated in one person — and growing faster than he can give it away, spend it, or even count it. There isn't a word for this in the vocabulary of need. The old word is ", h("b",{},"gluttony"), "."),
+      chips("forbes"),
+      h("div",{class:"btnrow"},
+        shareBtn("If $100M = never work again forever, Elon Musk has…", ()=>boxes.toLocaleString() + " of those", "ten thousand lifetimes of 'enough'"),
+        nextBtn("Act III: so tax it? →")));
+  }}, "Show me Musk in gold boxes →");
+  el.append(btn);
+});
+/* ---------- ACT 3 TITLE ---------- */
+S("act3", 3, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "Act III"),
+    h("h1",{}, "The Taxes"),
+    h("p",{class:"lead"}, "“But they pay most of the taxes!” Let's check. Not rates on paper — what actually leaves each pile, measured against what each pile actually gained."),
+    nextBtn("Start →")
+  );
+}, true);
+
+/* ---------- 3.1 WHO PAYS THE HIGHER RATE ---------- */
+S("b31", 3, el=>{
+  syncRegionUI(true); // ProPublica is US-only
+  const nurseRate = DATA.us.workerTaxRate;
+  const muskTax = DATA.trueTaxRates[0]; // Musk — the archetype
+  el.append(
+    h("div",{class:"kicker"}, "guess before you see it — US data"),
+    h("h2",{}, "A nurse on the median wage, and Elon Musk. On what each actually GAINED, what rate did each actually pay?"),
+    h("p",{class:"lead"}, "Nurse: income tax + payroll tax on wages. Musk: all federal income tax paid, measured against how much richer he actually got (his “true tax rate,” from the leaked IRS files). Set both guesses."));
+  const mk = (label)=>{
+    const read = h("span",{class:"lval"}, "20%");
+    const sl = h("input",{type:"range", min:"0", max:"50", step:"0.5", value:"20",
+      oninput:e=>{ read.textContent = (+e.target.value).toFixed(1).replace(".0","")+"%"; }});
+    return {row: h("div",{class:"lever"}, h("div",{class:"lhead"}, h("span",{class:"lname"},label), read), sl), sl};
+  };
+  const a = mk("The nurse pays…"), b = mk("Musk pays…");
+  const lock = h("button",{class:"btn", onclick:()=>{
+    recordGuess("b31", "Musk's true tax rate", (+b.sl.value)+"%", fmt.pct(muskTax.rate,2));
+    a.sl.disabled = b.sl.disabled = true; lock.remove();
+    reveal(+a.sl.value, +b.sl.value);
+  }}, "LOCK BOTH IN");
+  el.append(a.row, a.sl, b.row, b.sl, lock);
+
+  function reveal(gA, gB){
+    const w = h("div",{class:"reveal"});
+    el.append(w);
+    // both fields are 100 boxes so the comparison is visually parallel:
+    // 24 of the nurse's leave; 3 of Musk's leave.
+    const nurseField = h("div",{class:"drainfield"});
+    for (let i=0;i<100;i++) nurseField.append(h("div",{class:"bx"}));
+    const mField = h("div",{class:"drainfield"});
+    for (let i=0;i<100;i++) mField.append(h("div",{class:"bx"}));
+    w.append(h("div",{class:"drainrow"},
+      h("div",{class:"draincol"},
+        h("div",{class:"vs-label"}, "the nurse — 100 boxes of wages"),
+        h("div",{class:"rate-big"}, fmt.pct(nurseRate)), nurseField,
+        h("div",{class:"note"}, "your guess: " + gA + "%")),
+      h("div",{class:"draincol"},
+        h("div",{class:"vs-label"}, "Musk — 100 boxes of wealth gain (2014–18)"),
+        h("div",{class:"rate-big", style:"color:var(--gold)"}, fmt.pct(muskTax.rate,2)), mField,
+        h("div",{class:"note"}, "your guess: " + gB + "%"))));
+    setTimeout(()=>{
+      [...nurseField.children].slice(0,Math.round(nurseRate*100)).forEach((bx,i)=>setTimeout(()=>bx.classList.add("gone"), i*30));
+      [12,55,88].forEach((k,i)=>setTimeout(()=>mField.children[k].classList.add("gone"), 200+i*260)); // ≈3.27%
+    }, anim.reduced?10:700);
+    w.append(
+      h("div",{class:"punch"},
+        "Watch the boxes. ", h("b",{},"24 of the nurse's 100 leave. Three of Musk's leave."), " His wealth grew $13.9 billion; he paid $455 million — ", h("b",{},"3.27%"), ", about ", h("b",{},"7× less"), " than the nurse. In 2018, the year he became Tesla's largest gainer, he paid ", h("b",{},"$0"), ". And it goes lower still:"),
+      h("div",{class:"choices", style:"margin-top:16px"},
+        DATA.trueTaxRates.slice(1).map(t=>h("div",{class:"rrow"},
+          h("span",{class:"g"}, t.name + (t.extra ? " — " + t.extra : "")),
+          h("span",{class:"a"}, fmt.pct(t.rate, t.rate<.01?2:1))))),
+      chips("oecd","propublica"),
+      h("div",{class:"btnrow"},
+        shareBtn("A median nurse's real tax rate vs Elon Musk's true tax rate:", ()=>fmt.pct(nurseRate)+" vs "+fmt.pct(muskTax.rate,2), "leaked IRS files — he paid $0 in 2018"),
+        nextBtn("How is that legal? →")));
+  }
+});
+
+/* ---------- 3.2 BUY BORROW DIE ---------- */
+S("b32", 3, el=>{
+  syncRegionUI(true);
+  el.append(
+    h("div",{class:"kicker"}, "it's not even illegal"),
+    h("h2",{}, "The three-step machine: Buy. Borrow. Die."));
+  const panels = [
+    {t:"BUY", d:[h("span",{class:"dbox"},"stock: $1B"), h("span",{class:"arrow"},"→"), h("span",{class:"dbox"},"stock: $10B")],
+     p:"Own assets, never sell. The $9B gain is “unrealized” — under US law, it isn't income, so it's taxed at exactly $0. The outline grows; the IRS sees nothing."},
+    {t:"BORROW", d:[h("span",{class:"dbox"},"stock: $10B"), h("span",{class:"arrow"},"→"), h("span",{class:"dfill"},"bank loan: $1B cash")],
+     p:"Need spending money? Don't sell — borrow against the pile at single-digit interest. Loans aren't income either. Mansions, yachts, and Twitter acquisitions, all financed tax-free while the collateral keeps compounding."},
+    {t:"DIE", d:[h("span",{class:"dbox"},"heirs inherit $10B"), h("span",{class:"arrow"},"→"), h("span",{class:"dfill"},"taxable gain: $0")],
+     p:"At death, the “stepped-up basis” resets the clock: heirs inherit at current value and the entire lifetime of gains simply vanishes for tax purposes. Then their generation starts the machine again."}
+  ];
+  let i = 0;
+  const holder = h("div",{});
+  el.append(holder);
+  const btn = h("button",{class:"btn", onclick:show}, "Step 1: BUY →");
+  el.append(btn);
+  function show(){
+    const p = panels[i];
+    holder.append(h("div",{class:"panelcard reveal"},
+      h("h3",{}, h("span",{class:"step"}, (i+1)+". "+p.t)),
+      h("div",{class:"diagram"}, p.d),
+      h("p",{}, p.p)));
+    i++;
+    if (i < panels.length) btn.textContent = "Step " + (i+1) + ": " + panels[i].t + " →";
+    else {
+      btn.remove();
+      el.append(
+        h("div",{class:"punch reveal"}, "This is why Act II mattered: ", h("b",{},"the income tax was built for people whose money arrives as income."), " Theirs doesn't. The nurse's paycheck is captured at the source; the outline is never touched at all."),
+        chips("propublica"),
+        nextBtn("So what WOULD touch it? →"));
+    }
+  }
+});
+
+/* ---------- 3.3 THE LEVERS ---------- */
+S("b33", 3, el=>{
+  syncRegionUI(true);
+  el.append(
+    h("div",{class:"kicker"}, "your turn — first-order arithmetic, real bases"),
+    h("h2",{}, "Pull the levers."),
+    h("p",{class:"lead"}, "Static, first-order estimates — no behavioral modeling, just honest multiplication against the real wealth bases. That's the point: even the crudest math shows the size of what's on the table."));
+  const mkLever = (name, min, max, step, val, unit)=>{
+    const read = h("span",{class:"lval"});
+    const sl = h("input",{type:"range", min:String(min), max:String(max), step:String(step), value:String(val)});
+    const row = h("div",{class:"lever"}, h("div",{class:"lhead"}, h("span",{class:"lname"},name), read), sl);
+    return {row, sl, read, unit};
+  };
+  const L1 = mkLever("Annual wealth tax on fortunes above $50M", 0, 8, 0.5, 2, "%");
+  const L2 = mkLever("Tax on billionaires' yearly wealth GAINS (like wages are taxed)", 0, 40, 1, 24, "%");
+  const out = h("div",{class:"tradeoffs"});
+  const yourNote = h("p",{class:"note"});
+  el.append(L1.row, L1.sl, L2.row, L2.sl, out, yourNote);
+  function calc(){
+    const wt = +L1.sl.value/100, gt = +L2.sl.value/100;
+    L1.read.textContent = (+L1.sl.value)+"%";
+    L2.read.textContent = (+L2.sl.value)+"%";
+    const base01 = DATA.us.totalWealth * DATA.us.top01Share;   // ~$25T proxy for >$50M fortunes
+    const gains = 4e12;                                        // Forbes: billionaire wealth +$4T y/y
+    const rev = wt*base01 + gt*gains;
+    out.innerHTML = "";
+    out.append(h("div",{class:"tcard"}, "Revenue, first-order: ", h("b",{}, fmt.big(rev) + " per year")));
+    DATA.tradeoffPrograms.forEach(p=>{
+      out.append(h("div",{class:"tcard"}, "= ", h("b",{}, Math.floor(rev/p.cost).toLocaleString() + "×"), " " + p.name + " (≈" + fmt.big(p.cost) + "/yr)"));
+    });
+    const after = DATA.marketReturn - wt - DATA.marketReturn*gt;
+    out.append(h("div",{class:"tcard"},
+      "And the piles? At 10.4% average growth, a top fortune still compounds at ",
+      h("b",{}, fmt.pct(Math.max(0,after))), " after your levers. ",
+      after > 0 ? "Still growing. Nobody's yacht is at risk." : "At this setting, piles finally stop outgrowing everyone else."));
+    yourNote.textContent = "For contrast: your wages are already taxed at ~24.4% before they ever reach you.";
+  }
+  L1.sl.addEventListener("input", calc);
+  L2.sl.addEventListener("input", calc);
+  calc();
+  el.append(chips("dfa","forbes","est","oecd"), nextBtn("Finish →"));
+});
+
+/* ---------- FINALE ---------- */
+S("finale", 3, el=>{
+  syncRegionUI(false);
+  const secs = sessionSeconds();
+  const youEarned = secs * D.youPerWorkSec();
+  const heGained = secs * D.muskPerSecMarket();
+  const heGainedReal = secs * DATA.muskJuneGainPerSec;
+  el.append(
+    h("div",{class:"kicker"}, "one last number — yours"),
+    h("h2",{}, "That little clock in the corner? It was counting for a reason."),
+    h("div",{class:"replay"},
+      h("div",{class:"rrow reveal"}, h("span",{class:"g"},"You played for"), h("span",{class:"a"}, fmt.clock(secs))),
+      h("div",{class:"rrow reveal"}, h("span",{class:"g"},"You earned (at your wage, on the clock)"), h("span",{class:"a"}, fmt.money2(youEarned))),
+      h("div",{class:"rrow reveal"}, h("span",{class:"g"},"Musk's pile earned (boring index returns)"), h("span",{class:"a"}, fmt.big(heGained))),
+      h("div",{class:"rrow reveal"}, h("span",{class:"g"},"Musk's pile earned (his actual June 2026 pace)"), h("span",{class:"a", style:"color:var(--c3)"}, fmt.big(heGainedReal)))));
+  // guess replay
+  const gs = Object.values(state.guesses);
+  if (gs.length){
+    el.append(h("h2",{style:"margin-top:26px;font-size:22px"}, "Your intuition vs. reality:"));
+    const rep = h("div",{class:"replay"});
+    gs.forEach(g=>rep.append(h("div",{class:"rrow"},
+      h("span",{class:"g"}, g.label + " — you guessed " + g.guess),
+      h("span",{class:"a"}, g.actual))));
+    el.append(rep,
+      h("div",{class:"punch"}, "You were wrong in the same direction every time — ", h("b",{},"everyone is."), " That's not a personal failing. It's the point: the scale is designed to be unimaginable, and what can't be imagined can't be voted on. Now you've seen it."));
+  }
+  state.sandboxUnlocked = true;
+  persist.save();
+  el.append(
+    h("div",{class:"btnrow"},
+      shareBtn("While I played THE GAP (" + fmt.clock(secs) + "), Elon Musk passively gained…", ()=>fmt.big(heGained), "I earned " + fmt.money2(youEarned)),
+      h("button",{class:"btn", onclick:()=>go("yeahbut")}, "“Yeah, but…” →"),
+      h("button",{class:"btn ghost", onclick:()=>go("sandbox")}, "🔓 Sandbox unlocked"),
+      h("a",{class:"btn ghost", href:"https://simecon.app", style:"text-decoration:none"}, "🔧 Now fix it yourself → SimEcon")),
+    h("p",{class:"asof"}, "All data frozen " + DATA.asOf + ". Sources: Federal Reserve (SCF, Z.1, DFA), BLS, OECD, Forbes, ProPublica, UBS, WID. Tap ⓘ chips throughout."));
+}, true);
+
+/* ---------- YEAH BUT (debate room) ---------- */
+S("yeahbut", 3, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "for the group chat"),
+    h("h2",{}, "“Yeah, but…” — the four replies you'll hear, pre-answered."));
+  const cards = [
+    {t:"“It's just paper wealth — he can't actually spend it.”",
+     p:["Act II called. He bought Twitter for $44B and billionaires live on loans against the “paper” (buy-borrow-die). Banks accept the paper as collateral at face value — the only entity that treats it as imaginary is the IRS."]},
+    {t:"“They earned it.”",
+     p:["The first billion, maybe. But you watched the machine: past that point the pile earns more per second at idle than a surgeon earns per week of work. Nobody 'earns' $84,000/second — a pile that size collects; it does not labor. And you tried the catch-up sliders: no wage, no savings rate, ever closes the gap."]},
+    {t:"“They'll give it away.”",
+     p:["The pile grows ~10% a year. Billionaire giving runs far below that — Musk's fortune grew $218B in one month; total US charitable giving from ALL sources is ~$550B a YEAR. The math is simple: fortunes are accumulating faster than they are being given away. Philanthropy loses the race to compounding."]},
+    {t:"“Taxing them wouldn't even fund anything.”",
+     p:["You pulled the levers yourself. A 2% wealth tax on just the top 0.1% is ~$500B/yr — twenty NASA budgets, every year, from 132,000 households — while their piles STILL grow at ~8%. 'It wouldn't fund anything' is only true if you never do the multiplication. You just did."]}
+  ];
+  cards.forEach((c,i)=>{
+    el.append(h("div",{class:"panelcard"},
+      h("h3",{}, h("span",{class:"step"}, "№"+(i+1)+" "), c.t),
+      h("p",{}, c.p)));
+  });
+  el.append(
+    chips("propublica","dfa","forbes"),
+    h("div",{class:"btnrow"},
+      h("button",{class:"btn", onclick:()=>go("sandbox")}, "Sandbox →"),
+      h("button",{class:"btn ghost", onclick:()=>go("finale")}, "← Back")));
+}, true);
+/* ---------- SANDBOX ---------- */
+S("sandbox", 0, el=>{
+  syncRegionUI(false);
+  el.append(
+    h("div",{class:"kicker"}, "sandbox — all levers, no rails"),
+    h("h2",{}, "Explore the gap yourself."));
+
+  /* 1. pick your billionaire + wage */
+  const sel = h("select",{}, DATA.billionaires.map((b,i)=>h("option",{value:String(i)}, b.name + " — " + fmt.big(b.worth))));
+  const wageIn = h("input",{type:"number", placeholder:"Your salary", value:String(state.playerIncome), style:"max-width:180px"});
+  const statGrid = h("div",{class:"statgrid"});
+  function renderStats(){
+    const b = DATA.billionaires[+sel.value];
+    const wage = Math.max(1000, +wageIn.value || state.playerIncome);
+    state.playerIncome = wage; persist.save();
+    const perSec = b.worth*DATA.marketReturn/(365.25*86400);
+    statGrid.innerHTML = "";
+    const stats = [
+      [fmt.big(b.worth), b.name + "'s net worth (Forbes, July 2026)"],
+      [fmt.years(b.worth/wage), "for you to earn it (saving 100%)"],
+      [fmt.money(perSec) + "/sec", "its passive growth at market returns"],
+      [(wage/perSec).toFixed(1) + " sec", "for the pile to earn your salary"],
+      [Math.round(b.worth/DATA.enoughBox).toLocaleString(), "gold $100M “enough” boxes"],
+      [Math.floor(b.worth/DATA.wealthPerRicheLife).toLocaleString(), "people this pile could pay $120k/yr, forever (4% dividends)"],
+      [Math.round(b.worth/R().medianNetWorth).toLocaleString() + "×", "median " + (state.region==="us"?"US household":"world adult") + " net worths"]
+    ];
+    stats.forEach(([v,l])=>statGrid.append(h("div",{class:"stat"}, h("div",{class:"sv"},v), h("div",{class:"sl"},l))));
+    if (b.note) statGrid.append(h("div",{class:"stat"}, h("div",{class:"sv"},"⚡"), h("div",{class:"sl"}, b.note)));
+  }
+  sel.addEventListener("change", renderStats);
+  wageIn.addEventListener("input", renderStats);
+  el.append(h("div",{class:"sandsec"},
+    h("h3",{style:"font-weight:900"}, "Pick a billionaire, pick your wage"),
+    h("div",{class:"btnrow", style:"margin-top:12px"}, sel, wageIn),
+    statGrid));
+  renderStats();
+
+  /* 2. distribution explorer through DFA history */
+  const histSec = h("div",{class:"sandsec"});
+  const yearLab = h("div",{class:"sub-num"}, "2026");
+  const shareLab = h("div",{class:"hero-num", style:"font-size:clamp(34px,7vw,64px)"}, "31.6%");
+  const histSlider = h("input",{type:"range", min:"0", max:String(DATA.dfaHistory.length-1), step:"1", value:String(DATA.dfaHistory.length-1),
+    oninput:e=>{
+      const [y,s] = DATA.dfaHistory[+e.target.value];
+      yearLab.textContent = String(y);
+      shareLab.textContent = fmt.pct(s);
+      histBar.firstChild.style.width = (s*100)+"%";
+    }});
+  const histBar = h("div",{class:"wealthbar"}, h("div",{style:"background:var(--gold);width:31.6%"}), h("div",{style:"background:var(--line);flex:1"}));
+  histSec.append(
+    h("h3",{style:"font-weight:900"}, "The top 1%'s share of US wealth, 1989 → 2026"),
+    yearLab, shareLab, histBar, histSlider,
+    h("p",{class:"note"}, "Federal Reserve Distributional Financial Accounts, approximate keyframes."),
+    chips("dfa"));
+  el.append(histSec);
+
+  /* 3. unconstrained levers */
+  const levSec = h("div",{class:"sandsec"});
+  const wtRead = h("span",{class:"lval"}), gtRead = h("span",{class:"lval"});
+  const wtSl = h("input",{type:"range", min:"0", max:"15", step:"0.5", value:"0"});
+  const gtSl = h("input",{type:"range", min:"0", max:"90", step:"1", value:"0"});
+  const levOut = h("div",{class:"tradeoffs"});
+  function levCalc(){
+    const wt = +wtSl.value/100, gt = +gtSl.value/100;
+    wtRead.textContent = (+wtSl.value)+"%"; gtRead.textContent = (+gtSl.value)+"%";
+    const rev = wt*DATA.us.totalWealth*DATA.us.top01Share + gt*4e12;
+    levOut.innerHTML = "";
+    levOut.append(h("div",{class:"tcard"}, "First-order revenue: ", h("b",{}, fmt.big(rev)+"/yr"),
+      " · piles still compound at ", h("b",{}, fmt.pct(Math.max(0, DATA.marketReturn - wt - DATA.marketReturn*gt))), " after levers"));
+    DATA.tradeoffPrograms.slice(0,2).forEach(p=>levOut.append(
+      h("div",{class:"tcard"}, "= ", h("b",{}, Math.floor(rev/p.cost).toLocaleString()+"×"), " " + p.name)));
+  }
+  wtSl.addEventListener("input", levCalc); gtSl.addEventListener("input", levCalc);
+  levSec.append(
+    h("h3",{style:"font-weight:900"}, "Tax levers, unconstrained"),
+    h("div",{class:"lever"}, h("div",{class:"lhead"}, h("span",{class:"lname"},"Wealth tax >$50M"), wtRead), wtSl),
+    h("div",{class:"lever"}, h("div",{class:"lhead"}, h("span",{class:"lname"},"Tax on billionaire wealth gains"), gtRead), gtSl),
+    levOut,
+    h("button",{class:"btn ghost small", onclick:()=>{ wtSl.value="0"; gtSl.value="0"; levCalc(); }}, "reset to reality"));
+  levCalc();
+  el.append(levSec);
+
+  el.append(h("div",{class:"sandnav"},
+    h("button",{class:"btn ghost", onclick:()=>go("intro")}, "↺ Replay the journey"),
+    h("button",{class:"btn ghost", onclick:()=>go("yeahbut")}, "“Yeah, but…” room"),
+    h("a",{class:"btn ghost", href:"https://simecon.app", style:"text-decoration:none"}, "🔧 SimEcon — the full budget sandbox")));
+}, true);
+
+/* ================================================================
+   boot + present mode + dev assertions
+   ================================================================ */
+persist.load();
+syncRegionUI(false);
+
+if (new URLSearchParams(location.search).get("present") === "1") document.body.classList.add("present");
+let tapCount = 0, tapTimer;
+document.querySelector(".brand").addEventListener("click", ()=>{
+  clearTimeout(tapTimer); tapCount++;
+  if (tapCount >= 3){ document.body.classList.toggle("present"); tapCount = 0; }
+  tapTimer = setTimeout(()=>tapCount=0, 600);
+});
+
+(function assert(){
+  const ok = (name, cond)=>{ if(!cond) console.warn("ASSERT FAIL:", name); };
+  ok("years to earn ≈ 16.4M", Math.abs(musk.worth/DATA.us.medianWage - 16.4e6) < 0.2e6);
+  ok("musk $/sec market ≈ 3470", Math.abs(musk.worth*DATA.marketReturn/(365.25*86400) - 3470) < 100);
+  ok("june gain ≈ $84k/sec", Math.abs(DATA.muskJuneGainPerSec - 84100) < 1000);
+  ok("enough boxes = 10530", Math.round(musk.worth/DATA.enoughBox) === 10530);
+  ok("Buffett ratio ≈ 244", Math.abs(DATA.us.workerTaxRate/DATA.trueTaxRates.find(t=>t.name.includes("Buffett")).rate - 244) < 5);
+  ok("Musk ratio ≈ 7.5", Math.abs(DATA.us.workerTaxRate/DATA.trueTaxRates[0].rate - 7.46) < .2);
+  ok("dividend lives = 351,000", Math.floor(musk.worth/DATA.wealthPerRicheLife) === 351000);
+  ok("$3M @4% = $120k", DATA.wealthPerRicheLife*.04 === DATA.divIncome);
+  ok("median-income lives ≈ 656k", Math.abs(Math.floor(musk.worth*.04/DATA.us.medianWage) - 655870) < 10);
+  ok("UBI lives = 3.51M", Math.floor(musk.worth*.04/12000) === 3510000);
+  ok("global UBI lives = 67M", Math.floor(DATA.global.billionaireWealth*.04/12000) === 67000000);
+  ok("banquet sums to ~100%", Math.abs(DATA.us.top10Share + (1-DATA.us.top10Share-DATA.us.bottom50Share) + DATA.us.bottom50Share - 1) < 1e-9);
+  ok("percentile(median) ≈ .5", Math.abs(D.percentile(192700) - .5) < .02);
+})();
+
+go(0);
+
+</script>
+</body>
+</html>
