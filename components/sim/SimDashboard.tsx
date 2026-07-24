@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { useSimEngine } from "@/hooks/useSimEngine";
-import { SegmentedControl } from "./SegmentedControl";
+import { ModeCards } from "./ModeCards";
+import { ComparePanel } from "./ComparePanel";
 import { LeverSidebar } from "./LeverSidebar";
 import { ScenarioPresets } from "./ScenarioPresets";
 import { EventControls } from "./EventControls";
@@ -104,28 +105,42 @@ export function SimDashboard() {
         </div>
       </a>
 
-      <div className="mb-6 flex justify-center">
-        <SegmentedControl
-          value={sim.mode}
-          onChange={sim.setMode}
-          options={[
-            { value: "whatif", label: "What if we had..." },
-            { value: "fix", label: "Fix this mess" },
-          ]}
-        />
-      </div>
+      <ModeCards value={sim.mode} onChange={sim.setMode} />
 
       {sim.mode === "fix" ? (
         <div className="space-y-5">
           <div className="rounded-3xl p-4 sm:p-5" style={{ background: C.card, boxShadow: SHADOW }}>
-            <ScenarioPresets
-              activePreset={sim.activePreset}
-              onApply={(id, config) => {
-                sim.applyPreset(config);
-                sim.setActivePreset(id);
-              }}
-              onReset={sim.reset}
-            />
+            <div className="mb-3 flex items-center justify-end">
+              <span className="flex items-center gap-2 text-sm" style={{ color: C.inkMute }}>
+                Compare two plans
+                <Switch checked={sim.compareOn} onCheckedChange={sim.setCompareOn} />
+              </span>
+            </div>
+            {sim.compareOn ? (
+              <ComparePanel
+                yearsA={sim.years}
+                yearsB={sim.yearsB}
+                activeA={sim.activePreset}
+                activeB={sim.activePresetB}
+                onPickA={(id, config) => {
+                  sim.applyPreset(config);
+                  sim.setActivePreset(id);
+                }}
+                onPickB={(id, config) => {
+                  sim.applyPresetB(config);
+                  sim.setActivePresetB(id);
+                }}
+              />
+            ) : (
+              <ScenarioPresets
+                activePreset={sim.activePreset}
+                onApply={(id, config) => {
+                  sim.applyPreset(config);
+                  sim.setActivePreset(id);
+                }}
+                onReset={sim.reset}
+              />
+            )}
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[360px_1fr] lg:items-start">
