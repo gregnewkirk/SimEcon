@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import type { SdLeverConfig, SdYearData } from "@/lib/sd/types";
 import { projectSdForward } from "@/lib/sd/engine";
 import { replaySdCounterfactual, type SdWhatIfResult } from "@/lib/sd/replay";
 import { sdDefaultConfig } from "@/lib/sd/levers";
 import { SD_DEFAULT_ASSUMPTIONS } from "@/lib/sd/growth";
+import { encodeSdState, decodeSdState } from "@/lib/sd/url-state";
 
 export type SdMode = "whatif" | "fix";
 export const SD_FORWARD_END = 2040;
@@ -35,6 +36,30 @@ export function useSdEngine(): SdEngine {
   const [cfg, setCfg] = useState<SdLeverConfig>(() => sdDefaultConfig());
   const [events, setEvents] = useState<string[]>([]);
   const [activePreset, setActivePreset] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Hydrate once from the URL after mount (avoids an SSR hydration mismatch on
+  // shared links: the prerendered HTML is always the baseline budget).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length > 0) {
+      const state = decodeSdState(params);
+      setCfg(state.cfg);
+      setMode(state.mode);
+      setEvents(state.events);
+    }
+    setHydrated(true);
+  }, []);
+
+  // Keep the URL in sync so the address bar is always a shareable snapshot.
+  useEffect(() => {
+    if (!hydrated) return;
+    const t = setTimeout(() => {
+      const qs = encodeSdState(cfg, mode, events).toString();
+      window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : ""));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [hydrated, cfg, mode, events]);
 
   const setLever = useCallback((id: string, value: number | boolean) => {
     setCfg((c) => ({ ...c, [id]: value }));

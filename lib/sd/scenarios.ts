@@ -74,6 +74,21 @@ export const SD_SCENARIOS: SdScenario[] = [
     },
   },
   {
+    id: "new_ideas_city",
+    label: "Borrow every idea",
+    blurb: "The other-cities slate: mansion tax, big-employer payroll tax, delivery fee - funding groceries, guaranteed income, and free buses. LA + Seattle + Stockton + Mamdani's NYC, on the Pacific.",
+    config: {
+      mansion_tax: 4,
+      payroll_tax: 1.2,
+      pied_a_terre: true,
+      delivery_fee: true,
+      naming_rights: true,
+      muni_grocery: true,
+      guaranteed_income: 1000,
+      free_buses: true,
+    },
+  },
+  {
     id: "fix_it_city",
     label: "Fix-it city",
     blurb: "Attack the $6.5B backlog: stormwater tax on the ballot, paving and channels funded, paid for with hotel tax and parking money.",

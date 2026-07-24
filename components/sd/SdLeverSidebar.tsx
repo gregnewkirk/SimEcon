@@ -6,14 +6,14 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
-import { SD_POLICE_LEVERS, SD_DEPT_LEVERS, SD_REVENUE_LEVERS, SD_PENSION_LEVERS } from "@/lib/sd/levers";
+import { SD_POLICE_LEVERS, SD_DEPT_LEVERS, SD_REVENUE_LEVERS, SD_IDEAS_LEVERS, SD_PENSION_LEVERS } from "@/lib/sd/levers";
 import type { SdLever, SdLeverConfig } from "@/lib/sd/types";
 import { SdLeverDetail } from "./SdLeverDetail";
 import { sdLeverGapImpact, sdLeverImpactAt } from "./leverProjection";
 import { signedMoneyM } from "./format";
 import { C, SHADOW_SM } from "@/components/sim/theme";
 
-const ALL_SIDEBAR_LEVERS = [...SD_POLICE_LEVERS, ...SD_DEPT_LEVERS, ...SD_REVENUE_LEVERS, ...SD_PENSION_LEVERS];
+const ALL_SIDEBAR_LEVERS = [...SD_POLICE_LEVERS, ...SD_DEPT_LEVERS, ...SD_REVENUE_LEVERS, ...SD_IDEAS_LEVERS, ...SD_PENSION_LEVERS];
 const GLOBAL_MAX = Math.max(...ALL_SIDEBAR_LEVERS.map((l) => Math.abs(sdLeverGapImpact(l))));
 
 const isDial = (l: SdLever) => !!l.range;
@@ -175,6 +175,13 @@ export function SdLeverSidebar({ cfg, setLever }: { cfg: SdLeverConfig; setLever
       <GroupLabel>Revenue</GroupLabel>
       {groupOf(SD_REVENUE_LEVERS).map(([group, levers]) => (
         <Section key={group} title={group} summary={<SectionSummary levers={levers} cfg={cfg} />}>
+          {levers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />)}
+        </Section>
+      ))}
+
+      <GroupLabel>Borrowed from other cities</GroupLabel>
+      {groupOf(SD_IDEAS_LEVERS).map(([group, levers]) => (
+        <Section key={group} title={group} icon="🧪" summary={<SectionSummary levers={levers} cfg={cfg} />}>
           {levers.map((l, i) => <Row key={l.id} lever={l} cfg={cfg} setLever={setLever} last={i === levers.length - 1} />)}
         </Section>
       ))}
