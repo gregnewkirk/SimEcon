@@ -41,6 +41,14 @@ export function SimDashboard() {
     wasSurplus.current = surplus;
   }, [fixYear?.deficitB]);
 
+  // The big win: celebrate the moment the projection first reaches debt-free.
+  const wasDebtFree = useRef(false);
+  useEffect(() => {
+    const debtFree = sim.years.some((y) => y.debtT <= 0);
+    if (debtFree && !wasDebtFree.current) setConfetti((n) => n + 1);
+    wasDebtFree.current = debtFree;
+  }, [sim.years]);
+
   const cf2025 = sim.counterfactual[sim.counterfactual.length - 1];
   const ac2025 = sim.actual[sim.actual.length - 1];
   const debtSaved = ac2025 && cf2025 ? ac2025.debtT - cf2025.debtT : 0;
@@ -59,24 +67,42 @@ export function SimDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/gap" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
-            THE GAP →
-          </a>
-          <Link href="/san-diego" className="text-sm underline-offset-2 hover:underline" style={{ color: C.inkMute }}>
-            San Diego edition →
+          <Link href="/san-diego" className="rounded-full px-4 py-1.5 text-sm font-semibold" style={{ background: C.card, color: C.ink, boxShadow: SHADOW_SM }}>
+            🌴 San Diego edition →
           </Link>
           <span className="flex items-center gap-1.5 text-sm" style={{ color: C.inkMute }}>
             Dynamic effects
             <InfoPopover title="Dynamic effects">
-              Off (default), levers show their conventional score: the dollars they raise or cost on paper, the way CBO and JCT officially publish them. Turn it on to layer in behavioral effects: people respond to taxes, so a hike raises somewhat less (corporate about -15%, the top rate about -25% as income shifts away). More realistic, but more contestable. Capital-gains realization is always included either way.
+              Off (default), levers show their conventional score: the dollars they raise or cost on paper, the way CBO and JCT officially publish them. Turn it on to layer in behavioral effects: people respond to taxes, so a hike raises somewhat less (corporate about -15%, the top rate about -25% as income shifts away). More realistic, but more contestable. Capital-gains realization is always included either way. It only changes anything when you have moved income-bracket or corporate rates.
             </InfoPopover>
             <Switch checked={sim.useDynamic} onCheckedChange={sim.setUseDynamic} />
+            {sim.useDynamic && (
+              <span className="font-mono text-[11px] font-semibold tabular-nums" style={{ color: Math.abs(sim.dynamicCostB) < 0.5 ? C.inkMute : C.red }}>
+                {Math.abs(sim.dynamicCostB) < 0.5
+                  ? "no rate moves yet"
+                  : `${sim.dynamicCostB >= 0 ? "+" : "−"}$${Math.abs(Math.round(sim.dynamicCostB))}B deficit`}
+              </span>
+            )}
           </span>
           <motion.button whileTap={{ scale: 0.95 }} onClick={sim.reset} className="rounded-full px-4 py-1.5 text-sm font-medium" style={{ background: C.card, color: C.ink, boxShadow: SHADOW_SM }}>
             Reset
           </motion.button>
         </div>
       </header>
+
+      <a href="/gap" className="mb-6 block rounded-3xl px-5 py-4 transition-transform hover:scale-[1.01]" style={{ background: "linear-gradient(100deg, #0a0e14, #14213a)", boxShadow: SHADOW_SM }}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-lg font-black tracking-tight" style={{ color: "#fff" }}>
+              THE <span style={{ color: "#38e1ff" }}>GAP</span> <span className="font-semibold" style={{ color: "#8fa0b8" }}>— a game about numbers you can&apos;t feel</span>
+            </div>
+            <div className="text-sm" style={{ color: "#8fa0b8" }}>
+              How much do the richest actually have? Guess, then see. A five-minute journey through wealth inequality — every stat sourced.
+            </div>
+          </div>
+          <span className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#38e1ff", color: "#06131b" }}>Play THE GAP →</span>
+        </div>
+      </a>
 
       <div className="mb-6 flex justify-center">
         <SegmentedControl

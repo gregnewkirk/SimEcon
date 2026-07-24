@@ -36,6 +36,8 @@ export interface SimEngine {
   /** The displayed end-year snapshot for the active mode. */
   current: YearData | undefined;
   incidence: IncidenceResult;
+  /** First-year deficit impact ($B) of behavioral responses; 0 when dynamic is off. */
+  dynamicCostB: number;
 }
 
 export function useSimEngine(): SimEngine {
@@ -80,6 +82,14 @@ export function useSimEngine(): SimEngine {
     [cfg, useDynamic]
   );
 
+  // First-year deficit impact of behavioral responses, so the Dynamic toggle
+  // visibly shows what it's doing (it only bites when bracket/corporate rates move).
+  const dynamicCostB = useMemo(() => {
+    if (!useDynamic) return 0;
+    const staticYears = projectForward(cfg, DEFAULT_ASSUMPTIONS, { useDynamic: false, endYear: FORWARD_END });
+    return (years[0]?.deficitB ?? 0) - (staticYears[0]?.deficitB ?? 0);
+  }, [cfg, useDynamic, years]);
+
   const { actual, counterfactual } = useMemo(
     () => replayCounterfactual(events, DEFAULT_ASSUMPTIONS),
     [events]
@@ -112,5 +122,6 @@ export function useSimEngine(): SimEngine {
     counterfactual,
     current,
     incidence,
+    dynamicCostB,
   };
 }
