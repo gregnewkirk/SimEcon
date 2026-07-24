@@ -38,6 +38,15 @@ export interface SimEngine {
   incidence: IncidenceResult;
   /** First-year deficit impact ($B) of behavioral responses; 0 when dynamic is off. */
   dynamicCostB: number;
+  /** Compare mode: a second plan projected alongside the first. */
+  compareOn: boolean;
+  setCompareOn: (v: boolean) => void;
+  cfgB: LeverConfig;
+  setLeverB: (id: string, value: number | boolean) => void;
+  applyPresetB: (partial: LeverConfig) => void;
+  activePresetB: string | null;
+  setActivePresetB: (id: string | null) => void;
+  yearsB: YearData[];
 }
 
 export function useSimEngine(): SimEngine {
@@ -46,6 +55,9 @@ export function useSimEngine(): SimEngine {
   const [useDynamic, setUseDynamic] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const [activePreset, setActivePreset] = useState<string | null>(null);
+  const [compareOn, setCompareOn] = useState(false);
+  const [cfgB, setCfgB] = useState<LeverConfig>(() => defaultConfig());
+  const [activePresetB, setActivePresetB] = useState<string | null>(null);
 
   const setLever = useCallback((id: string, value: number | boolean) => {
     setCfg((c) => ({ ...c, [id]: value }));
@@ -57,6 +69,13 @@ export function useSimEngine(): SimEngine {
   }, []);
   const applyPreset = useCallback((partial: LeverConfig) => {
     setCfg({ ...defaultConfig(), ...partial });
+  }, []);
+  const setLeverB = useCallback((id: string, value: number | boolean) => {
+    setCfgB((c) => ({ ...c, [id]: value }));
+    setActivePresetB(null);
+  }, []);
+  const applyPresetB = useCallback((partial: LeverConfig) => {
+    setCfgB({ ...defaultConfig(), ...partial });
   }, []);
   const reset = useCallback(() => {
     setCfg(defaultConfig());
@@ -80,6 +99,11 @@ export function useSimEngine(): SimEngine {
   const years = useMemo(
     () => projectForward(cfg, DEFAULT_ASSUMPTIONS, { useDynamic, endYear: FORWARD_END }),
     [cfg, useDynamic]
+  );
+
+  const yearsB = useMemo(
+    () => (compareOn ? projectForward(cfgB, DEFAULT_ASSUMPTIONS, { useDynamic, endYear: FORWARD_END }) : []),
+    [cfgB, useDynamic, compareOn]
   );
 
   // First-year deficit impact of behavioral responses, so the Dynamic toggle
@@ -123,5 +147,13 @@ export function useSimEngine(): SimEngine {
     current,
     incidence,
     dynamicCostB,
+    compareOn,
+    setCompareOn,
+    cfgB,
+    setLeverB,
+    applyPresetB,
+    activePresetB,
+    setActivePresetB,
+    yearsB,
   };
 }
